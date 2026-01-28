@@ -65,6 +65,13 @@ In this section we review prior work on RTIC and underpinning theory.
 - Compile time analysis and code generation
 - Zero Cost abstractions for implementing the concurrency model
 
+==== RTIC Evoluition
+
+The RTIC framework is a Rust first open source development rooted in research on modelling and implmementation of (hard) real-time systems. Over the last decade RTIC has reached wide adoption (with a million downloads). However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed. While still experimental it serves the purpose of prototyping new features and concepts for RTIC.
+
+RTIC-eVo provides a set of complition passes, gradualary lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass, conforms to the input DSL of subsequent passes.
+
+In Section @sec:rw-pass we will leverage this modularity to sketch the implementation of Reader-Writer resources in RTIC-eVo.
 
 === The Stack Resource Policy
 
@@ -104,6 +111,53 @@ When $t_1$ claims the shared resource for read access, the system ceiling is onl
   // placement: top,
   image("rw.drawio.svg", width: 90%),
 ) <fig:rw-example>
+
+== Reader-Writer Resource Implementation in RTIC-eVo {#sec:rw-pass}
+
+As earlierd discussed, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $r$:
+
+- Reader ceiling $π_r(r)$: Maximum priority among tasks with write access to the resource.
+- Writer ceiling $π_w(r)$: Maximum priority among tasks with read or write access to the resource.
+
+The `core-pass` (last in the compilation pipeline) takes a DSL whith write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$. 
+
+Assume an upstream `rw-pass` to: 
+
+- Identify all tasks with access to each resource $r$ and compute $π_r(r)$ correspondingly.
+- Transform the DSL read accesses to write accesses.
+
+The `core-pass` will now take into account all accesses (both read and write) when computing the ceiling $π(r)$.
+
+The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, which will internally call the existing `lock` API (with ceiling set to $π_r(r)$), and pass on an immutable reference to the underlying data structure to the closure argument.
+
+In this way, no additional target specific code generation is required, as the target specific `lock` implementation will be reused.
+
+Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $π(r)$ takes all accesses into account. However, from a modelling perspective rejecting write accesses to tasks with read only priviliges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+
+At this point, we have defined the `rw-pass` contract at high level, in the following we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
+
+=== Implementation sketch
+
+Each pass first parses the input DSL into an interal abstract syntax tree (AST) representation, later used for analysis and DSL transformation. For the purpose of this paper, we make the assumption that *all* shared resources may be accessible for reader-writer access. (In case a resource absctracts underlying hardware, reads may have side effects, thus in a future work we will return to distinguishing such resources from pure data structures.)
+
+The `core-pass` DSL models the system in terms of tasks with local and shared resources. The model is declarative, where each task definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the task is given access to the shared resources `A`, `B` and `C`).
+
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the task has read access to resources `A` and `E`. 
+
+The `rw-pass` will then perform the following steps:
+
+- Collect the set of reader and writer resources per task.
+- Compute the reader and writer ceilings per resource. 
+- Generate code for reader access, per task.
+- Transform the DSL merging `read_shared` into `shared` resources.
+
+In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid `core-pass` model.
+
+
+
+
+
+
 
 //  table(
 //     // Table styling is not mandated by the IEEE. Feel free to adjust these
