@@ -112,7 +112,7 @@ When $t_1$ claims the shared resource for read access, the system ceiling is onl
   image("rw.drawio.svg", width: 90%),
 ) <fig:rw-example>
 
-== Reader-Writer Resource Implementation in RTIC-eVo {#sec:rw-pass}
+== Reader-Writer Resource Implementation in RTIC-eVo <sec:rw-pass>
 
 As earlierd discussed, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $r$:
 
