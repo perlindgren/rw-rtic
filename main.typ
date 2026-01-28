@@ -49,12 +49,13 @@ In this paper we explore multiple-reader, single writer resources in context of 
 
 Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 
-Key contributions of this paper include:
-- Declarative model for Reader-Writer resources
-- Static analysis for Reader-Writer resources
-- Code generation for Reader-Writer resources in RTIC
-- Evaluation of Reader-Writer resources in RTIC with benchmarks and real world applications
-
+#box[
+  Key contributions of this paper include:
+  - Declarative model for Reader-Writer resources
+  - Static analysis for Reader-Writer resources
+  - Code generation for Reader-Writer resources in RTIC
+  - Evaluation of Reader-Writer resources in RTIC with benchmarks and real world applications
+]
 == Background
 
 In this section we review prior work on RTIC and underpinning theory.
@@ -67,9 +68,9 @@ In this section we review prior work on RTIC and underpinning theory.
 
 ==== RTIC Evoluition
 
-The RTIC framework is a Rust first open source development rooted in research on modelling and implmementation of (hard) real-time systems. Over the last decade RTIC has reached wide adoption (with a million downloads). However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed. While still experimental it serves the purpose of prototyping new features and concepts for RTIC.
+The RTIC framework is a Rust-first open source development rooted in research on modelling and implementation of (hard) real-time systems. Over the last decade RTIC has reached wide adoption (with a million downloads). However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed/*@mrtic2025*/. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
 
-RTIC-eVo provides a set of complition passes, gradualary lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass, conforms to the input DSL of subsequent passes.
+RTIC-eVo provides a set of compilation passes, gradually lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass, conforms to the input DSL of subsequent passes.
 
 In Section @sec:rw-pass we will leverage this modularity to sketch the implementation of Reader-Writer resources in RTIC-eVo.
 
@@ -79,10 +80,10 @@ Here we should review the Baker SRP stuff with a focus on multi-unit resources.
 
 == Reader-Writer Resources
 
-Reader-Writer resources are an edge case of multi-unit resources, where we are allowed to have an infinite number of readers, but only a single write at any time. This model coincides well with the Rust aliasing invariants, which allow for any number of immutable references (&T), but only a single mutable reference (&mut T) at any time.
+Reader-Writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides well with the Rust aliasing invariants, which allow for any number of immutable references (&T), but only a single mutable reference (&mut T) at any time.
 
 === Single-Unit Resources
-Figure @fig:single-unit-example shows an example system with a shared single-unit resource between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, the ceiling is $π$ is $5$ (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
+@fig:single-unit-example[Figure] shows an example system with a shared single-unit resource between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, the ceiling is $π$ is $5$ (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
 
 Filled color indicates the task execution. Height changes indicate that the task has claimed (locked) the shared resource, and the system ceiling being raised accordingly. Hatched color indicates a task being preempted by a higher priority task.
 
@@ -99,11 +100,11 @@ Here we can see that the task $t_4$ is exposed to excessive blocking due to the 
 
 === Reduced Blocking with Reader-Writer Resources
 
-Figure @fig:rw-example shows an example system with a reader/writer resource shared between the tasks $t_1,..t_5$, the rest of the example remains the some as previous section.
+@fig:rw-example[Figure] shows an example system with a reader/writer resource shared between the tasks $t_1,..t_5$, the rest of the example remains the same as previous section.
 
-We now have two ceilings, $π_w$ (being the maximum priority of any task accessing the resource), and $π_r$ (being the maximum priority of any task writing the resource). In this case $π_w = 5$ and $π_r = 3$.
+We now have two ceilings, $π_w$ (being the maximum priority of any task _accessing_ the resource), and $π_r$ (being the maximum priority of any task _writing_ the resource). In this case $π_w = 5$ and $π_r = 3$.
 
-When $t_1$ claims the shared resource for read access, the system ceiling is only raised to $π_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is only raised to $π_r = 3$, allowing task $t_5$ to be directly executed (without being blocked). Notice here, the reader ceiling $π_r = 3$ is sufficient to ensure that $t_2$ will execute with exclusive access to the shared resource. This since other competing tasks ($t_4$ and $t_5$) have higher priority than $t_2$, and thus if already executing will prevent $t_2$ from being dispatched. The writer ceiling $π_w = 5$ ensures that when $t_2$ (or $t_3$) requests write access to the resource, both $t_4$ and $t_5$ are blocked from executing, thus race free execution is guaranteed.
+When $t_1$ claims the shared resource for read access, the system ceiling is only raised to $π_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is only raised to #box($π_r = 3$), allowing task $t_5$ to be directly executed (without being blocked). Notice here, the reader ceiling $π_r = 3$ is sufficient to ensure that $t_2$ will execute with exclusive access to the shared resource. This since other competing tasks ($t_4$ and $t_5$) have higher priority than $t_2$, and thus if already executing will prevent $t_2$ from being dispatched. The writer ceiling $π_w = 5$ ensures that when $t_2$ (or $t_3$) requests write access to the resource, both $t_4$ and $t_5$ are blocked from executing, thus race free execution is guaranteed.
 
 
 #figure(
@@ -114,12 +115,12 @@ When $t_1$ claims the shared resource for read access, the system ceiling is onl
 
 == Reader-Writer Resource Implementation in RTIC-eVo <sec:rw-pass>
 
-As earlierd discussed, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $r$:
+As discussed earlier, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $r$:
 
-- Reader ceiling $π_r(r)$: Maximum priority among tasks with write access to the resource.
-- Writer ceiling $π_w(r)$: Maximum priority among tasks with read or write access to the resource.
+- Reader ceiling $π_r(r)$: Maximum priority among tasks with _write access_ to the resource.
+- Writer ceiling $π_w(r)$: Maximum priority among tasks with _read_ or _write access_ to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL whith write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$.
+The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$.
 
 Assume an upstream `rw-pass` to:
 
