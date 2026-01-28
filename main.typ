@@ -119,9 +119,9 @@ As earlierd discussed, we need to treat reader and writer accesses differently. 
 - Reader ceiling $π_r(r)$: Maximum priority among tasks with write access to the resource.
 - Writer ceiling $π_w(r)$: Maximum priority among tasks with read or write access to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL whith write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$. 
+The `core-pass` (last in the compilation pipeline) takes a DSL whith write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$.
 
-Assume an upstream `rw-pass` to: 
+Assume an upstream `rw-pass` to:
 
 - Identify all tasks with access to each resource $r$ and compute $π_r(r)$ correspondingly.
 - Transform the DSL read accesses to write accesses.
@@ -142,12 +142,12 @@ Each pass first parses the input DSL into an interal abstract syntax tree (AST) 
 
 The `core-pass` DSL models the system in terms of tasks with local and shared resources. The model is declarative, where each task definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the task is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the task has read access to resources `A` and `E`. 
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the task has read access to resources `A` and `E`.
 
 The `rw-pass` will then perform the following steps:
 
 - Collect the set of reader and writer resources per task.
-- Compute the reader and writer ceilings per resource. 
+- Compute the reader and writer ceilings per resource.
 - Generate code for reader access, per task.
 - Transform the DSL merging `read_shared` into `shared` resources.
 
