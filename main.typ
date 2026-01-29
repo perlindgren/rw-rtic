@@ -98,11 +98,17 @@ Now, a lower priority interrupt/task is not able to preempt a higher priority in
 
 In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
 
-The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. For this reason, the system ceiling is defined only by the set of locked resources, and RTIC is able to reduce the formula for $macron(Pi)$ to
+The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. In systems conforming to SRP, this number is a compile-time known constant.
 
-$
-macron(Pi) = max({0} union {p(t) | t "uses a locked resource"}).
-$
+// For this reason, the system ceiling is defined only by the set of locked resources.
+
+// From @eq:system-ceiling and @eq:resource-ceiling and assuming single-unit resources, the following formula can be derived for $macron(Pi)$:
+
+// $
+// macron(Pi) = max({0} union {p(t) | t "needs a locked resource"}),
+// $
+
+// where, "t accesses a locked resource" means the same as "$t$'s maximum needs for resources exceed the currently available resources".
 
 The key contribution of this paper is to show that with multi-unit resources of the read-write type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
