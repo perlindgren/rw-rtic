@@ -3,9 +3,9 @@
 #show: ieee.with(
   title: [Zero Cost Reader-Writer Locks for the RTIC Framework],
   abstract: [
-    The RTIC framework provides and executable model for concurrent applications as a set of static priority, run-to-completion tasks with local and shared resources. At run-time the system is scheduled in compliance to the Stack Resource Policy (SRP), which brings guarantees for race-and deadlock-free execution of systems with shared resources. While the original work on SRP allows for multi-unit resources, the RTIC framework restricts the model to single-unit resources.
+    The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    In this paper we explore multiple-reader, single writer resources in context of the SRP model and the Rust aliasing invariants. We show that Reader-Writer resources can be implemented in RTIC with Zero Cost, while improving schedulability of the application. In the paper, we review the theoretical background and layout the statical analysis and code generation implementation in RTIC for the ARM Cortex-M v7m architecture. Finally, we evaluate the implementation with a set of benchmarks and real world applications.
+    In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. Finally, we evaluate the implementation with a set of benchmarks and real world applications.
   ],
   authors: (
     (
@@ -43,19 +43,20 @@
 )
 
 = Introduction
-Extend on: The RTIC framework provides and executable model for concurrent applications as a set of static priority, run-to-completion tasks with local and shared resources. At run-time the system is scheduled in compliance to the Stack Resource Policy (SRP), which brings guarantees for race-and deadlock-free access to shared resources. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework restricts the model to single-unit resources.
+Extend on: The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-In this paper we explore multiple-reader, single writer resources in context of the SRP model and the Rust aliasing invariants. We show that Reader-Writer resources can be implemented in RTIC with Zero Cost, while improving schedulability of the application. In the paper, we review the theoretical background and layout the statical analysis and code generation implementation in RTIC for the ARM Cortex-M v7m architecture.
+In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. 
 
 Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 
 #box[
   Key contributions of this paper include:
-  - Declarative model for Reader-Writer resources
-  - Static analysis for Reader-Writer resources
-  - Code generation for Reader-Writer resources in RTIC
-  - Evaluation of Reader-Writer resources in RTIC with benchmarks and real world applications
+  - Declarative model for readers-writer resources
+  - Static analysis for readers-writer resources
+  - Code generation for readers-writer resources in RTIC
+  - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
 ]
+
 == Background
 
 In this section we review prior work on RTIC and underpinning theory. The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
