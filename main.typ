@@ -1,4 +1,4 @@
-#import "preamble.typ": preamble
+#import "preamble.typ": *
 #show: doc => preamble(doc)
 
 #import "@preview/charged-ieee:0.1.4": ieee
@@ -46,11 +46,13 @@
 )
 
 = Introduction
-Extend on: The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
+#todo(position: "inline", [Extend / copied from abstract:
+  The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
+  In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
 
-Finally, we evaluate the implementation with a set of benchmarks and real world applications.
+  Finally, we evaluate the implementation with a set of benchmarks and real world applications.
+])
 
 #box[
   Key contributions of this paper include:
@@ -134,7 +136,7 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 === The Stack Resource Policy
 
-Here we should review the Baker SRP stuff with a focus on multi-unit resources.
+#todo(position: "inline")[Here we should review the Baker SRP stuff with a focus on multi-unit resources.]
 
 == Readers-writer Resources
 
