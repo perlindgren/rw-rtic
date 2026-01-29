@@ -177,40 +177,32 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
 
   #math.equation(
     $
-      &              &                                     =>^(#ref(<eq:proof1>)) & \
-      & macron(Pi) = & max(
-                         & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
-                         &                                                              & union & {ceil(R_m)_v_R_m} \
-                         &                                                              & union & {ceil(R_m)_v_(R_m)^'}
-                       ) \
-      &              &                                                        <=> \
-      & macron(Pi) = & max(
-                         & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
-                         &                                           & union & {ceil(R_m)_v_m^'}
-                       ) \
-      &              &                                                        <=> \
-      & macron(Pi) = & max(
-                         & max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
-                         &                                                & union & {ceil(R_m)_v_(R_m)^'}
-                       ) \
-      &              &                                      <=>^#ref(<eq:proof0>) \
-      & macron(Pi) = & max(&mid({ macron(Pi)_"cur"}) union {ceil(R_m)_v'_(R_m)}),
+      =>^(#ref(<eq:proof1>)) & macron(Pi) = & max(
+                                                & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
+                                                &                                                              & union & {ceil(R_m)_v_R_m} union {ceil(R_m)_v_(R_m)^'}
+                                              ) \
+                         <=> & macron(Pi) = & max(
+                                                & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
+                                                &                                           & union & {ceil(R_m)_v_m^'}
+                                              ) \
+                         <=> & macron(Pi) = & max(
+                                                & max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
+                                                &                                                & union & {ceil(R_m)_v_(R_m)^'}
+                                              ) \
+       <=>^#ref(<eq:proof0>) & macron(Pi) = & max(&mid({ macron(Pi)_"cur"}) union {ceil(R_m)_v'_(R_m)}),
     $,
   )
   where the last term can be expanded to its definition:
   $
-               & <=>^#ref(<eq:resource-ceiling-orig>) \
-    macron(Pi) & = max(
-                   { macron(Pi)_"cur"} \
-                                       & union {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}
-                 ) \
-               & <=> \
-    macron(Pi) & = max(
-                   { macron(Pi)_"cur"} union {0} \
-                                                 & union max{pi(J) mid(|) v'_R_m < mu_R_m (t)}
-                 ) \
-               & <=>^(pi>=0) \
-    macron(Pi) & = max({ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
+    <=>^#ref(<eq:resource-ceiling-orig>) & macron(Pi) = & max(
+      & { macron(Pi)_"cur"} \
+      &                     & union & {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}
+    ) \
+    <=> & macron(Pi) = & max(
+      & { macron(Pi)_"cur"} union {0} \
+      &                               & union & max{pi(J) mid(|) v'_R_m < mu_R_m (t)}
+    ) \
+    <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
   $<eq:proof2>
 ]
 
@@ -228,34 +220,32 @@ $<eq:proof3>
 
 It can be expanded to
 $
-  =>^#ref(<eq:proof3>) \
-            macron(Pi)
-            =          & max(
-                           { macron(Pi)_"cur"} union {pi(t) mid(|) t "has read access to" R_m} \
-                                                                                               & union {pi(t) mid(|) t "has write access to" R_m}
-                         )
+  =>^#ref(<eq:proof3>) macron(Pi)
+  = max(
+          & { macron(Pi)_"cur"} \
+    union & {pi(t) mid(|) t "has read access to" R_m} \
+    union & {pi(t) mid(|) t "has write access to" R_m}
+  )
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the task must have preempted all other tasks that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the task has to be the highest priority task with read access to $R_m$, i.e.
+For there to be zero $R_m$ after a read lock, the task must have preempted all other tasks that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the task has to be the highest priority task with read access to $R_m$, i.e.,
 $
   pi(t_"cur") = max{pi(t) mid(|) t "has read access to" R_m}
 $<eq:proof5>
 Continuing from @eq:proof4,
 $
-  =>^(#ref(<eq:proof5>)) \
-            macron(Pi) = & max(
-                             { macron(Pi)_"cur"} union {pi(t_"cur")} \
-                                                                     & union {pi(t) mid(|) t "has write access to" R_m}
-                           )
+  =>^(#ref(<eq:proof5>)) macron(Pi) = max(
+          & { macron(Pi)_"cur"} union {pi(t_"cur")} \
+    union & {pi(t) mid(|) t "has write access to" R_m}
+  )
 $
 However, in SRP, as a task is not allowed to preempt the currently executing task unless it has a higher priority, so it is enough to limit the system ceiling to
 $
-  =>^(#ref(<eq:proof5>)) \
-            macron(Pi) = & max(
-                             { macron(Pi)_"cur"} \
-                                                 & union {pi(t) mid(|) t "has write access to" R_m}
-                           ) \
-                       = & max(macron(Pi)_"cur", ceil(R)_r),
+  =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
+                                        { macron(Pi)_"cur"} \
+                                                            & union {pi(t) mid(|) t "has write access to" R_m}
+                                      ) \
+                                    & = max(macron(Pi)_"cur", ceil(R)_r),
 $
 which proves @eq:rw-lock-ceil-r.
 
@@ -264,10 +254,9 @@ which proves @eq:rw-lock-ceil-r.
 
 If the lock was a write-lock, $v'_R_m = 0$. Continuing from @eq:proof2
 $
-            => \
-  macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (t)}) \
-             = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m}) \
-             = & max(macron(Pi)_"cur", ceil(R)_w),
+  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (t)}) \
+                = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m}) \
+                = & max(macron(Pi)_"cur", ceil(R)_w),
 $
 proving @eq:rw-lock-ceil-w.
 
