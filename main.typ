@@ -43,7 +43,7 @@
 )
 
 = Introduction
-Extend on: The RTIC framework provides and executable model for concurrent applications as a set of static priority, run-to-completion tasks with local and shared resources. At run-time the system is scheduled in compliance to the Stack Resource Policy (SRP), which brings guarantees for race-and deadlock-free access to shared resources. While the original work on SRP allows for multi-unit resources, the RTIC framework restricts the model to single-unit resources.
+Extend on: The RTIC framework provides and executable model for concurrent applications as a set of static priority, run-to-completion tasks with local and shared resources. At run-time the system is scheduled in compliance to the Stack Resource Policy (SRP), which brings guarantees for race-and deadlock-free access to shared resources. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework restricts the model to single-unit resources.
 
 In this paper we explore multiple-reader, single writer resources in context of the SRP model and the Rust aliasing invariants. We show that Reader-Writer resources can be implemented in RTIC with Zero Cost, while improving schedulability of the application. In the paper, we review the theoretical background and layout the statical analysis and code generation implementation in RTIC for the ARM Cortex-M v7m architecture.
 
@@ -58,7 +58,48 @@ Finally, we evaluate the implementation with a set of benchmarks and real world 
 ]
 == Background
 
-In this section we review prior work on RTIC and underpinning theory.
+In this section we review prior work on RTIC and underpinning theory. The term _task_ is used interchangeably with _job_ as defined in @baker1991stack.
+
+In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and highest of any pending task, including the running task.
+
+The preemption level of a task, $pi(t)$, is defined as any static function that satisfies
+
+$
+p(t') > p(t) "and p' arrives later" => pi(t') > pi(t).
+$
+
+In RTIC, the chosen function is $pi(t) = p(t)$, where $p(t)$ is a programmer selected, static priority for the task.
+
+The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its current availability. Formally,
+
+$
+macron(pi) = max({ceil(R_i) mid(|) R "is a resource"}).
+$<eq:system-ceiling>
+
+Notice that $macron(pi)$ changes only when a resource is locked or unlocked.
+
+RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a job that could be blocked because of the current locks on $R$. Formally,
+
+$
+ceil(R) = max({0} union { p(y) mid(|) v_R < mu_R (y)}),
+$<eq:resource-ceiling>
+where $v_R$ is the current availability of $R$ and $mu_R(J)$ is $t$'s maximum need for $R$.
+
+RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling. 
+
+Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule.
+
+In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored.
+
+The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. For this reason, the system ceiling is defined only by the set of locked resources, and RTIC is able to reduce the formula for $macron(pi)$ to
+
+$
+macron(pi) = max({0} union {p(t) | t "uses a locked resource"}).
+$
+
+The key contribution of this paper is to show that with multi-unit resources of the read-write type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
+
+
 
 === The RTIC Framework
 
@@ -83,57 +124,58 @@ Here we should review the Baker SRP stuff with a focus on multi-unit resources.
 Reader-Writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides well with the Rust aliasing invariants, which allow for any number of immutable references (&T), but only a single mutable reference (&mut T) at any time.
 
 === Single-Unit Resources
-@fig:single-unit-example[Figure] shows an example system with a shared single-unit resource between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, the ceiling is $π$ is $5$ (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
+@fig:single-unit-example[Figure] shows an example system with some shared single-unit resource $R$ between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
 
-Filled color indicates the task execution. Height changes indicate that the task has claimed (locked) the shared resource, and the system ceiling being raised accordingly. Hatched color indicates a task being preempted by a higher priority task.
+Filled color indicates the task execution. The dashed line indicates the current system ceiling $macron(pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a task being blocked, and a cross-hatched color indicates the blocking is due to a higher priority task.
 
-Boxes indicates task blocking due to resource unavailability, notice under SRP tasks may only be blocked from being dispatched, once executing they run to completion free of blocking.
+Notice under SRP tasks may only be blocked from being dispatched; once executing, they run to completion free of blocking.
 
-Here we can see that the task $t_4$ is exposed to excessive blocking due to the long-running lock held by tasks $t_1$. $t_5$ is also blocked by $t_4$.
+Here we can see that the tasks $t_4$ and $t_5$ are exposed to unnecessary blocking due to the locks held by tasks $t_1$ and $t_3$.
 
 
 #figure(
   caption: [Example: Single-Unit Resource Sharing],
   // placement: top,
-  image("single_unit.drawio.svg", width: 90%),
+  image("single_unit.png", width: 100%),
 ) <fig:single-unit-example>
 
 === Reduced Blocking with Reader-Writer Resources
 
-@fig:rw-example[Figure] shows an example system with a reader/writer resource shared between the tasks $t_1,..t_5$, the rest of the example remains the same as previous section.
+@fig:rw-example[Figure] shows an example system with a reader/writer resource shared between the tasks $t_1,..t_5$, the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
-We now have two ceilings, $π_w$ (being the maximum priority of any task _accessing_ the resource), and $π_r$ (being the maximum priority of any task _writing_ the resource). In this case $π_w = 5$ and $π_r = 3$.
+Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any task _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any task _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
 
-When $t_1$ claims the shared resource for read access, the system ceiling is only raised to $π_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is only raised to #box($π_r = 3$), allowing task $t_5$ to be directly executed (without being blocked). Notice here, the reader ceiling $π_r = 3$ is sufficient to ensure that $t_2$ will execute with exclusive access to the shared resource. This since other competing tasks ($t_4$ and $t_5$) have higher priority than $t_2$, and thus if already executing will prevent $t_2$ from being dispatched. The writer ceiling $π_w = 5$ ensures that when $t_2$ (or $t_3$) requests write access to the resource, both $t_4$ and $t_5$ are blocked from executing, thus race free execution is guaranteed.
+When $t_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is raised to $max(macron(pi)_"cur", ceil(R)_r) = max(4, 3) = 4$. Notice that in RTIC, it is enough to raise the system ceiling to $ceil(R)_r = 3$, as tasks with lower priority than the current tasks are not allowed to preempt due to interrupt priority order.
 
+When $t_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 
 #figure(
   caption: [Example: Reader-Writer resource sharing ],
   // placement: top,
-  image("rw.drawio.svg", width: 90%),
+  image("rw.png", width: 90%),
 ) <fig:rw-example>
 
 == Reader-Writer Resource Implementation in RTIC-eVo <sec:rw-pass>
 
 As discussed earlier, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $r$:
 
-- Reader ceiling $π_r(r)$: Maximum priority among tasks with _write access_ to the resource.
-- Writer ceiling $π_w(r)$: Maximum priority among tasks with _read_ or _write access_ to the resource.
+- Reader ceiling $ceil(R)_r$: Maximum priority among tasks with _write access_ to the resource.
+- Writer ceiling $ceil(R)_w$: Maximum priority among tasks with _read_ or _write access_ to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $π(r)$ of any task with shared access to the resource $r$.
+The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $pi(t)$ of any task $t$ with shared access to the resource $R$.
 
 Assume an upstream `rw-pass` to:
 
-- Identify all tasks with access to each resource $r$ and compute $π_r(r)$ correspondingly.
+- Identify all tasks with access to each resource $R$ and compute $ceil(R)_w$ correspondingly.
 - Transform the DSL read accesses to write accesses.
 
-The `core-pass` will now take into account all accesses (both read and write) when computing the ceiling $π(r)$.
+The `core-pass` will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
 
-The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, which will internally call the existing `lock` API (with ceiling set to $π_r(r)$), and pass on an immutable reference to the underlying data structure to the closure argument.
+The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, which will internally call the existing `lock` API (with ceiling set to $ceil(R)_r$), and pass on an immutable reference to the underlying data structure to the closure argument.
 
 In this way, no additional target specific code generation is required, as the target specific `lock` implementation will be reused.
 
-Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $π(r)$ takes all accesses into account. However, from a modelling perspective rejecting write accesses to tasks with read only priviliges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modelling perspective rejecting write accesses to tasks with read only priviliges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
 
 At this point, we have defined the `rw-pass` contract at high level, in the following we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
