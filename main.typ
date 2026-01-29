@@ -174,38 +174,43 @@ where $v_(R_m)^'$ is the new availability of resource $R_m$.
 The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e., $ceil(R_m)_v_R_m <= ceil(R_m)_v_(R_m)^'$, because $v_R_m > v_(R_m)^'$.
 
 #box[From this, it follows that we can add the lower value inside the maximum:
+
+  #math.equation(
+    $
+      &              &                                     =>^(#ref(<eq:proof1>)) & \
+      & macron(Pi) = & max(
+                         & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
+                         &                                                              & union & {ceil(R_m)_v_R_m} \
+                         &                                                              & union & {ceil(R_m)_v_(R_m)^'}
+                       ) \
+      &              &                                                        <=> \
+      & macron(Pi) = & max(
+                         & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
+                         &                                           & union & {ceil(R_m)_v_m^'}
+                       ) \
+      &              &                                                        <=> \
+      & macron(Pi) = & max(
+                         & max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
+                         &                                                & union & {ceil(R_m)_v_(R_m)^'}
+                       ) \
+      &              &                                      <=>^#ref(<eq:proof0>) \
+      & macron(Pi) = & max(&mid({ macron(Pi)_"cur"}) union {ceil(R_m)_v'_(R_m)}),
+    $,
+  )
+  where the last term can be expanded to its definition:
   $
-                 & =>^(#ref(<eq:proof1>)) \
-    macron(Pi) = & max(
-                     {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
-                                                                                  & union {ceil(R_m)_v_R_m} \
-                                                                                  & union {ceil(R_m)_v_(R_m)^'}
-                   ) \
-                 & <=> \
-    macron(Pi) = & max(
-                     {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
-                                                               & union {ceil(R_m)_v_m^'}
-                   ) \
-                 & <=> \
-    macron(Pi) = & max(
-                     max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
-                                                                    & union {ceil(R_m)_v_(R_m)^'}
-                   ) \
-                 & <=>^#ref(<eq:proof0>) \
-    macron(Pi) = & max({ macron(Pi)_"cur"} union {ceil(R_m)_v'_(R_m)}), \
-                 & "where the last term can be expanded to its definition:" \
-                 & <=>^#ref(<eq:resource-ceiling-orig>) \
-    macron(Pi) = & max(
-                     { macron(Pi)_"cur"} \
-                                         & union {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}
-                   ) \
-                 & <=> \
-    macron(Pi) = & max(
-                     { macron(Pi)_"cur"} union {0} \
-                                                   & union max{pi(J) mid(|) v'_R_m < mu_R_m (t)}
-                   ) \
-                 & <=>^(pi>=0) \
-    macron(Pi) = & max({ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
+               & <=>^#ref(<eq:resource-ceiling-orig>) \
+    macron(Pi) & = max(
+                   { macron(Pi)_"cur"} \
+                                       & union {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}
+                 ) \
+               & <=> \
+    macron(Pi) & = max(
+                   { macron(Pi)_"cur"} union {0} \
+                                                 & union max{pi(J) mid(|) v'_R_m < mu_R_m (t)}
+                 ) \
+               & <=>^(pi>=0) \
+    macron(Pi) & = max({ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
   $<eq:proof2>
 ]
 
