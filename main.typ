@@ -58,50 +58,50 @@ Finally, we evaluate the implementation with a set of benchmarks and real world 
 ]
 == Background
 
-In this section we review prior work on RTIC and underpinning theory. The term _task_ is used interchangeably with _job_ as defined in @baker1991stack.
+In this section we review prior work on RTIC and underpinning theory. The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
 
-In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and highest of any pending task, including the running task.
+In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending task, including the running task.
 
 The preemption level of a task, $pi(t)$, is defined as any static function that satisfies
 
 $
-p(t') > p(t) "and p' arrives later" => pi(t') > pi(t).
+p(t') > p(t) "and" t' "arrives later" => pi(t') > pi(t).
 $
 
-In RTIC, the chosen function is $pi(t) = p(t)$, where $p(t)$ is a programmer selected, static priority for the task.
+In RTIC, the chosen function is $pi(t) = p(t)$, where $p(t)$ is a programmer selected static priority for the task.
 
 The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its current availability. Formally,
 
 $
-macron(pi) = max({ceil(R_i) mid(|) R "is a resource"}).
+macron(Pi) = max({ceil(R_i) mid(|) R_i "is a resource"}).
 $<eq:system-ceiling>
 
-Notice that $macron(pi)$ changes only when a resource is locked or unlocked.
+Notice that $macron(Pi)$ changes only when a resource is locked or unlocked.
 
-RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a job that could be blocked because of the current locks on $R$. Formally,
+RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a task that could be blocked because of the current locks on $R$. Formally,
 
 $
-ceil(R) = max({0} union { pi(y) mid(|) v_R < mu_R (y)}),
+ceil(R) = max({0} union { pi(t) mid(|) v_R < mu_R (t)}),
 $<eq:resource-ceiling-orig>
 
 or as $pi = p$,
 
 $
-ceil(R) = max({0} union { pi(y) mid(|) v_R < mu_R (y)}),
+ceil(R) = max({0} union { p(t) mid(|) v_R < mu_R (t)}),
 $<eq:resource-ceiling>
 
-where $v_R$ is the current availability of $R$ and $mu_R(J)$ is $t$'s maximum need for $R$.
+where $v_R$ is the current availability of $R$ and $mu_R (t)$ is the task $t$'s maximum need for $R$.
 
 RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling. 
 
-Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule.
+Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the task to also be the _oldest_ highest priority pending task. This exception to the does not affect most of the qualities of SRP proven in @baker1991stack.
 
-In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored.
+In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
 
-The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. For this reason, the system ceiling is defined only by the set of locked resources, and RTIC is able to reduce the formula for $macron(pi)$ to
+The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. For this reason, the system ceiling is defined only by the set of locked resources, and RTIC is able to reduce the formula for $macron(Pi)$ to
 
 $
-macron(pi) = max({0} union {p(t) | t "uses a locked resource"}).
+macron(Pi) = max({0} union {p(t) | t "uses a locked resource"}).
 $
 
 The key contribution of this paper is to show that with multi-unit resources of the read-write type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
@@ -132,27 +132,27 @@ Reader-Writer resources are a special case of multi-unit resources, where an inf
 
 Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a read/write resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. This means that no extra overhead is introduced to RTIC when implementing the read-write locks, as the read-write compiles similarly to mutex locks.
 
-Formally,
+Formally:
 
-+ when a read-lock of resource $R$ is taken, the system ceiling $macron(pi)$ changes to
-  $ macron(pi) = max(macron(pi)_"cur", ceil(R)_r) $<eq:rw-lock-ceil-r>
++ when a read-lock of resource $R$ is taken, if the system ceiling $macron(Pi)$ is changed to
+  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_r) $<eq:rw-lock-ceil-r>
   
-  where $ceil(R)_r$ is the highest preemption level of jobs with write-access to $R$, and
-+ when a write-lock of resource $R$ is taken, the system ceiling $macron(pi)$ changes to
-  $ macron(pi) = max(macron(pi)_"cur", ceil(R)_w), $<eq:rw-lock-ceil-w>
+  where $ceil(R)_r$ is the highest preemption level of tasks with write-access to $R$, the system is still SRP compliant, and
++ when a write-lock of resource $R$ is taken, the system ceiling $macron(Pi)$ changes to
+  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_w), $<eq:rw-lock-ceil-w>
   
-  where $ceil(R)_w$ is the highest preemption level of jobs that need $R$.
+  where $ceil(R)_w$ is the highest preemption level of tasks that need $R$, the system is still SRP compliant.
 
 *Proof*
 
 Assume the system has resources $R_1, ..., R_n$ and their availability is $v_R_1, ... v_R_n$ before taking the lock. Now, by definition @eq:resource-ceiling-orig, the system ceiling is
 $
-macron(pi)_"cur" &= max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
+macron(Pi)_"cur" &= max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
 $<eq:proof0>
 Assume the read or write lock operation concerns resource $R_m$, $m in 1, ..., n$.
 After the locking, the system ceiling is, by definition,
 $
-macron(pi) = max({ceil(R_i)_v_R_i mid(|) i in {1, ..., n} "and" i in.not {m}} \
+macron(Pi) = max({ceil(R_i)_v_R_i mid(|) i in {1, ..., n} "and" i in.not {m}} \
 union {ceil(R_m)_v_(R_m)^'}),
 $<eq:proof1>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
@@ -162,27 +162,27 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
 #box[From this, it follows that we can add the lower value inside the maximum:
 $
 &=>^(#ref(<eq:proof1>)) \
-macron(pi) = &max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
+macron(Pi) = &max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
 &union {ceil(R_m)_v_R_m} \
 &union {ceil(R_m)_v_(R_m)^'}) \
 &<=> \
-macron(pi) = &max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
+macron(Pi) = &max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
 &union {ceil(R_m)_v_m^'}) \
 &<=> \
-macron(pi) = &max(max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
+macron(Pi) = &max(max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
 &union {ceil(R_m)_v_(R_m)^'}) \
 &<=>^#ref(<eq:proof0>) \
-  macron(pi) = &max({ macron(pi)_"cur"} union {ceil(R_m)_v'_(R_m)}),
+  macron(Pi) = &max({ macron(Pi)_"cur"} union {ceil(R_m)_v'_(R_m)}),
 \
 &"where the last term can be expanded to its definition:" \
 &<=>^#ref(<eq:resource-ceiling-orig>) \
-macron(pi) = &max({ macron(pi)_"cur"} \
-&union {max({0}  union {pi(J) mid(|) v'_R_m < mu_R_m (J)})}) \
+macron(Pi) = &max({ macron(Pi)_"cur"} \
+&union {max({0}  union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}) \
 &<=> \
-macron(pi) = &max({ macron(pi)_"cur"} union {0} \
-&union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}) \
+macron(Pi) = &max({ macron(Pi)_"cur"} union {0} \
+&union max{pi(J) mid(|) v'_R_m < mu_R_m (t)}) \
 &<=>^(pi>=0) \
-macron(pi) = &max({ macron(pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+macron(Pi) = &max({ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
 $<eq:proof2>
 ]
 
@@ -190,50 +190,57 @@ $<eq:proof2>
 
 After locking, either $v'_R_m in {1, ..., n-1}$ or $v_R_m = 0$.
 
-In the former case, the condition $v'_R_m < mu_R_m (J)$ in @eq:proof2 corresponds to $J$ having write access to $R_m$, proving @eq:rw-lock-ceil-r for that case.
+In the former case, the condition $v'_R_m < mu_R_m (t)$ in @eq:proof2 corresponds to $t$ having write access to $R_m$, proving @eq:rw-lock-ceil-r for that case.
 
-In the latter case, the condition $v'_R_m < mu_R_m (J)$ corresponds $J$ having access to $R_m$ in general, as both reading and writing jobs are blocked when there is zero $R_m$, i.e.
+In the latter case, the condition $v'_R_m < mu_R_m (t)$ corresponds $t$ having access to $R_m$ in general, as both reading and writing tasks are blocked when there is zero $R_m$, i.e.
 
 $
-=>^#ref(<eq:proof2>)   macron(pi) = &max({ macron(pi)_"cur"} union {pi(J) mid(|) J "needs" R_m})
+=>^#ref(<eq:proof2>)   macron(Pi) = &max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m})
 $<eq:proof3>
 
 It can be expanded to
 $
 =>^#ref(<eq:proof3>) \
-macron(pi)
-= &max({ macron(pi)_"cur"} union {pi(J) mid(|) J "has read access to" R_m} \
-&union {pi(J) mid(|) J "has write access to" R_m}) 
+macron(Pi)
+= &max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "has read access to" R_m} \
+&union {pi(t) mid(|) t "has write access to" R_m}) 
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.
+For there to be zero $R_m$ after a read lock, the task must have preempted all other tasks that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the task has to be the highest priority task with read access to $R_m$, i.e.
 $
-pi(J_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
+pi(t_"cur") = max{pi(t) mid(|) t "has read access to" R_m}
 $<eq:proof5>
 Continuing from @eq:proof4,
 $
 =>^(#ref(<eq:proof5>)) \
-macron(pi) = &max({ macron(pi)_"cur"} union {pi(J_"cur")} \
-&union {pi(J) mid(|) J "has write access to" R_m}) \
-=^(macron(pi)_"cur" >= pi(J_"cur")) &max({ macron(pi)_"cur"} \
-&union {pi(J) mid(|) J "has write access to" R_m}), 
+macron(Pi) = &max({ macron(Pi)_"cur"} union {pi(t_"cur")} \
+&union {pi(t) mid(|) t "has write access to" R_m})
 $
-which is what we intended to prove. 
+However, in SRP, as a task is not allowed to preempt the currently executing task unless it has a higher priority, so it is enough to limit the system ceiling to
+$
+=>^(#ref(<eq:proof5>)) \
+macron(Pi) = &max({ macron(Pi)_"cur"} \
+&union {pi(t) mid(|) t "has write access to" R_m}) \
+= &max(macron(Pi)_"cur", ceil(R)_r),
+$
+which proves @eq:rw-lock-ceil-r.
+
 
 *Proof for @eq:rw-lock-ceil-w (write-lock):*
 
 If the lock was a write-lock, $v'_R_m = 0$. Continuing from @eq:proof2
 $
 => \
-macron(pi) = &max({ macron(pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-= &max({ macron(pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) ,
+macron(Pi) = &max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (t)}) \
+= &max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m}) \
+= &max(macron(Pi)_"cur", ceil(R)_w),
 $
 proving @eq:rw-lock-ceil-w.
 
 === Example or read/write with Single-Unit Resources
 @fig:single-unit-example[Figure] shows an example system with some shared single-unit resource $R$ between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
 
-Filled color indicates the task execution. The dashed line indicates the current system ceiling $macron(pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a task being blocked, and a cross-hatched color indicates the blocking is due to a higher priority task.
+Filled color indicates the task execution. The dashed line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a task being blocked, and a cross-hatched color indicates the blocking is due to a higher priority task.
 
 Notice under SRP tasks may only be blocked from being dispatched; once executing, they run to completion free of blocking.
 
@@ -252,7 +259,9 @@ Here we can see that the tasks $t_4$ and $t_5$ are exposed to unnecessary blocki
 
 Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any task _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any task _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
 
-When $t_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is raised to $max(macron(pi)_"cur", ceil(R)_r) = max(4, 3) = 4$. Notice that in RTIC, it is enough to raise the system ceiling to $ceil(R)_r = 3$, as tasks with lower priority than the current tasks are not allowed to preempt due to interrupt priority order.
+When $t_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is raised to $ceil(R)_r = 3$.
+
+Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the read-write lock needs to keep count of $R$ availability, but a later proof will show it is not necessary.
 
 When $t_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 
