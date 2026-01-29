@@ -45,7 +45,7 @@
 = Introduction
 Extend on: The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. 
+In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
 
 Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 
@@ -63,7 +63,7 @@ In this section we review prior work on RTIC and underpinning theory. The term _
 
 In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending task, including the running task.
 
-The preemption level of a task, $pi(t)$, is defined as any static function that satisfies
+The preemption level of a task $pi(t)$ is defined as any static function that satisfies
 
 $
   p(t') > p(t) "and" t' "arrives later" => pi(t') > pi(t).
@@ -71,7 +71,7 @@ $
 
 In RTIC, the chosen function is $pi(t) = p(t)$, where $p(t)$ is a programmer selected static priority for the task.
 
-The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its current availability. Formally,
+The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its own, current availability. Formally,
 
 $
   macron(Pi) = max({ceil(R_i) mid(|) R_i "is a resource"}).
@@ -95,9 +95,9 @@ where $v_R$ is the current availability of $R$ and $mu_R (t)$ is the task $t$'s 
 
 RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling.
 
-Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the task to also be the _oldest_ highest priority pending task. This exception to the does not affect most of the qualities of SRP proven in @baker1991stack.
+Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the task to also be the _oldest_ highest priority pending task. This exception does not affect most of the qualities of SRP proven in @baker1991stack.
 
-In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
+In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
 
 The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. In systems conforming to SRP, this number is a compile-time known constant.
 
@@ -111,7 +111,7 @@ The current version of RTIC uses only single-unit resources. For a single-unit r
 
 // where, "t accesses a locked resource" means the same as "$t$'s maximum needs for resources exceed the currently available resources".
 
-The key contribution of this paper is to show that with multi-unit resources of the read-write type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
+The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
 
 
@@ -121,34 +121,34 @@ The key contribution of this paper is to show that with multi-unit resources of 
 - Compile time analysis and code generation
 - Zero Cost abstractions for implementing the concurrency model
 
-==== RTIC Evoluition
+==== RTIC Evolution
 
 The RTIC framework is a Rust-first open source development rooted in research on modelling and implementation of (hard) real-time systems. Over the last decade RTIC has reached wide adoption (with a million downloads). However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
 
-RTIC-eVo provides a set of compilation passes, gradually lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass, conforms to the input DSL of subsequent passes.
+RTIC-eVo provides a set of compilation passes, gradually lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.
 
-In Section @sec:rw-pass we will leverage this modularity to sketch the implementation of Reader-Writer resources in RTIC-eVo.
+In @sec:rw-pass, we will leverage this modularity to sketch the implementation of readers-writer resources in RTIC-eVo.
 
 === The Stack Resource Policy
 
 Here we should review the Baker SRP stuff with a focus on multi-unit resources.
 
-== Reader-Writer Resources
+== Readers-writer Resources
 
-Reader-Writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides well with the Rust aliasing invariants, which allow for any number of immutable references (&T), but only a single mutable reference (&mut T) at any time.
+Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
 
-Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a read/write resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. This means that no extra overhead is introduced to RTIC when implementing the read-write locks, as the read-write compiles similarly to mutex locks.
+Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. This means that no extra overhead is introduced to RTIC when implementing the readers-writer locks, as the readers-writer lock compiles similarly to mutex locks.
 
-Formally:
+Formally, SRP compliance is maintained when:
 
-+ when a read-lock of resource $R$ is taken, if the system ceiling $macron(Pi)$ is changed to
++ a read-lock of resource $R$ is taken, if the system ceiling $macron(Pi)$ is changed to
   $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_r) $<eq:rw-lock-ceil-r>
 
-  where $ceil(R)_r$ is the highest preemption level of tasks with write-access to $R$, the system is still SRP compliant, and
-+ when a write-lock of resource $R$ is taken, the system ceiling $macron(Pi)$ changes to
+  where $ceil(R)_r$ is the highest preemption level of tasks with write-access to $R$, and
++ a write-lock of resource $R$ is taken, if the system ceiling $macron(Pi)$ changes to
   $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_w), $<eq:rw-lock-ceil-w>
 
-  where $ceil(R)_w$ is the highest preemption level of tasks that need $R$, the system is still SRP compliant.
+  where $ceil(R)_w$ is the highest preemption level of tasks that need $R$.
 
 *Proof*
 
