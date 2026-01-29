@@ -1,3 +1,6 @@
+#import "preamble.typ": preamble
+#show: doc => preamble(doc)
+
 #import "@preview/charged-ieee:0.1.4": ieee
 
 #show: ieee.with(

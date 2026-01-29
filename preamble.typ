@@ -1,0 +1,3 @@
+#let preamble(doc) = {
+  doc
+}
