@@ -85,7 +85,11 @@ ceil(R) = max({0} union { p(y) mid(|) v_R < mu_R (y)}),
 $<eq:resource-ceiling>
 where $v_R$ is the current availability of $R$ and $mu_R(J)$ is $t$'s maximum need for $R$.
 
-RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined tasks to interrupt handlers. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. Each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored.
+RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling. 
+
+Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule.
+
+In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the new ceiling value to stack. With each unlock, the previous value is restored.
 
 The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. For this reason, the system ceiling is defined only by the set of locked resources, and RTIC is able to reduce the formula for $macron(pi)$ to
 
