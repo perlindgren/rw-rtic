@@ -88,7 +88,15 @@ $
   macron(Pi) = max({ceil(R_i) mid(|) R_i "is a resource"}).
 $<eq:system-ceiling>
 
-Notice that $macron(Pi)$ changes only when a resource is locked or unlocked.
+Notice that $macron(Pi)$ changes only when a resource is locked or unlocked. After a lock on $R$, the value it changes to
+
+$
+  max(macron(Pi)_"cur", ceil(R)_v_R),
+$
+
+where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
+
+In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$. This is relevant for the RTIC implementation of a near zero-cost locking, which is the focus of the last part of this section. 
 
 RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a task that could be blocked because of the current locks on $R$. Formally,
 
@@ -96,13 +104,12 @@ $
   ceil(R) = max({0} union { pi(t) mid(|) v_R < mu_R (t)}),
 $<eq:resource-ceiling-orig>
 
-or as $pi = p$,
+where $v_R$ is the current availability of $R$ and $mu_R (t)$ is the task $t$'s maximum need for $R$---or as $pi = p$,
 
 $
-  ceil(R) = max({0} union { p(t) mid(|) v_R < mu_R (t)}),
+  ceil(R) = max({0} union { p(t) mid(|) v_R < mu_R (t)}).
 $<eq:resource-ceiling>
 
-where $v_R$ is the current availability of $R$ and $mu_R (t)$ is the task $t$'s maximum need for $R$.
 
 RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling.
 
@@ -110,17 +117,15 @@ Now, a lower priority interrupt/task is not able to preempt a higher priority in
 
 In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
 
-The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. In systems conforming to SRP, this number is a compile-time known constant.
+The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. This allows RTIC to simplify the formula for system ceiling to
 
-// For this reason, the system ceiling is defined only by the set of locked resources.
+$
+macron(Pi) = max({0} union {ceil(R) | R "is locked"}),
+$
 
-// From @eq:system-ceiling and @eq:resource-ceiling and assuming single-unit resources, the following formula can be derived for $macron(Pi)$:
+because for unlocked $R$, $ceil(R) = 0$, and for a locked $R$, there is only one possible $ceil(R)$.
 
-// $
-// macron(Pi) = max({0} union {p(t) | t "needs a locked resource"}),
-// $
-
-// where, "t accesses a locked resource" means the same as "$t$'s maximum needs for resources exceed the currently available resources".
+As ceil(R) is a compile-time known constant, the lock function for each $R$ compiles to code that raises the system-ceiling to some constant value. The lock function does not need to include any calculations.
 
 The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
