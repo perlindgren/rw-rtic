@@ -196,11 +196,11 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
   $
     <=>^#ref(<eq:resource-ceiling-orig>) & macron(Pi) = & max(
       & { macron(Pi)_"cur"} \
-      &                     & union & {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (t)})}
+      &                     & union & {max({0} union {pi(t) mid(|) v'_R_m < mu_R_m (t)})}
     ) \
     <=> & macron(Pi) = & max(
       & { macron(Pi)_"cur"} union {0} \
-      &                               & union & max{pi(J) mid(|) v'_R_m < mu_R_m (t)}
+      &                               & union & max{pi(t) mid(|) v'_R_m < mu_R_m (t)}
     ) \
     <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
   $<eq:proof2>
@@ -254,7 +254,7 @@ which proves @eq:rw-lock-ceil-r.
 
 If the lock was a write-lock, $v'_R_m = 0$. Continuing from @eq:proof2
 $
-  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (t)}) \
+  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) 0 < mu_R_m (t)}) \
                 = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m}) \
                 = & max(macron(Pi)_"cur", ceil(R)_w),
 $
