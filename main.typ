@@ -157,7 +157,7 @@ Formally, SRP compliance is maintained when:
 
 *Proof*
 
-Assume the system has resources $R_1, ..., R_n$ and their availability is $v_R_1, ... v_R_n$ before taking the lock. Now, by definition @eq:resource-ceiling-orig, the system ceiling is
+Assume the system has resources $R_1, ..., R_n$ and their availability is $v_R_1, ... v_R_n$ before taking the lock. Now, by definition @eq:system-ceiling, the system ceiling is
 $
   macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
 $<eq:proof0>
