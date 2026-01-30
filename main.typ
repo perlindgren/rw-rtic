@@ -96,7 +96,44 @@ $
 
 where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
 
-In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$. This is relevant for the RTIC implementation of a near zero-cost locking, which is the focus of the last part of this section. 
+In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
+
+The values of $ceil(R)_v_R$ being compile-time known constants is relevant for the RTIC implementation of a near zero-cost locking, which is the focus of the last part of this section. 
+
+=== Example
+
+E.g., assume there are tasks $t_x in t_1, t_2, t_3$, with priorities corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the tasks have the following maximum resource needs:
+
+
+#figure(caption: [The resource needs in a system with three tasks and three resources.],
+ table(
+ columns: 4,
+ [],[$mu_(R_i)(t_1)$],[$mu_(R_i)(t_2)$],[$mu_(R_i)(t_3)$],
+ [$R_1$ ($N(R_1)=3$)],[3],[2],[1],
+ [$R_2$ ($N(R_2)=1$)],[1],[1],[0],
+ [$R_3$ ($N(R_3)=3$)],[1],[3],[1]
+ )
+)<fig:example-needs>
+
+(Here, $R_1$ is a general multiunit resource, $R_2$ is a simple mutex, and $R_3$ behaves similarly to a read-write lock, where $J_2$ writes and $J_1$ and $J_3$ read.)
+
+From @fig:example-needs, it can be determined which is the highest priority task that would be blocked if there were some $m$ amount of resource $R$ left. This determines the value $ceil(R)_m$. A new table can be filled with this information:
+
+
+#figure(caption: [The compile-time known, different resource ceilings of each resource.],
+ table(
+ columns: 5,
+ align:center+horizon,
+ [$ceil(R_i)_m$],[$ceil(R_i)_3$],[$ceil(R_i)_2$],[$ceil(R_i)_1$],[$ceil(R_i)_0$],
+ [$R_1$],[0],[1],[2],[3],
+ [$R_2$],[-],[-],[0],[2],
+ [$R_3$],[0],[2],[2],[3],
+ )
+)
+
+When a resource is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the appropriate number in the array above.
+
+=== RTIC implementation of SRP
 
 RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a task that could be blocked because of the current locks on $R$. Formally,
 
@@ -126,6 +163,8 @@ $
 because for unlocked $R$, $ceil(R) = 0$, and for a locked $R$, there is only one possible $ceil(R)$.
 
 As ceil(R) is a compile-time known constant, the lock function for each $R$ compiles to code that raises the system-ceiling to some constant value. The lock function does not need to include any calculations.
+
+#todo(position: "inline")[Some pseudocode here for the lock function?]
 
 The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
