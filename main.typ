@@ -64,7 +64,13 @@
 
 == Background
 
-In this section we review prior work on RTIC and underpinning theory. The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
+In this section we review prior work on RTIC and underpinning theory.
+
+#todo(position: "inline")[
+  Here, maybe talk about RTIC being based on SRP in general, without going into formalism. Explain what using SRP means in practical  terms.
+]
+
+The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
 
 In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending task, including the running task.
 
@@ -119,6 +125,9 @@ The current version of RTIC uses only single-unit resources. For a single-unit r
 The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
 
+#todo(position: "inline")[
+  The theore section above could be moved under The Stack Resource Policy section, as it mostly talk about SRP in general terms. In the above section, the difference between RTIC and SRP is made at the end.
+]
 
 === The RTIC Framework
 
