@@ -81,39 +81,38 @@ RTIC is a Rust-based hardware accelerated real-time operating system that levera
 
 = Existing theory / SRP
 
-In SRP, a job will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending job, including the running job.
+In SRP, a job $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.
 
-The preemption level of a job $pi(J)$ is defined as any static function that satisfies
+The preemption level of a job $pi(J)$#footnote(numbering: "*")[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
 $
 
-In RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer selected static priority for the job.
+For instance, in RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer-selected, static priority for the job.
 
-The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its own, current availability. Formally,
+The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than is currently available. Formally, given the system has resources $R_i, i in [0, m]$
 
 $
-  macron(Pi) = max({ceil(R_i) mid(|) R_i "is a resource"}).
+  macron(Pi) = max({ceil(R_i) mid(|) i in [0, m]}).
 $<eq:system-ceiling>
 
-Notice that $macron(Pi)$ changes only when a resource is locked or unlocked. After a lock on $R$, the value it changes to
+System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. After a lock on $R$, the value it changes to
 
 $
-  max(macron(Pi)_"cur", ceil(R)_v_R),
+  macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
 $
 
 where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
 
 = Declarative model
 
-In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
+In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$. 
+RTIC leverages this to implement near zero-cost locking.
 
-The values of $ceil(R)_v_R$ being compile-time known constants is relevant for the RTIC implementation of a near zero-cost locking, which is the focus of the last part of this section. 
+== Example
 
-=== Example
-
-E.g., assume there are tasks $t_x in t_1, t_2, t_3$, with priorities corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the tasks have the following maximum resource needs:
+Assume there are tasks $t_x in t_1, t_2, t_3$, with priorities corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the tasks have the following maximum resource needs:
 
 
 #figure(caption: [The resource needs in a system with three tasks and three resources.],
