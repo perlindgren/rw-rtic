@@ -8,7 +8,7 @@
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. Finally, we evaluate the implementation with a set of benchmarks and real world applications.
+    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. Finally, we evaluate the implementation with a set of benchmarks and real world applications.
   ],
   authors: (
     (
@@ -40,19 +40,32 @@
       email: "anonymous@example.com",
     ),
   ),
-  index-terms: ("Real-Time Systems", "Stack Resource Policy", "Reader Writer Locks", "RTIC", "Rust"),
+  index-terms: ("Real-Time Systems", "Stack Resource Policy", "Readers-Writer Locks", "RTIC", "Rust"),
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
 )
 
 = Introduction
+
+#heksa[Intro got a bit messy. I'll need to organize this.]
+
+The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
+
+
 #todo(position: "inline", [Extend / copied from abstract:
-  The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion tasks with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work@baker1991stack on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
-
-  In this paper we explore multiple-readers/single-writer resources in context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
-
+  In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
+  
   Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 ])
+
+Stack Resource Policy@baker1990srp defines a preemptive scheduling policy with shared-stack execution and shared resources. The scheduling policy prevents deadlocks and multiple priority inversion. The original theory supports the use of versatile multi-unit resources that can be used to guarantee non-interference between users of shared resources. SRP descibes a threshold based filtering of tasks allowed to run, where the treshold updates with each lock and unlock operation on a resource.
+
+RTIC associates the static priority tasks to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts. In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
+
+
+In RTIC, the hardware runs the highest priority, enabled, interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed. 
+
+RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardwares prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
 #box[
   Key contributions of this paper include:
@@ -62,13 +75,11 @@
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
 ]
 
-== Background
+= Background
 
-In this section we review prior work on RTIC and underpinning theory.
+#todo[TODO]
 
-#todo(position: "inline")[
-  Here, maybe talk about RTIC being based on SRP in general, without going into formalism. Explain what using SRP means in practical  terms.
-]
+= Existing theory / SRP
 
 The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
 
@@ -95,6 +106,8 @@ $
 $
 
 where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
+
+= Declarative model
 
 In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
 
@@ -152,7 +165,7 @@ RTIC leverages the underlying hardware's prioritized interrupts for near zero-co
 
 Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the task to also be the _oldest_ highest priority pending task. This exception does not affect most of the qualities of SRP proven in @baker1991stack.
 
-In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.
+In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.#todo[repetition of material in the introduction]
 
 The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. This allows RTIC to simplify the formula for system ceiling to
 
