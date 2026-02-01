@@ -236,6 +236,18 @@ $
 $<eq:proof1>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
 
+It can be shown that because
+
+$
+ceil(R_m)_v_(R_m)^' > ceil(R_m)_v_(R_m),
+$<eq:proof1.5>
+it follows that
+$
+=>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>))\
+& macron(Pi) = max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+$<eq:proof2>
+
+/*
 The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e., $ceil(R_m)_v_R_m <= ceil(R_m)_v_(R_m)^'$, because $v_R_m > v_(R_m)^'$.
 
 #box[From this, it follows that we can add the lower value inside the maximum:
@@ -271,6 +283,8 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
     <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
   $<eq:proof2>
   ]
+
+*/
 
 *Proof for @eq:rw-lock-ceil-r (read-lock):*
 
