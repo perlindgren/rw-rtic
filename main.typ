@@ -81,17 +81,15 @@ RTIC is a Rust-based hardware accelerated real-time operating system that levera
 
 = Existing theory / SRP
 
-The term _task_ is used interchangeably with _job_, _job request_ or _job execution_ as defined in @baker1991stack.
+In SRP, a job will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending job, including the running job.
 
-In SRP, a task will preempt another if its _preemption level_ is higher than the _system ceiling_ and it's the oldest and highest priority of any pending task, including the running task.
-
-The preemption level of a task $pi(t)$ is defined as any static function that satisfies
+The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
-  p(t') > p(t) "and" t' "arrives later" => pi(t') > pi(t).
+  p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
 $
 
-In RTIC, the chosen function is $pi(t) = p(t)$, where $p(t)$ is a programmer selected static priority for the task.
+In RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer selected static priority for the job.
 
 The system ceiling, $macron(Pi)$, is defined as a maximum of current _resource ceilings_, which are values assigned to each resource that depend on its own, current availability. Formally,
 
@@ -130,7 +128,7 @@ E.g., assume there are tasks $t_x in t_1, t_2, t_3$, with priorities correspondi
 
 (Here, $R_1$ is a general multiunit resource, $R_2$ is a simple mutex, and $R_3$ behaves similarly to a read-write lock, where $J_2$ writes and $J_1$ and $J_3$ read.)
 
-From @fig:example-needs, it can be determined which is the highest priority task that would be blocked if there were some $m$ amount of resource $R$ left. This determines the value $ceil(R)_m$. A new table can be filled with this information:
+From @fig:example-needs, it can be determined which is the highest priority job that would be blocked if there were some $m$ amount of resource $R$ left. This determines the value $ceil(R)_m$. A new table can be filled with this information:
 
 
 #figure(caption: [The compile-time known, different resource ceilings of each resource.],
@@ -148,22 +146,22 @@ When a resource is locked, the system ceiling is raised to the maximum of the cu
 
 === RTIC implementation of SRP
 
-RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a task that could be blocked because of the current locks on $R$. Formally,
+RTIC uses the same definition for $ceil(R)$ as one of the example implementations in @baker1991stack: the resource ceiling is the maximum of zero and the highest priority of a job that could be blocked because of the current locks on $R$. Formally,
 
 $
-  ceil(R) = max({0} union { pi(t) mid(|) v_R < mu_R (t)}),
+  ceil(R) = max({0} union { pi(J) mid(|) v_R < mu_R (J)}),
 $<eq:resource-ceiling-orig>
 
-where $v_R$ is the current availability of $R$ and $mu_R (t)$ is the task $t$'s maximum need for $R$---or as $pi = p$,
+where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the job $J$'s maximum need for $R$---or as $pi = p$,
 
 $
-  ceil(R) = max({0} union { p(t) mid(|) v_R < mu_R (t)}).
+  ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}).
 $<eq:resource-ceiling>
 
 
 RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized tasks to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling.
 
-Now, a lower priority interrupt/task is not able to preempt a higher priority interrupt/task, and no interrupt/task is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the task to also be the _oldest_ highest priority pending task. This exception does not affect most of the qualities of SRP proven in @baker1991stack.
+Now, a lower priority interrupt/job is not able to preempt a higher priority interrupt/job, and no interrupt/job is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the job to also be the _oldest_ highest priority pending job. This exception does not affect most of the qualities of SRP proven in @baker1991stack.
 
 In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to stack. With each unlock, the previous value is restored. This is possible, as with SRP scheduling, the tasks are able to share a single stack in general.#todo[repetition of material in the introduction]
 
@@ -188,7 +186,7 @@ The key contribution of this paper is to show that with multi-unit resources of 
 
 === The RTIC Framework
 
-- Declarative task/resource model in Rust
+- Declarative job/resource model in Rust
 - Compile time analysis and code generation
 - Zero Cost abstractions for implementing the concurrency model
 
@@ -262,13 +260,13 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
   $
     <=>^#ref(<eq:resource-ceiling-orig>) & macron(Pi) = & max(
       & { macron(Pi)_"cur"} \
-      &                     & union & {max({0} union {pi(t) mid(|) v'_R_m < mu_R_m (t)})}
+      &                     & union & {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (J)})}
     ) \
     <=> & macron(Pi) = & max(
       & { macron(Pi)_"cur"} union {0} \
-      &                               & union & max{pi(t) mid(|) v'_R_m < mu_R_m (t)}
+      &                               & union & max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
     ) \
-    <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(t) mid(|) v'_R_m < mu_R_m (t)}).
+    <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
   $<eq:proof2>
 ]
 
@@ -276,12 +274,12 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
 
 After locking, either $v'_R_m in {1, ..., n-1}$ or $v_R_m = 0$.
 
-In the former case, the condition $v'_R_m < mu_R_m (t)$ in @eq:proof2 corresponds to $t$ having write access to $R_m$, proving @eq:rw-lock-ceil-r for that case.
+In the former case, the condition $v'_R_m < mu_R_m (J)$ in @eq:proof2 corresponds to $J$ having write access to $R_m$, proving @eq:rw-lock-ceil-r for that case.
 
-In the latter case, the condition $v'_R_m < mu_R_m (t)$ corresponds $t$ having access to $R_m$ in general, as both reading and writing tasks are blocked when there is zero $R_m$, i.e.
+In the latter case, the condition $v'_R_m < mu_R_m (J)$ corresponds $J$ having access to $R_m$ in general, as both reading and writing tasks are blocked when there is zero $R_m$, i.e.
 
 $
-  =>^#ref(<eq:proof2>) macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m})
+  =>^#ref(<eq:proof2>) macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m})
 $<eq:proof3>
 
 It can be expanded to
@@ -289,27 +287,27 @@ $
   =>^#ref(<eq:proof3>) macron(Pi)
   = max(
           & { macron(Pi)_"cur"} \
-    union & {pi(t) mid(|) t "has read access to" R_m} \
-    union & {pi(t) mid(|) t "has write access to" R_m}
+    union & {pi(J) mid(|) J "has read access to" R_m} \
+    union & {pi(J) mid(|) J "has write access to" R_m}
   )
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the task must have preempted all other tasks that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the task has to be the highest priority task with read access to $R_m$, i.e.,
+For there to be zero $R_m$ after a read lock, the job must have preempted all other tasks that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
 $
-  pi(t_"cur") = max{pi(t) mid(|) t "has read access to" R_m}
+  pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
 $<eq:proof5>
 Continuing from @eq:proof4,
 $
   =>^(#ref(<eq:proof5>)) macron(Pi) = max(
           & { macron(Pi)_"cur"} union {pi(t_"cur")} \
-    union & {pi(t) mid(|) t "has write access to" R_m}
+    union & {pi(J) mid(|) J "has write access to" R_m}
   )
 $
-However, in SRP, as a task is not allowed to preempt the currently executing task unless it has a higher priority, so it is enough to limit the system ceiling to
+However, in SRP, as a job is not allowed to preempt the currently executing job unless it has a higher priority, so it is enough to limit the system ceiling to
 $
   =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
                                         { macron(Pi)_"cur"} \
-                                                            & union {pi(t) mid(|) t "has write access to" R_m}
+                                                            & union {pi(J) mid(|) J "has write access to" R_m}
                                       ) \
                                     & = max(macron(Pi)_"cur", ceil(R)_r),
 $
@@ -320,16 +318,16 @@ which proves @eq:rw-lock-ceil-r.
 
 If the lock was a write-lock, $v'_R_m = 0$. Continuing from @eq:proof2
 $
-  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) 0 < mu_R_m (t)}) \
-                = & max({ macron(Pi)_"cur"} union {pi(t) mid(|) t "needs" R_m}) \
+  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
+                = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
                 = & max(macron(Pi)_"cur", ceil(R)_w),
 $
 proving @eq:rw-lock-ceil-w.
 
 === Example or read/write with Single-Unit Resources
-@fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any task accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for task execution.
+@fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the tasks $t_1,..t_5$ with priorities $1,..5$ respectively. Tasks $t_1, t_4$ and $t_5$ are only reading the shared  while tasks $t_3$ and $t_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any job accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for job execution.
 
-Filled color indicates the task execution. The dashed line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a task being blocked, and a cross-hatched color indicates the blocking is due to a higher priority task.
+Filled color indicates the job execution. The dashed line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a job being blocked, and a cross-hatched color indicates the blocking is due to a higher priority job.
 
 Notice under SRP tasks may only be blocked from being dispatched; once executing, they run to completion free of blocking.
 
@@ -355,9 +353,9 @@ Here we can see that the tasks $t_4$ and $t_5$ are exposed to unnecessary blocki
 
 @fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the tasks $t_1,..t_5$, the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
-Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any task _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any task _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
+Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
 
-When $t_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing task $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is raised to $ceil(R)_r = 3$.
+When $t_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing job $t_4$ to be directly executed (without being blocked). Similarly, when $t_4$ claims the resource, the system ceiling is raised to $ceil(R)_r = 3$.
 
 Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the read-write lock needs to keep count of $R$ availability, but a later proof will show it is not necessary.
 
@@ -371,7 +369,7 @@ As discussed earlier, we need to treat reader and writer accesses differently. I
 - Reader ceiling $ceil(R)_r$: Maximum priority among tasks with _write access_ to the resource.
 - Writer ceiling $ceil(R)_w$: Maximum priority among tasks with _read_ or _write access_ to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $pi(t)$ of any task $t$ with shared access to the resource $R$.
+The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
 
 Assume an upstream `rw-pass` to:
 
@@ -392,15 +390,15 @@ At this point, we have defined the `rw-pass` contract at high level, in the foll
 
 Each pass first parses the input DSL into an internal abstract syntax tree (AST) representation, later used for analysis and DSL transformation. For the purpose of this paper, we make the assumption that *all* shared resources may be accessible for reader-writer access. (In case a resource abstracts underlying hardware, reads may have side effects, thus in a future work we will return to distinguishing such resources from pure data structures.)
 
-The `core-pass` DSL models the system in terms of tasks with local and shared resources. The model is declarative, where each task definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the task is given access to the shared resources `A`, `B` and `C`).
+The `core-pass` DSL models the system in terms of tasks with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the task has read access to resources `A` and `E`.
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.
 
 The `rw-pass` will then perform the following steps:
 
-- Collect the set of reader and writer resources per task.
+- Collect the set of reader and writer resources per job.
 - Compute the reader and writer ceilings per resource.
-- Generate code for reader access, per task.
+- Generate code for reader access, per job.
 - Transform the DSL merging `read_shared` into `shared` resources.
 
 In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid `core-pass` model.
