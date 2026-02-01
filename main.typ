@@ -243,8 +243,8 @@ ceil(R_m)_v_(R_m)^' > ceil(R_m)_v_(R_m),
 $<eq:proof1.5>
 it follows that
 $
-=>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>))\
-& macron(Pi) = max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+=>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = &max({ macron(Pi)_"cur"}\
+&union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
 $<eq:proof2>
 
 /*
