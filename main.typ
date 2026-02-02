@@ -71,7 +71,7 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
   Key contributions of this paper include:
   - Declarative model for readers-writer resources
   - Static analysis for readers-writer resources
-  - Code generation for readers-writer resources in RTIC
+  - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
   #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
 ]
