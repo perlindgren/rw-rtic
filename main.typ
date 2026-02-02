@@ -212,9 +212,9 @@ As $ceil(R)$ is a compile-time known constant, the lock function for each $R$ co
 
 #heksa(position: "inline")[Some pseudocode here for the lock function?]
 
-The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
-
 = SRP compliant readers-writer lock
+
+The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
 *Proof, that for reader or write lock on $R$, the system ceiling can be raised to a compile-time known constant while staying SRP compliant*
 
@@ -353,7 +353,8 @@ $
 $
 proving @eq:rw-lock-ceil-w.
 
-=== Example or read/write with Single-Unit Resources
+== Example of improved schedulability using readers-write locks
+
 @fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the jobs $J_1,..J_5$ with priorities $1,..5$ respectively. Tasks $J_1, J_4$ and $J_5$ are only reading the shared  while jobs $J_3$ and $J_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any job accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for job execution.
 
 Filled color indicates the job execution. The dashed line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a job being blocked, and a cross-hatched color indicates the blocking is due to a higher priority job.
