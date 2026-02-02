@@ -142,8 +142,6 @@ In RTIC, the hardware runs the highest priority, enabled, pending interrupt with
 
 RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
-= Declarative model
-
 In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
 RTIC leverages this to implement near zero-cost locking.
 
