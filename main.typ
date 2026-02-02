@@ -51,7 +51,9 @@
 #heksa[Intro got a bit messy. I'll need to organize this.]
 // Motivation, introduce the problem at hand and in brief: RTIC only implements
 // binary semaphores, based on a simplified model.
-The RTIC framework provides an executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution. The original theory@baker1990srp-1 also describes multi-unit resources that define a unified model for binary semaphores and readers-writer locks. RTIC---_however_---only implements the former.
+The RTIC framework provides an executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution. The original theory@baker1990srp-1 also describes a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
+
+// The question then: why does RTIC only implement the former?
 
 While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
@@ -62,7 +64,7 @@ While the original work on SRP allows for multi-unit resources, the RTIC framewo
   Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 ])
 
-Stack Resource Policy@baker1990srp-1 defines a preemptive scheduling policy with shared-stack execution and shared resources. The scheduling policy prevents deadlocks and multiple priority inversion. The original theory supports the use of versatile multi-unit resources that can be used to guarantee non-interference between users of shared resources. SRP descibes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource.
+The scheduling policy prevents deadlocks and multiple priority inversion. SRP descibes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource.
 
 RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts. In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
 
