@@ -5,7 +5,7 @@
 #set figure(placement: top)
 
 #show: ieee.with(
-  title: [Zero Cost Reader-Writer Locks for the RTIC Framework],
+  title: [Zero Cost Readers-Writer Locks for the RTIC Framework],
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
@@ -62,7 +62,7 @@ The RTIC framework provides an executable model for concurrent applications as a
 The rationale for the constrained implementation is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability.
 
 // Contributions
-However, in situations where the highest priority contender is not a write, a readers-writer lock provides improved schedulability, allowing to expedite higher priority tasks that only need to read the resource. #heksa(position: "inline")[Need to outline the benefit of 'general semaphore' here, and mention that it's left for future work.]
+However, in situations where the highest priority contender is not a write, a readers-writer lock provides improved schedulability/*, allowing to expedite higher priority tasks that only need to read the resource*/. #heksa(position: "inline")[Need to outline the benefit of 'general semaphore' here, and mention that it's left for future work.]
 
 // Contributions
 In this paper, we describe an extension of the declarative, "RTIC restricted model", applicable to readers-writer locks, and an implementation thereof.
