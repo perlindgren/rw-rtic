@@ -86,6 +86,12 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 - SRP extends PCP, and can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.
 - PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
 
+== Rust aliasing guarantees
+
+#heksa(position: "inline")[
+  Oversight(?) in PCP/SRP models: even read-only access to a hardware object can cause a side-effect. Rust allows meticulous spatial modeling of memory maps, allowing the compiler to be aware of, and enforce exclusivity requirements beyond(?) the scheduling theory.
+]
+
 == RTIC, RTIC v2, RTIC eVo / MRTIC
 
 === The RTIC framework
