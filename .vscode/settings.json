@@ -3,5 +3,6 @@
         "BASEPRI",
         "NVIC",
         "RTIC"
-    ]
+    ],
+    "editor.formatOnSave": true
 }
