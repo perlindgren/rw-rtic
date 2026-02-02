@@ -101,15 +101,7 @@ RTIC-eVo provides a set of compilation passes, gradually lowering the Domain Spe
 
 In @sec:rw-pass, we will leverage this modularity to sketch the implementation of readers-writer resources in RTIC-eVo.
 
-== The Stack Resource Policy
-
-#todo(position: "inline")[Here we should review the Baker SRP stuff with a focus on multi-unit resources.]
-
-== Readers-writer Resources
-
-Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
-
-= Existing theory / SRP
+= Baseline model (SRP) /* "Existing theory */
 
 In SRP, a job $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.
 
@@ -134,6 +126,21 @@ $
 $
 
 where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
+
+== Readers-writer Resources
+
+Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
+
+= "RTIC restricted model"
+
+SRP describes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource.
+
+RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts. In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
+
+
+In RTIC, the hardware runs the highest priority, enabled, interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed.
+
+RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
 = Declarative model
 
