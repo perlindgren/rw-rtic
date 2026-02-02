@@ -49,8 +49,11 @@
 = Introduction
 
 #heksa[Intro got a bit messy. I'll need to organize this.]
+// Motivation, introduce the problem at hand and in brief: RTIC only implements
+// binary semaphores, based on a simplified model.
+The RTIC framework provides an executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution. The original theory@baker1990srp-1 also describes multi-unit resources that define a unified model for binary semaphores and readers-writer locks. RTIC---_however_---only implements the former.
 
-The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race-and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
+While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
 
 #todo(position: "inline", [Extend / copied from abstract:
