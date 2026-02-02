@@ -82,7 +82,8 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 #box[
   Key contributions of this paper include:
-  - Declarative model for readers-writer resources
+  - Observation/proof that with multi-unit resources of the readers-writer type, there is a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
+  - Unification of the SRP compliant readers-writer lock to match the Rust aliasing model.
   - Static analysis for readers-writer resources
   - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
@@ -104,9 +105,11 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 == Rust aliasing guarantees
 
 #heksa(position: "inline")[
-  Oversight(?) in PCP/SRP models: even read-only access to a hardware object can cause a side-effect. Rust allows meticulous spatial modeling of memory maps, allowing the compiler to be aware of, and enforce exclusivity requirements beyond(?) the scheduling theory.
-
-  ... or is `serial.read()` just a write operation? ... it is. Problem solved #emoji.face.happy #emoji.fire
+  - Read-access may imply side-effects---bring this problem forward.
+  - Oversight(?) in PCP/SRP models: even read-only access to a hardware object can cause a side-effect. Rust allows meticulous spatial modeling of memory maps, allowing the compiler to be aware of, and enforce exclusivity requirements beyond(?) the scheduling theory.
+  - ... or is `serial.read()` just a write operation? ... it is. Problem solved #emoji.face.happy #emoji.fire. The serial example could be included in this paper or the journal.
+  - Could compare the Rust concurrency model (spatial with borrow checker & temporal with Send/Sync) and the SRP concurrency model (temporal)
+  - Requirements for "type of access" are and should be HAL implementors problem ("it is the right place to put it"). This is "correctly abstracted by the embedded-hal"---Show the `embedded-io` documentation.1
 ]
 
 == RTIC, RTIC v2, RTIC eVo / MRTIC
@@ -460,6 +463,10 @@ The `rw-pass` will then perform the following steps:
 - Transform the DSL merging `read_shared` into `shared` resources.
 
 In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid `core-pass` model.
+
+= Cool use cases
+- Update set point in low-priority. Execute read algorithm / motor control in high priority.
+
 
 = Conclusion
 
