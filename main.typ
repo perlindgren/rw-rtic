@@ -105,11 +105,15 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 #heksa(position: "inline")[
   Oversight(?) in PCP/SRP models: even read-only access to a hardware object can cause a side-effect. Rust allows meticulous spatial modeling of memory maps, allowing the compiler to be aware of, and enforce exclusivity requirements beyond(?) the scheduling theory.
+
+  ... or is `serial.read()` just a write operation? ... it is. Problem solved #emoji.face.happy #emoji.fire
 ]
 
 == RTIC, RTIC v2, RTIC eVo / MRTIC
 
 === The RTIC framework
+
+#heksa(position: "inline")[Download count here.]
 
 - Declarative job/resource model in Rust
 - Compile time analysis and code generation
@@ -154,6 +158,8 @@ where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R
 Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
 
 = "RTIC restricted model"
+
+#valhe(position: "inline")[Connect theory to a hardware specification. Valhe can do ARM. Heksa can do RISC-V.]
 
 SRP describes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource. RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts.
 
