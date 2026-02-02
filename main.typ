@@ -5,7 +5,7 @@
 #set figure(placement: top)
 
 #show: ieee.with(
-  title: [Zero Cost Readers-Writer Locks for the RTIC Framework],
+  title: [Work in Progress: Zero Cost Readers-Writer Locks for the RTIC Framework],
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
@@ -45,6 +45,19 @@
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Fig.],
 )
+
+/* # RTAS notes
+
+  Aiming for "Work in Progress" track
+
+  The WiP sub-track welcomes ongoing and unpublished work, discussing early
+  ideas about problems with existing solutions or open problems, new research
+  directions, or trends in practice. The review will focus on originality and
+  potential impact. Solutions and experimental validation are not necessary. WiP
+  papers should not exceed 4 pages and must include “Work in Progress” in the
+  title (i.e., Work in Progress: Title of the Paper). Shorter submissions than
+  the page limit will not be penalized.
+*/
 
 = Introduction
 
