@@ -55,7 +55,7 @@ The RTIC framework provides an executable model for concurrent applications as a
 
 #todo(position: "inline", [Extend / copied from abstract:
   In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.
-  
+
   Finally, we evaluate the implementation with a set of benchmarks and real world applications.
 ])
 
@@ -64,7 +64,7 @@ Stack Resource Policy@baker1990srp-1 defines a preemptive scheduling policy with
 RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts. In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
 
 
-In RTIC, the hardware runs the highest priority, enabled, interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed. 
+In RTIC, the hardware runs the highest priority, enabled, interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed.
 
 RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardwares prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
@@ -130,7 +130,7 @@ where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R
 
 = Declarative model
 
-In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$. 
+In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
 RTIC leverages this to implement near zero-cost locking.
 
 == Example
@@ -138,30 +138,29 @@ RTIC leverages this to implement near zero-cost locking.
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the following maximum resource needs as specified in @tab:example-needs.
 
 
-#figure(caption: [The resource needs in a system with three jobs and three resources#footnote(numbering: "*")[Here, $R_1$ is a general multiunit resource, $R_2$ is a simple mutex, and $R_3$ behaves similarly to a read-write lock, where $J_2$ writes and $J_1$ and $J_3$ read.].],
- table(
- columns: 4,
- [],[$mu_(R_i)(J_1)$],[$mu_(R_i)(J_2)$],[$mu_(R_i)(J_3)$],
- [$R_1$ ($N(R_1)=3$)],[3],[2],[1],
- [$R_2$ ($N(R_2)=1$)],[1],[1],[0],
- [$R_3$ ($N(R_3)=3$)],[1],[3],[1]
- )
+#figure(
+  caption: [The resource needs in a system with three jobs and three resources#footnote(numbering: "*")[Here, $R_1$ is a general multiunit resource, $R_2$ is a simple mutex, and $R_3$ behaves similarly to a read-write lock, where $J_2$ writes and $J_1$ and $J_3$ read.].],
+  table(
+    columns: 4,
+    [], [$mu_(R_i)(J_1)$], [$mu_(R_i)(J_2)$], [$mu_(R_i)(J_3)$],
+    [$R_1$ ($N(R_1)=3$)], [3], [2], [1],
+    [$R_2$ ($N(R_2)=1$)], [1], [1], [0],
+    [$R_3$ ($N(R_3)=3$)], [1], [3], [1],
+  ),
 )<tab:example-needs>
 
 
 Using @tab:example-needs, it can be determined which is the highest preemption level/priority job that would be blocked if there were some amount $m$ of resource $R$ left. This determines the value $ceil(R)_m$. A new table (@tab:example-ceilings) can be filled with this information. In practise, these numbers can be extracted by the compiler.
 
 
-#figure(caption: [The compile-time known, different resource ceilings of each resource.],
- table(
- columns: 5,
- align:center+horizon,
- [$ceil(R_i)_m$],[$ceil(R_i)_3$],[$ceil(R_i)_2$],[$ceil(R_i)_1$],[$ceil(R_i)_0$],
- [$R_1$],[0],[1],[2],[3],
- [$R_2$],[-],[-],[0],[2],
- [$R_3$],[0],[2],[2],[3],
- )
-)<tab:example-ceilings>
+#figure(caption: [The compile-time known, different resource ceilings of each resource.], table(
+  columns: 5,
+  align: center + horizon,
+  [$ceil(R_i)_m$], [$ceil(R_i)_3$], [$ceil(R_i)_2$], [$ceil(R_i)_1$], [$ceil(R_i)_0$],
+  [$R_1$], [0], [1], [2], [3],
+  [$R_2$], [-], [-], [0], [2],
+  [$R_3$], [0], [2], [2], [3],
+))<tab:example-ceilings>
 
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
 
@@ -190,7 +189,7 @@ In RTIC, each lock operation is compiled to code that updates the system ceiling
 The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. This allows RTIC to simplify the formula for system ceiling to
 
 $
-macron(Pi) = max({0} union {ceil(R) | R "is locked"}).
+  macron(Pi) = max({0} union {ceil(R) | R "is locked"}).
 $
 
 This is because when $R$ is unlocked, $ceil(R) = 0$, and when $R$ is locked, there is only one possible $ceil(R)$.
