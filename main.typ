@@ -71,7 +71,7 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
   Key contributions of this paper include:
   - Declarative model for readers-writer resources
   - Static analysis for readers-writer resources
-  - Code generation for readers-writer resources in RTIC
+  - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
   #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
   #valhe(position: "inline")[The key contribution here is to show that: even though SRP says we should raise the system ceiling in a complicated way, we do not have to. With r/w locks, we can make an exception to the SRP defined rule, and the scheduling stays the same. To explain it further: SRP defines that with each read-lock, the system ceiling is raised to a different number depending on how much of the r/w resource is left. Instead, we ignore this and raise it always to the same number, and we show that the system still schedules jobs like SRP does.]
@@ -81,10 +81,10 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 == SRP-based scheduling
 
-- PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
-- SRP can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.
-- PCP describes a locking protocol for binary semaphores. For PCP, priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
+- PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
 - PCP has been extended to apply to readers-writer resources@sha1989pcpmode, and multi-processor systems @rajkumar1988multi.
+- SRP extends PCP, and can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.
+- PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
 
 == RTIC, RTIC v2, RTIC eVo / MRTIC
 
