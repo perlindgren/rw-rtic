@@ -80,7 +80,7 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 == SRP-based scheduling
 
-- SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
+- PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
 - SRP can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.
 - PCP describes a locking protocol for binary semaphores. For PCP, priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
 - PCP has been extended to apply to readers-writer resources@sha1989pcpmode, and multi-processor systems @rajkumar1988multi.
