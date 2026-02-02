@@ -74,7 +74,9 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
   - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
   #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
-  #valhe(position: "inline")[The key contribution here is to show that: even though SRP says we should raise the system ceiling in a complicated way, we do not have to. With r/w locks, we can make an exception to the SRP defined rule, and the scheduling stays the same. To explain it further: SRP defines that with each read-lock, the system ceiling is raised to a different number depending on how much of the r/w resource is left. Instead, we ignore this and raise it always to the same number, and we show that the system still schedules jobs like SRP does.]
+  #valhe(
+    position: "inline",
+  )[The key contribution here is to show that: even though SRP says we should raise the system ceiling in a complicated way, we do not have to. With r/w locks, we can make an exception to the SRP defined rule, and the scheduling stays the same. To explain it further: SRP defines that with each read-lock, the system ceiling is raised to a different number depending on how much of the r/w resource is left. Instead, we ignore this and raise it always to the same number, and we show that the system still schedules jobs like SRP does.]
 ]
 
 = Prior work
@@ -262,8 +264,8 @@ $<eq:proof1.5>
 it follows that
 $
   =>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = & max(
-                                                              { macron(Pi)_"cur"}\
-                                                              &union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                                                              { macron(Pi)_"cur"} \
+                                                                                  & union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
                                                             ).
 $<eq:proof2>
 
