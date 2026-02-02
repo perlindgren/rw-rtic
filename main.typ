@@ -73,24 +73,21 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
   - Static analysis for readers-writer resources
   - Code generation for readers-writer resources in RTIC
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
+  #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
 ]
 
-= Placeholder---end of introduction
+= Prior work
 
-SRP describes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource.
+== SRP-based scheduling
 
-RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts. In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
+- SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
+- SRP can be used to support EDF, RM and deadline-monotonic scheduling policies. @baker1991srp-journal
+- PCP describes a locking protocol for binary semaphores. For PCP, priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
+- PCP has been extended to apply to readers-writer resources@sha1989pcpmode, and multi-processor systems @rajkumar1988multi.
 
+== RTIC, RTIC v2, RTIC eVo / MRTIC
 
-In RTIC, the hardware runs the highest priority, enabled, pending interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed.
-
-RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardwares prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
-
-= Background
-
-#todo[TODO]
-
-== The RTIC Framework
+=== The RTIC framework
 
 - Declarative job/resource model in Rust
 - Compile time analysis and code generation
@@ -248,12 +245,14 @@ where $v_(R_m)^'$ is the new availability of resource $R_m$.
 It can be shown that because
 
 $
-ceil(R_m)_v_(R_m)^' > ceil(R_m)_v_(R_m),
+  ceil(R_m)_v_(R_m)^' > ceil(R_m)_v_(R_m),
 $<eq:proof1.5>
 it follows that
 $
-=>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = &max({ macron(Pi)_"cur"}\
-&union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+  =>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = & max(
+                                                              { macron(Pi)_"cur"}\
+                                                              &union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                                                            ).
 $<eq:proof2>
 
 /*
