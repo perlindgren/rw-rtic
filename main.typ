@@ -145,7 +145,7 @@ RTIC is a Rust-based hardware accelerated real-time operating system that levera
 In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
 RTIC leverages this to implement near zero-cost locking.
 
-== Example
+== Example from @baker1990srp-1
 
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the following maximum resource needs as specified in @tab:example-needs.
 
