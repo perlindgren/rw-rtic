@@ -272,7 +272,7 @@ where $v_(R_m)^'$ is the new availability of resource $R_m$.
 It can be shown that because
 
 $
-  ceil(R_m)_v_(R_m)^' > ceil(R_m)_v_(R_m),
+  ceil(R_m)_v_(R_m)^' >= ceil(R_m)_v_(R_m),
 $<eq:proof1.5>
 it follows that
 $
