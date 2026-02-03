@@ -343,7 +343,7 @@ $
   )
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
+For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$.#valhe[I should probably refer to Baker's proof on SRP qualities here.] For that to be possible, the job has to be the highest priority job with read access to $R_m$#valhe[This is because how readers-write is modeled in SRP...], i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
 $<eq:proof5>
@@ -354,7 +354,7 @@ $
     union & {pi(J) mid(|) J "has write access to" R_m}
   )
 $
-However, in SRP, as a job is not allowed to preempt the currently executing job unless it has a higher priority, so it is enough to limit the system ceiling to
+However, in SRP, as a job is not allowed to preempt the currently executing job unless it has a higher priority#valhe[This is currently in the definition of SRP scheduling rule, but if it's changed like suggested, this is only a result of the definitions.], so it is enough to limit the system ceiling to
 $
   =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
                                         { macron(Pi)_"cur"} \
