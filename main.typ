@@ -133,9 +133,7 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 = Baseline model (SRP) /* "Existing theory */
 
-In SRP, a job $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.
-
-The preemption level of a job $pi(J)$#footnote(numbering: "*")[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] is defined as any static function that satisfies
+In SRP, a job $J$#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
@@ -143,19 +141,19 @@ $
 
 For instance, in RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer-selected, static priority for the job.
 
-The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than is currently available. Formally, given the system has resources $R_i, i in [0, m]$
+The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, given the system has resources $R_i, i in [0, m]$
 
 $
   macron(Pi) = max({ceil(R_i) mid(|) i in [0, m]}).
 $<eq:system-ceiling>
 
-System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. After a lock on $R$, the value it changes to
+System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. When a lock on $R$ is obtained, the system ceiling is updated to
 
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
 $
 
-where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
+where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the remaining amount of unlocked $R$, denoted by $v_R$.
 
 == Readers-writer Resources
 
