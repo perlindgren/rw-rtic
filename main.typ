@@ -165,11 +165,11 @@ Generally, an infinite number of readers is allowed, but only a single write at 
 
 = RTIC restricted model
 
-RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
+RTIC is a Rust-based, hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
-Rust compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding relative priority level. The jobs--now ISRs--are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
+Rust compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
 
-In RTIC---so far---only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with lower priority that the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
+In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
 Formally, in RTIC, the preemption levels equal the priority: $pi = p$, and the resource ceiling is defined as
 
