@@ -191,8 +191,7 @@ Depending on the MCU, interrupts can be masked either using the BASEPRI register
 
 == RISC-V
 
-#heksa(position: "inline")[Connect theory to a hardware specification. Valhe can do ARM. Heksa can do RISC-V.]
-
+The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For per-interrupt priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with `mintthresh`.~@lindgren2023hw-support
 
 = Example from @baker1990srp-1
 
