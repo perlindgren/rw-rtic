@@ -133,6 +133,8 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 = Baseline model (SRP) /* "Existing theory */
 
+SRP assumes a set number of run-to-completion running on a single core, sharing a set number resources, and that the maximum resource needs are known _a priori_. The resources can be either unique, requiring mutual exclusion, or multi-unit, meaning there are multiple---but a limited number of---distinct units of them. Jobs are assumed to request anything from zero to the full amount of the multi-unit resource.
+
 In SRP, a job $J$#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
@@ -157,7 +159,9 @@ where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the t
 
 == Readers-writer Resources
 
-Readers-writer resources are a special case of multi-unit#heksa[Valhe: math. model for "multi-unit resource" not yet introduced by name in prior text. Make sure the word "multi-unit" is mentioned in the preceding 'baseline model' if possible.] resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
+Readers-writer resources are a special case of multi-unit resources. In the SRP context, they can be modeled as an abstract resource with a count equaling the number of jobs accessing the resource, and writers consuming all units of the resource, while readers consume only one unit. This allows multiple readers but only one writer at a time.
+
+Generally, an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
 
 = RTIC restricted model
 
