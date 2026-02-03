@@ -135,7 +135,7 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 SRP assumes a set number of run-to-completion running on a single core, sharing a set number resources, and that the maximum resource needs are known _a priori_. The resources can be either unique, requiring mutual exclusion, or multi-unit, meaning there are multiple---but a limited number of---distinct units of them. Jobs are assumed to request anything from zero to the full amount of the multi-unit resource.
 
-In SRP, a job $J$#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
+In SRP, a job $J$#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.#valhe[Includion of the running job here is not needed, as it it included in the definition for resource ceiling.] The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
