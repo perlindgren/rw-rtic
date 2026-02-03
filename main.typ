@@ -157,7 +157,7 @@ where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the t
 
 == Readers-writer Resources
 
-Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
+Readers-writer resources are a special case of multi-unit#heksa[Valhe: math. model for "multi-unit resource" not yet introduced by name in prior text. Make sure the word "multi-unit" is mentioned in the preceding 'baseline model' if possible.] resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
 
 = "RTIC restricted model"
 
