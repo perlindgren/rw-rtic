@@ -165,9 +165,7 @@ Generally, an infinite number of readers is allowed, but only a single write at 
 
 = RTIC restricted model
 
-RTIC is a Rust-based, hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
-
-Rust compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
+RTIC compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
 
 In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
@@ -179,19 +177,19 @@ $<eq:resource-ceiling>
 
 where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$.
 
-In combination with Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
+In combination with the Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
 
 == ARM Cortex-M
 
-Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines. The external interrupts can be controlled and configured trough a peripheral known as the Nested Vectored Interrupt Controller (NVIC). Registers called NVIC_IPR control the priorities of the external interrupts.
+/*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/ On Cortex-M, external interrupts can be controlled and configured with the Nested Vectored Interrupt Controller (NVIC). Registers called `NVIC_IPR` control the priorities of the external interrupts.
 
-Pending interrupts are run in priority order, and a higher priority interrupt can preempt a lower one. Preempted context is pushed to stack and restored automatically by the hardware.#todo[maybe mention of how many clock cycles until new ISR starts executing - for Cortex-M3 it's 6 apparently]An ISR can be preempted safely while it is saving the context, increasing the responsitivity of high priority ISRs.
+/*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/ The context of an preempted ISR is pushed to stack and restored automatically by the hardware. An ISR can be preempted safely while it is saving the context, increasing the responsiveness of high priority ISRs.
 
-Depending on the MCU, interrupts can be masked either using the BASEPRI register, or if it's not implemented, the NVIC_ISER and NVIC_ICER registers. The BASEPRI register disables interrupts of lower or equal priority than its value, but it can not disable interrupts with maximum possible priority. The NVIC_ISER and NVIC_ICER registers enable or disable individual interrupts, each bit in the registers corresponding to a specific interrupt.
+Depending on the MCU, interrupts can be masked either using the `BASEPRI` register, or if it's not implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The `BASEPRI` register blocks interrupts of lower or equal priority than its value, but it can not block interrupts with maximum possible priority. /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The `NVIC_ISER` and `NVIC_ICER` registers enable or disable individual interrupts, each bit in the registers corresponding to a specific interrupt.
 
 == RISC-V
 
-The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For per-interrupt priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with `mintthresh`.~@lindgren2023hw-support
+The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For #box[per-interrupt] priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with, e.g., `mintthresh`.~@lindgren2023hw-support
 
 = Example from @baker1990srp-1
 
