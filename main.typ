@@ -63,7 +63,7 @@
 
 // Motivation, introduce the problem at hand and in brief: RTIC only implements
 // binary semaphores, based on a simplified model.
-The RTIC framework provides an executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution.#valhe[Should MPI prevention be mentioned?] The original theory@baker1990srp-1 also describes a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
+The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution.#valhe[Should MPI prevention be mentioned?] The original theory@baker1990srp-1 also describes a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
 
 // Observations on first paragraph
 //
@@ -133,9 +133,7 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 = Baseline model (SRP) /* "Existing theory */
 
-In SRP, a job $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.
-
-The preemption level of a job $pi(J)$#footnote(numbering: "*")[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] is defined as any static function that satisfies
+In SRP, a job $J$#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
@@ -143,25 +141,25 @@ $
 
 For instance, in RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer-selected, static priority for the job.
 
-The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than is currently available. Formally, given the system has resources $R_i, i in [0, m]$
+The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, given the system has resources $R_i, i in [0, m]$
 
 $
   macron(Pi) = max({ceil(R_i) mid(|) i in [0, m]}).
 $<eq:system-ceiling>
 
-System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. After a lock on $R$, the value it changes to
+System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. When a lock on $R$ is obtained, the system ceiling is updated to
 
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
 $
 
-where $macron(Pi)_"cur"$ is the system ceiling before the lock, and $ceil(R)_v_R$ is the the ceiling of $R$ with the remaining amount of unlocked $R$, denoted by $v_R$.
+where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the remaining amount of unlocked $R$, denoted by $v_R$.
 
 == Readers-writer Resources
 
-Readers-writer resources are a special case of multi-unit resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
+Readers-writer resources are a special case of multi-unit#heksa[Valhe: math. model for "multi-unit resource" not yet introduced by name in prior text. Make sure the word "multi-unit" is mentioned in the preceding 'baseline model' if possible.] resources, where an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
 
-= "RTIC restricted model"
+= RTIC restricted model
 
 RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
