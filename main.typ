@@ -163,19 +163,26 @@ Readers-writer resources are a special case of multi-unit resources, where an in
 
 = "RTIC restricted model"
 
-#valhe(position: "inline")[Connect theory to a hardware specification. Valhe can do ARM. Heksa can do RISC-V.]
-
-SRP describes a threshold based filtering of jobs allowed to run, where the treshold updates with each lock and unlock operation on a resource. RTIC associates the static priority jobs to interrupts handlers that get a corresponding priority level. It implements the threshold-based filtering by manipulating the system ceiling for interrupts.
-
-In RTIC---so far---only single-unit resources have been allowed, as with them, the threshold needs to be updated to a compile-time known number, while for general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, resulting in unwanted overhead.
-
-
-In RTIC, the hardware runs the highest priority, enabled, pending interrupt without any programmatical control. The locking functions only manipulate the system ceiling for interrupts. #heksa[Heksa: see this:]In combination with Rust ownership system and compliance with SRP, controlled access to shared resources is guaranteed.
-
 RTIC is a Rust-based hardware accelerated real-time operating system that leverages the underlying hardware's prioritized interrupt handlers for near zero-cost scheduling. The scheduling policy it uses is a restricted version of SRP.
 
-In systems conforming to SRP, all possible ceilings of resource $R$ are compile-time known constants, i.e., $ceil(R)_v_R$ is known _a priori_ for each $v_R$.
-RTIC leverages this to implement near zero-cost locking.
+Rust compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding relative priority level. The jobs--now ISRs--are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
+
+In RTIC---so far---only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with lower priority that the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
+
+In combination with Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
+
+== ARM Cortex-M
+
+Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines. The external interrupts can be controlled and configured trough a peripheral known as the Nested Vectored Interrupt Controller (NVIC). Registers called NVIC_IPR control the priorities of the external interrupts.
+
+Pending interrupts are run in priority order, and a higher priority interrupt can preempt a lower one. Preempted context is pushed to stack and restored automatically by the hardware.#todo[maybe mention of how many clock cycles until new ISR starts executing - for Cortex-M3 it's 6 apparently]An ISR can be preempted safely while it is saving the context, increasing the responsitivity of high priority ISRs.
+
+Depending on the MCU, interrupts can be masked either using the BASEPRI register, or if it's not implemented, the NVIC_ISER and NVIC_ICER registers. The BASEPRI register disables interrupts of lower or equal priority than its value, but it can not disable interrupts with maximum possible priority. The NVIC_ISER and NVIC_ICER registers enable or disable individual interrupts, each bit in the registers corresponding to a specific interrupt.
+
+== RISC-V
+
+#heksa(position: "inline")[Connect theory to a hardware specification. Valhe can do ARM. Heksa can do RISC-V.]
+
 
 == Example from @baker1990srp-1
 
@@ -467,6 +474,10 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Cool use cases
 - Update set point in low-priority. Execute read algorithm / motor control in high priority.
+
+= Future work
+
+For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, as a count of remaining resources would need to be kept. The viability of general ulti-resource support for RTIC is left for future work.
 
 
 = Conclusion
