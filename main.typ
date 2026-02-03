@@ -75,7 +75,8 @@ The RTIC framework provides an executable model for concurrent applications as a
 The rationale for the constrained implementation is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability.
 
 // Contributions
-However, in situations where the highest priority contender is not a write, a readers-writer lock provides improved schedulability/*, allowing to expedite higher priority tasks that only need to read the resource*/. #heksa(position: "inline")[Need to outline the benefit of 'general semaphore' here, and mention that it's left for future work.]
+However, in situations where the highest priority contender is not a write, a readers-writer lock provides improved schedulability/*, allowing to expedite higher priority tasks that only need to read the resource*/. #heksa(position: "inline")[Need to outline the benefit of 'general semaphore' here, and mention that it's left for future work.]Extending RTIC's supported lock types to include readers-writer locks increases RTIC's suitability for static-priority real-time systems requiring priority-ordered preemption among readers of shared resources. Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers.
+#valhe[Per, Heksa: please review this claim.]
 
 // Contributions
 In this paper, we describe an extension of the declarative, "RTIC restricted model", applicable to readers-writer locks, and an implementation thereof.
