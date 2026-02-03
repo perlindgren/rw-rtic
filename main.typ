@@ -151,7 +151,7 @@ System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. 
 
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
-$
+$<eq:new-ceiling>
 
 where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the remaining amount of unlocked $R$, denoted by $v_R$.
 
@@ -166,6 +166,14 @@ RTIC is a Rust-based hardware accelerated real-time operating system that levera
 Rust compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding relative priority level. The jobs--now ISRs--are run in priority order by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
 
 In RTIC---so far---only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with lower priority that the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
+
+Formally, in RTIC, the preemption levels equal the priority: $pi = p$, and the resource ceiling is defined as
+
+$
+  ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
+$<eq:resource-ceiling>
+
+where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$.
 
 In combination with Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
 
@@ -182,7 +190,7 @@ Depending on the MCU, interrupts can be masked either using the BASEPRI register
 #heksa(position: "inline")[Connect theory to a hardware specification. Valhe can do ARM. Heksa can do RISC-V.]
 
 
-== Example from @baker1990srp-1
+= Example from @baker1990srp-1
 
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the following maximum resource needs as specified in @tab:example-needs.
 
@@ -213,43 +221,16 @@ Using @tab:example-needs, it can be determined which is the highest preemption l
 
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
 
-== RTIC implementation of SRP
-
-In RTIC, the resource ceiling is defined as
-
-$
-  ceil(R) = max({0} union { pi(J) mid(|) v_R < mu_R (J)}),
-$<eq:resource-ceiling-orig>
-
-where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$---or, since $pi = p$,
-
-$
-  ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}).
-$<eq:resource-ceiling>
-
-
-#todo[Repetitioin starts here.]
-RTIC leverages the underlying hardware's prioritized interrupts for near zero-cost scheduling by compiling the programmer defined and prioritized jobs to interrupt handlers in a corresponding relative priority order. SRP compliant preemption prevention is implemented by interrupt masking, e.g., using NVIC BASEPRI register and PRIMASK. The interrupt mask acts  as a system ceiling.
-
-Now, a lower priority interrupt/job is not able to preempt a higher priority interrupt/job, and no interrupt/job is able to preempt if its prioritity (= preemption level) is not higher than the system ceiling. This satisfies the SRP preemption rule except for the requirement for the job to also be the _oldest_ highest priority pending job. #valhe[Go through the proofs and see what qualities of SRP are affected by this exception!!]
-
-In RTIC, each lock operation is compiled to code that updates the system ceiling (sets the interrupt masks) and pushes the old ceiling value to the stack. With each unlock, the previous value is restored from the stack.
-
-The current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, so the system ceiling is always set to the same value based on @eq:system-ceiling and @eq:resource-ceiling. This allows RTIC to simplify the formula for system ceiling to
-
-$
-  macron(Pi) = max({0} union {ceil(R) | R "is locked"}).
-$
-
-This is because when $R$ is unlocked, $ceil(R) = 0$, and when $R$ is locked, there is only one possible $ceil(R)$.
-
-#todo[Repetition starts.]
-
-As $ceil(R)$ is a compile-time known constant, the lock function for each $R$ compiles to code that raises the system-ceiling to some constant value. The lock function does not need to include any calculations.#todo[repetition]
-
-#heksa(position: "inline")[Some pseudocode here for the lock function?]
 
 = SRP compliant readers-writer lock
+
+As already discussed, the current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, and @eq:new-ceiling simplifies to
+
+$
+  macron(pi)_"new" = max(macron(Pi)_"old", ceil(R)_0),
+$
+
+where $ceil(R)_0$ is a compile-time known constant.
 
 The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
