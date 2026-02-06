@@ -140,10 +140,10 @@ $
 
 For instance, in RTIC, the chosen function is $pi(J) = p(J)$, where $p(J)$ is a programmer-selected, static priority for the job.
 
-The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, given the system has resources $R_i, i in [0, m]$
+The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or bigger than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, given the system has resources $R_i, i in {0, ..., m}$
 
 $
-  macron(Pi) = max({ceil(R_i) mid(|) i in [0, m]}).
+  macron(Pi) = max({ceil(R_i) mid(|) i in {0, ..., m}}).
 $<eq:system-ceiling>
 
 System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. When a lock on $R$ is obtained, the system ceiling is updated to
