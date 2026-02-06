@@ -9,7 +9,7 @@
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture. Finally, we evaluate the implementation with a set of benchmarks and real world applications.
+    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while improving application schedulability. In the paper, we review the theory, and lay out the static analysis and code generation implementations in RTIC for the ARM Cortex\u{2011}v7m architecture.#valhe[This is not done yet. On the other hand, both RISC-V and Cortex-M in general are discussed.] Finally, we evaluate the implementation with a set of benchmarks and real world applications.
   ],
   authors: (
     (
@@ -63,7 +63,7 @@
 
 // Motivation, introduce the problem at hand and in brief: RTIC only implements
 // binary semaphores, based on a simplified model.
-The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution.#valhe[Should MPI prevention be mentioned?] The original theory@baker1990srp-1 also describes a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
+The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, and simple, efficient, single-shared-stack execution.#valhe[Should MPI prevention be mentioned? single-context-switch-per-job does not necessarily mean no multiple priority inversion---in the sense that while a high prio task is pending, at most one lower prio will execute.] The original theory@baker1990srp-1 also describes a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
 
 // Observations on first paragraph
 //
@@ -89,9 +89,6 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
   - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
   #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
-  #valhe(
-    position: "inline",
-  )[The key contribution here is to show that: even though SRP says we should raise the system ceiling in a complicated way, we do not have to. With r/w locks, we can make an exception to the SRP defined rule, and the scheduling stays the same. To explain it further: SRP defines that with each read-lock, the system ceiling is raised to a different number depending on how much of the r/w resource is left. Instead, we ignore this and raise it always to the same number, and we show that the system still schedules jobs like SRP does.]
 ]
 
 = Prior work
@@ -100,7 +97,7 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 - PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
 - PCP has been extended to apply to readers-writer resources@sha1989pcpmode, and multi-processor systems @rajkumar1988multi.#valhe[SRP is defined to single-core only. Why is multi-processor mentioned here?]
-- SRP extends PCP, and can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.
+- SRP extends PCP, and can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-core.]
 - PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
 
 == Rust aliasing guarantees
