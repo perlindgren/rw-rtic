@@ -83,10 +83,10 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 #box[
   Key contributions of this paper include:
-  - Observation/proof that with multi-unit resources of the readers-writer type, there is a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
+  - Observation/proof that with multi-unit resources of the readers-writer type, a deviation can be made to the SRP described behavior of the system ceiling, which allows a zero-cost implementation of the readers-writer lock while the system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
   - Unification of the SRP compliant readers-writer lock to match the Rust aliasing model.
   - Static analysis for readers-writer resources
-  - Code generation for readers-writer resources in RTIC#heksa[need to highlight the contribution: efficient implementation of RW locks due to shortcut found in theory]
+  - Code generation for readers-writer resources in RTIC.
   - Evaluation of readers-writer resources in RTIC with benchmarks and real world applications
   #heksa[So far, the contributions _don't_ sound convincing, at least when formulated like this. @baker1991srp-journal already describes a "declarative model for RW-resources". Why are we doing it again?.]
 ]
