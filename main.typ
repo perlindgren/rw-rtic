@@ -220,7 +220,7 @@ Using @tab:example-needs, it can be determined which is the highest preemption l
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
 
 
-= SRP compliant readers-writer lock
+= SRP compliant readers-writer lock<sect:proof>
 
 As already discussed, the current version of RTIC uses only single-unit resources. For a single-unit resource $R$, after each lock operation, $R$ has zero availability, and @eq:new-ceiling simplifies to
 
@@ -370,10 +370,10 @@ $
 proving @eq:rw-lock-ceil-w.
 
 == Example of improved schedulability using readers-write locks
-
+#todo[Figures have incorrect arrival label. A $t_1$ should be $t_5$.]
 @fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the jobs $J_1,..J_5$ with priorities $1,..5$ respectively. Tasks $J_1, J_4$ and $J_5$ are only reading the shared  while jobs $J_3$ and $J_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any job accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for job execution.
 
-Filled color indicates the job execution. The dashed line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a job being blocked, and a cross-hatched color indicates the blocking is due to a higher priority job.
+Filled color indicates the job execution. The bold black line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a job being blocked, and a cross-hatched color indicates the blocking is due to a higher priority job.#todo[Needs to be updated.]
 
 Notice under SRP jobs may only be blocked from being dispatched; once executing, they run to completion free of blocking.
 
@@ -397,13 +397,13 @@ Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blockin
 ]
 === Reduced Blocking with Reader-Writer Resources
 
-@fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$, the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
+@fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$; the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
 Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
 
 When $J_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing job $J_4$ to be directly executed (without being blocked). Similarly, when $J_4$ claims the resource, the system ceiling is raised to $ceil(R)_r = 3$.
 
-Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the read-write lock needs to keep count of $R$ availability, but a later proof will show it is not necessary.
+Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the readers-writer lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
 
 When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 
