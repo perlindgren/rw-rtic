@@ -234,7 +234,7 @@ The key contribution of this paper is to show that with multi-unit resources of 
 
 *Proof, that for reader or write lock on $R$, the system ceiling can be raised to a compile-time known constant while staying SRP compliant* #valhe[!!! This must be layer out in a better way. Now it seems that the proof starts after this bolded part, but instead, the *theorem* starts after it, and the actual proof follows the theorem.]
 
-Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. This means that no extra overhead is introduced to RTIC when implementing the readers-writer locks, as the readers-writer lock compiles similarly to mutex locks.
+Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. _This means that no extra overhead is introduced to RTIC when implementing the readers-writer locks, as the readers-writer lock compiles similarly to mutex locks._#valhe[The last part is not part of the theorem but a corollary.]
 
 Formally, SRP compliance is maintained when:
 
