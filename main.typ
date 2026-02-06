@@ -415,7 +415,7 @@ As discussed earlier, we need to treat reader and writer accesses differently. I
 - Reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource.
 - Writer ceiling $ceil(R)_w$: maximum priority among jobs with _read_ or _write access_ to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources. That is the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
+The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources, i.e., the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
 
 Assume an upstream `rw-pass` to:
 
@@ -430,7 +430,7 @@ In this way, no additional target specific code generation is required, as the t
 
 Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modelling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
 
-At this point, we have defined the `rw-pass` contract at high level, in the following we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
+At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
 === Implementation sketch
 
@@ -438,7 +438,7 @@ Each pass first parses the input DSL into an internal abstract syntax tree (AST)
 
 The `core-pass` DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.#valhe[should this say A and C?]
 
 The `rw-pass` will then perform the following steps:
 
@@ -454,7 +454,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Future work
 
-For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, as a count of remaining resources would need to be kept. The viability of general ulti-resource support for RTIC is left for future work.
+For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, as a count of remaining resources would need to be kept. The viability of general multi-resource support for RTIC is left for future work.
 
 
 = Conclusion
