@@ -146,7 +146,7 @@ $
   macron(Pi) = max({ceil(R_i) mid(|) i in {0, ..., m}}).
 $<eq:system-ceiling>
 
-System ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. When a lock on $R$ is obtained, the system ceiling is updated to
+From the definition, it follows that the system ceiling $macron(Pi)$ changes only when a resource is locked or unlocked. When a lock on $R$ is obtained, the system ceiling is updated to
 
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
