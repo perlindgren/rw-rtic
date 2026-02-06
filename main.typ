@@ -188,7 +188,7 @@ Depending on the MCU, interrupts can be masked either using the `BASEPRI` regist
 
 The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For #box[per-interrupt] priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with, e.g., `mintthresh`.~@lindgren2023hw-support
 
-= Example from @baker1990srp-1
+= Example of determining the resource ceilings from @baker1990srp-1
 
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the following maximum resource needs as specified in @tab:example-needs.
 
