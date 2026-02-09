@@ -369,7 +369,37 @@ $
 $
 proving @eq:rw-lock-ceil-w.
 
-== Example of improved schedulability using readers-write locks
+#todo(position: "inline")[Review the section below]
+
+= Improved schedulability using readers-write locks
+
+It can be shown that implementing readers-writers locks improves schedulability when the implementation introduces no overhead.
+
+In @baker1990srp-1, Baker presents proof for SRP schedulability under EDF priority scheme, and a similar result can be shown for a static priority scheme based on relative deadlines (relaxed RM, where deadline $<=$ period/minimum interarrival time). Assuming $n$ aperiodic and periodic jobs with increasing relative deadlines, $J_1, ..., J_n$, the system is schedulable if
+$
+  forall_(k in {1,...,n}) : frac(B_k, T_k) + sum_(i = 1)^k frac(C_i, T_i) <= 1,
+$<eq:scheduling-rule-rm>
+where $T_i$ is the period or minimum interarrival time of $J_i$, $C_i$ is the worst case execution time and $B_i$ is the longest time $J_i$ can be blocked by a lower priority job.
+
+The proof is similar to Baker's proof, except the $t'$ in the proof is selected to be the latest time there is no pending job with a priority less or equal than the job $J_d$ that missed its deadline, and $cal(A)$ is chosen as the jobs that are pending in $[t',t]$ and have a higher or equal priority than that of $J_d$.
+
+When implementing readers-writers locks, assuming the locking takes a similar amount of time and there is no extra overhead introduced, nothing changes in the schedulability rule except for $B_k$, which may stay the same or decrease for jobs $J_k$ that only read a r/w resource. Therefore, a system schedulable using mutex locks for reading and writing is also schedulable when readers-writer locks are implemented and used.
+
+To show that readers-writers locks improve schedulability, it is enough to show an example of a system that is not schedulable when it uses mutex locks, but is schedulable when using readers-writer locks.
+
+#place(top + left, scope: "parent", float: true)[
+  #figure(caption: [System benefitting from readers-writer locks.], table(
+    columns: 5,
+    [Task], [Period], [CS length], [WCET], [Priority],
+    [Reader 1], [$1$ ms], [$20$ $mu$s], [$50$ $mu$s], [Highest],
+    [Reader 2], [$20$ ms], [$3$ ms], [$4$ ms], [Middle],
+    [Writer], [$50$ ms], [$0.5$ ms], [$0.5$ ms], [Lowest],
+  ))<table:benefitting-system>
+]
+
+@table:benefitting-system specifies a system with three periodic tasks that share a readable-writable resource. Deadlines are assumed to equal the period, and the critical sections are related to the shared resource. As the critical section of the lower priority reader is longer than the period of the highest priority reader, the system is clearly not schedulable when using mutex locks. However, applying the schedulability rule of @eq:scheduling-rule-rm to the system, it can be shown that it is schedulable with readers-writer locks.
+
+#todo(position: "inline")[Review the above and place it somewhere it makes sense.]
 #todo[Figures have incorrect arrival label. A $t_1$ should be $t_5$.]
 @fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the jobs $J_1,..J_5$ with priorities $1,..5$ respectively. Tasks $J_1, J_4$ and $J_5$ are only reading the shared  while jobs $J_3$ and $J_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any job accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for job execution.
 
@@ -395,7 +425,7 @@ Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blockin
   ) <fig:example>
 
 ]
-=== Reduced Blocking with Reader-Writer Resources
+=== Behavior difference between mutex locks and readers-writers locks
 
 @fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$; the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
