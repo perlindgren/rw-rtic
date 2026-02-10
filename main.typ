@@ -43,7 +43,7 @@
   ),
   index-terms: ("Real-Time Systems", "Stack Resource Policy", "Readers-Writer Locks", "RTIC", "Rust"),
   bibliography: bibliography("refs.bib"),
-  figure-supplement: [Fig.],
+  figure-supplement: [Figure],
 )
 
 /* # RTAS notes
