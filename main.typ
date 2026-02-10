@@ -2,7 +2,11 @@
 #show: doc => preamble(doc)
 
 #import "@preview/charged-ieee:0.1.4": ieee
+
+// Local overrides
 #set figure(placement: top)
+#show "readers-writer": "readers\u{2011}writer"
+#show "compiler-verified": "compiler\u{2011}verified"
 
 #show: ieee.with(
   title: [Work in Progress: Zero Cost Readers-Writer Locks for the RTIC Framework],
