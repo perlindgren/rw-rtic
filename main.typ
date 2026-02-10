@@ -100,13 +100,24 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 
 == Rust aliasing guarantees
 
-#heksa(position: "inline")[
-  - Read-access may imply side-effects---bring this problem forward.
-  - Oversight(?) in PCP/SRP models: even read-only access to a hardware object can cause a side-effect. Rust allows meticulous spatial modeling of memory maps, allowing the compiler to be aware of, and enforce exclusivity requirements beyond(?) the scheduling theory.
-  - ... or is `serial.read()` just a write operation? ... it is. Problem solved #emoji.face.happy #emoji.fire. The serial example could be included in this paper or the journal.
-  - Could compare the Rust concurrency model (spatial with borrow checker & temporal with Send/Sync) and the SRP concurrency model (temporal)
-  - Requirements for "type of access" are and should be HAL implementors problem ("it is the right place to put it"). This is "correctly abstracted by the embedded-hal"---Show the `embedded-io` documentation.1
-]
+The Rust rules regarding _place_#footnote[@rust-ref [expr.place-value.value-expr-kinds]] and _move_#footnote[@rust-ref [expr.move]] expressions, and _pointer_#footnote[@rust-ref [type.pointer.reference]] types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from one code location simultaneously, in absence of _interior mutability_#footnote[@rust-ref [interior-mut]] and _raw pointers_#footnote[@rust-ref [type.pointer.raw]]. These rules can be extended to apply to other kinds of resources including hardware peripherals, by modeling them as #box[Zero-Sized] Types~(ZSTs).
+
+It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library~(@lst:embedded-io-read).
+
+#figure(
+  caption: [`embedded_io::Read`#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html] trait (truncated) is used to retrieve bytes from a hardware peripheral. As a result, the hardware-internal buffer is typically flushed.],
+  ```rust
+  pub trait Read {
+    // `&mut self`: caller is required to
+    // use a mutable reference to call this
+    // method.
+    fn read(&mut self, buf: &mut [u8])
+      -> Result<usize, _>;
+  }
+  ```,
+)<lst:embedded-io-read>
+
+Rust's readers-writer semantics coincide with the semantics of the readers-writer lock, which means that in a Rust program, shared references can be safely granted to readers, while mutable references can be granted to writers.
 
 == RTIC, RTIC v2, RTIC eVo / MRTIC
 
