@@ -73,7 +73,7 @@ The RTIC framework provides a Rust-language executable model for concurrent appl
 
 The original theory for SRP@baker1990srp-1 describes a scheduling policy for a system with multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a mutex based on the binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
-Replacing the binary semaphore with a readers-writer lock lowers the estimate for blocking time, when applicable, meaning that when using scheduling tests including worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying or the RM specific utilization factor test @sha1989pcpmode for schedulability.], more systems will pass the test.
+Replacing the binary semaphore with a readers-writer lock lowers the estimate for blocking time, when applicable, meaning that when using scheduling tests including worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying or the RM specific utilization factor test @sha1989rwpcp for schedulability.], more systems will pass the test.
 
 The rationale for the current constrained implementation of RTIC is that a binary semaphore is sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability under SRP.
 
