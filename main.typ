@@ -86,9 +86,9 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 
 #box[
   Key contributions of this paper are:
-  - Proof, that a relaxation can be made to the SRP-described behavior of the system ceiling, which can be applied in presence of multi-unit resources of the readers-writer type.
-  - Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore, allowed by said relaxation. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-  - The observation that said relaxation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
+  - Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.
+  - Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+  - The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
   //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
   - Description of code generation for readers-writer resources in RTIC.
   //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
@@ -362,7 +362,7 @@ $
   ).
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
+Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
 $<eq:proof5>
