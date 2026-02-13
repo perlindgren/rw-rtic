@@ -441,35 +441,35 @@ Notice that  if the last possible read-lock was taken, leaving the availability 
 When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 */
 
-= Readers-writer lock implementation in #box[RTIC-eVo] <sec:rw-pass>
+= Readers-writer lock implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
 
-As discussed earlier, we need to treat reader and writer accesses differently. In effect, we need to determine two ceilings per resource $R$:
+Read and write accesses need to be treated as distinct from each other.  In effect, two ceilings per resource $R$ are required:
 
-- Reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource.
-- Writer ceiling $ceil(R)_w$: maximum priority among jobs with _read_ or _write access_ to the resource.
+- reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource, and
+- writer ceiling $ceil(R)_w$: maximum priority among jobs with _read or write access_ to the resource.
 
-The `core-pass` (last in the compilation pipeline) takes a DSL with write access to shared resources, i.e., the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
+The final compilation pass /*`core-pass`*/in the pipeline takes as input the DSL with write access to shared resources#heksa[Unclear what is meant by the prior sentence. A DSL cannot have write access.], i.e., the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
 
-Assume an upstream `rw-pass` to:
+Assume a prior compiler-pass ("`rw-pass`") to:
 
-- Identify all jobs with access to each resource $R$ and compute $ceil(R)_w$ correspondingly.
-- Transform the DSL read accesses to write accesses.
+- identify all jobs with access to each resource $R$ and compute $ceil(R)_w$ correspondingly, and
+- transform the DSL read accesses to write accesses.
 
-The `core-pass` will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
+The final pass /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
 
 The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, which will internally call the existing `lock` API (with ceiling set to $ceil(R)_r$), and pass on an immutable reference to the underlying data structure to the closure argument.
 
 In this way, no additional target specific code generation is required, as the target specific `lock` implementation will be reused.
 
-Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.#todo[Mention this in the future work section]
+Notice however, that the final pass/*`core-pass`*/ will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.#todo[Mention this in the future work section]#heksa[This entire paragraph could just move to future work.]
 
 At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
-=== Implementation sketch
+== Implementation sketch
 
 Each pass first parses the input DSL into an internal abstract syntax tree (AST) representation, later used for analysis and DSL transformation. For the purpose of this paper, we make the assumption that *all* shared resources may be accessible for reader-writer access. (In case a resource abstracts underlying hardware, reads may have side effects, thus in a future work we will return to distinguishing such resources from pure data structures.)
 
-The `core-pass` DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
+The final pass /*`core-pass`*/ DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
 The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.#valhe[Per: should this say A and C?]
 
@@ -480,7 +480,7 @@ The `rw-pass` will then perform the following steps:
 - Generate code for reader access, per job.
 - Transform the DSL merging `read_shared` into `shared` resources.
 
-In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid `core-pass` model.
+In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid model in the final pass/*`core-pass`*/.
 
 /*
 = Cool use cases
