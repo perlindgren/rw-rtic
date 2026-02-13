@@ -102,9 +102,10 @@ PCP describes a locking protocol for binary semaphores, for which priority inver
 
 == Rust aliasing guarantees
 
-The Rust rules regarding _place_#footnote[@rust-ref [expr.place-value.value-expr-kinds]] and _move_#footnote[@rust-ref [expr.move]] expressions, and _pointer_#footnote[@rust-ref [type.pointer.reference]] types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from one code location simultaneously, in absence of _interior mutability_#footnote[@rust-ref [interior-mut]] and _raw pointers_#footnote[@rust-ref [type.pointer.raw]]. These rules can be extended to apply to other kinds of resources including hardware peripherals, by modeling them as #box[Zero-Sized] Types~(ZSTs).
+The Rust rules regarding _place_#footnote[@rust-ref[[expr.place-value.value-expr-kinds]]] and _move_#footnote[@rust-ref[[expr.move]]] expressions, and _pointer_#footnote[@rust-ref[[type.pointer.reference]]] types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_#footnote[@rust-ref[[interior-mut]]] and _dereferences of raw pointers_#footnote[@rust-ref[[type.pointer.raw.safety]]]. To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs).
 
-It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library~(@lst:embedded-io-read).
+/*
+It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library, presented in @lst:embedded-io-read.
 
 #figure(
   caption: [`embedded_io::Read`#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html] trait (truncated) is used to retrieve bytes from a hardware peripheral. As a result, the hardware-internal buffer is typically flushed.],
@@ -118,8 +119,9 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
   }
   ```,
 )<lst:embedded-io-read>
+*/
 
-Rust's readers-writer semantics coincide with the semantics of the readers-writer lock, which means that in a Rust program, shared references can be safely granted to readers, while mutable references can be granted to writers.
+Rust's alias rules coincide with the semantics of the readers-writer lock, which means that in a Rust program, shared references can be safely granted to readers, while mutable references can be granted to writers. Both kinds of references should be scoped to match the duration of the lock.
 
 == RTIC, RTIC v2, RTIC eVo / MRTIC
 
