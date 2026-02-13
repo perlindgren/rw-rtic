@@ -464,7 +464,7 @@ Each pass first parses the input DSL into an internal abstract syntax tree (AST)
 
 The final pass /*`core-pass`*/ DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.#valhe[Per: should this say A and C?]
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `C`.
 
 The `rw-pass` will then perform the following steps:
 
