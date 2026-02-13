@@ -495,7 +495,7 @@ For general multi-unit resources, the new system ceiling value is different for 
 
 = Conclusion
 
-We have shown that SRP compliant readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.#todo[Update to reflect key contributions.]
+We have shown that the declarative lock behavior descibed in SRP can be relaxed for readable-writable resources, and a readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.
 
 
 //  table(
