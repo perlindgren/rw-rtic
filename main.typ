@@ -179,7 +179,13 @@ $<eq:resource-ceiling>
 
 where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$.
 
-In combination with the Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
+With this set-up, HW implements SRP compliant scheduling when each lock operation on $R$ raises the system ceiling to
+
+$
+  macron(Pi)_"new" = max(macron(Pi)_"cur", R_0)
+$
+
+and restores the old value upon unlock. In combination with the Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
 
 == ARM Cortex-M
 
