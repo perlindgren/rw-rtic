@@ -92,9 +92,9 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 == SRP-based scheduling
 
 - PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by execution time of the longest critical section of a lower-priority job. @sha1987pcp
-- PCP has been extended to apply to readers-writer resources@sha1989pcpmode, and multi-processor systems @rajkumar1988multi.#valhe[SRP is defined to single-core only. Why is multi-processor mentioned here?]
-- SRP extends PCP, and can be used to support EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-core.]
-- PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. @baker1991srp-journal
+- PCP has been extended to apply to readers-writer resources@sha1989pcpmode#todo[check if only readers-writer or also multi-unit], and multi-processor systems @rajkumar1988multi.#valhe[SRP is defined to single-core only. Why is multi-processor mentioned here?]
+- SRP extends PCP and allows the use of both static and dynamic priority assignments, and multi-unit resources.~@baker1991srp-journal// EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-core.]
+- PCP and SRP-based methods remain of interest to hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis. /*@baker1991srp-journal*/#todo[Find a more recent source, that situation is still as described.]
 
 == Rust aliasing guarantees
 
@@ -137,9 +137,9 @@ In @sec:rw-pass, we will leverage this modularity to sketch the implementation o
 
 = Baseline model (SRP) /* "Existing theory */
 
-SRP assumes a set number of run-to-completion jobs running on a single core, sharing a set number resources, and that the maximum resource needs are known _a priori_. The resources can be either unique, requiring mutual exclusion, or multi-unit, meaning there are multiple---but a limited number of---distinct units of them.#valhe[Is it really necessary to explain what multi-unit resources are?] Jobs are assumed to request anything from zero to the full amount of the multi-unit resource.
+SRP assumes a fixed number of run-to-completion jobs running on a single core, sharing a fixed number of multi-unit resources. The maximum resource needs are assumed to be known _a priori_. Jobs are assumed to request anything from zero to the full amount of a multi-unit resource.
 
-In SRP, a job#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job, including the running job.#valhe[Includion of the running job here is not needed, as it it included in the definition for resource ceiling.] The preemption level of a job $pi(J)$ is defined as any static function that satisfies
+In SRP, a job#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
@@ -241,7 +241,7 @@ where $ceil(R)_0$ is a compile-time known constant.
 
 The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
 
-*Proof, that for reader or write lock on $R$, the system ceiling can be raised to a compile-time known constant while staying SRP compliant* #valhe[!!! This must be layer out in a better way. Now it seems that the proof starts after this bolded part, but instead, the *theorem* starts after it, and the actual proof follows the theorem.]
+*Proof, that for reader or write lock on $R$, the system ceiling can be raised to a compile-time known constant while staying SRP compliant* #valhe[!!! This must be laid out in a better way. Now it seems that the proof starts after this bolded part, but instead, the *theorem* starts after it, and the actual proof follows the theorem.]
 
 Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. _This means that no extra overhead is introduced to RTIC when implementing the readers-writer locks, as the readers-writer lock compiles similarly to mutex locks._#valhe[The last part is not part of the theorem but a corollary.]
 
@@ -346,7 +346,7 @@ $
   )
 $<eq:proof4>
 
-For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$.#valhe[I should probably refer to Baker's proof on SRP qualities here.] For that to be possible, the job has to be the highest priority job with read access to $R_m$#valhe[This is because how readers-write is modeled in SRP...], i.e.,
+For there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$.#valhe[I should probably refer to Baker's proof on SRP qualities here.] For that to be possible, the job has to be the highest priority job with read access to $R_m$#valhe[This is because of how readers-write is modeled in SRP...], i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
 $<eq:proof5>
@@ -357,7 +357,7 @@ $
     union & {pi(J) mid(|) J "has write access to" R_m}
   )
 $
-However, in SRP, as a job is not allowed to preempt the currently executing job unless it has a higher priority#valhe[This is currently in the definition of SRP scheduling rule, but if it's changed like suggested, this is only a result of the definitions.], so it is enough to limit the system ceiling to
+However, in SRP, as a job is not allowed to preempt the currently executing job unless it has a higher preemption level, so it is enough to limit the system ceiling to
 $
   =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
                                         { macron(Pi)_"cur"} \
@@ -370,15 +370,13 @@ which proves @eq:rw-lock-ceil-r.
 
 *Proof for @eq:rw-lock-ceil-w (write-lock):*
 
-If the lock was a write-lock, $v'_R_m = 0$. Continuing from @eq:proof2
+If the lock was a write-lock, $v'_R_m = 0$. Continuing from~@eq:proof2
 $
   => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
                 = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
                 = & max(macron(Pi)_"cur", ceil(R)_w),
 $
 proving @eq:rw-lock-ceil-w.
-
-#todo(position: "inline")[Review the section below]
 
 = Improved response time of high-priority #box[readers]// using readers-write locks
 
@@ -455,7 +453,7 @@ Each pass first parses the input DSL into an internal abstract syntax tree (AST)
 
 The `core-pass` DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.#valhe[should this say A and C?]
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `E`.#valhe[Per: should this say A and C?]
 
 The `rw-pass` will then perform the following steps:
 
