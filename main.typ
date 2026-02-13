@@ -446,14 +446,14 @@ Read and write accesses need to be treated as distinct from each other.  In effe
 - reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource, and
 - writer ceiling $ceil(R)_w$: maximum priority among jobs with _read or write access_ to the resource.
 
-The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_r$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
+The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock user API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_r$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
 
 During pre-compilation `rw-pass` should:
 
-- identify all jobs with access to each resource $R$ and compute $ceil(R)_w$ correspondingly, and
-- transform all DSL read accesses to write accesses to conform to the conventional model.
+- identify all jobs with access to each resource $R$ and compute $ceil(R)_r$ and $ceil(R)_w$, and
+- transform all DSL read accesses to "write" accesses to conform to the conventional model.
 
-The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all write accesses to shared resources. Then, the preemption level $pi(J)$ is computed of/*for or based on*/ any job $J$ with shared access to the resource $R$.
+The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all shared (write) accesses to shared resources. Then, the preemption level is computed based on all jobs $J$ with shared access to the resource $R$.
 The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
 This way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
@@ -487,7 +487,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 Implementation details for the analysis and code generation is left as future work.
 
-With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between access kind. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between accesses. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
 
 For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left as future work.
 
