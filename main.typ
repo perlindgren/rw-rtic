@@ -454,8 +454,6 @@ The main DSL compilation pass /*`core-pass`*/ takes as input the DSL with knowle
 The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
 In this way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
-Notice however, that the final pass/*`core-pass`*/ will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.#todo[Mention this in the future work section]#heksa[This entire paragraph could just move to future work.]
-
 At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
 == Implementation sketch
@@ -485,11 +483,13 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 #todo(position: "inline")[Future work: actual code]
 
+With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between access kind. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+
 For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left for future work.
 
 = Conclusion
 
-We have shown that the declarative lock behavior descibed in SRP can be relaxed for readable-writable resources, and a readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.
+We have shown that the declarative lock behavior described in SRP can be relaxed for readable-writable resources, and a readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.
 
 
 //  table(
