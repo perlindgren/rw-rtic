@@ -22,7 +22,7 @@
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. In the paper, we review the theory/* and lay out the static analysis#heksa[What is meant by 'static analysis'?]*/ and code generation implementations in RTIC for the ARM Cortex-M and RISC-V architectures. // Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS]
+    We review the theoretical foundations of readers-writer locks in the context of SRP to show that they can be implemented in RTIC at zero cost when compared to existing binary-semaphore-based locks, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. We provide declarative model for the implementation of code generation for RTIC, compatible with the ARM Cortex-M and RISC-V architectures. /* Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS] */
   ],
   authors: (
     (
@@ -93,7 +93,7 @@ Our contributions are:
 - a declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - the observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
-- description of target-independent code generation for readers-writer resources in RTIC.
+- a description of target-independent code generation for readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
 = Prior work
