@@ -94,7 +94,7 @@ Key contributions of this paper are:
 - Declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
-- Description of code generation for readers-writer resources in RTIC.
+- Description of target-independent code generation for readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
 = Prior work
@@ -133,7 +133,7 @@ For the developer, RTIC provides a declarative, SRP-compliant, tasks-and-resourc
 
 Supplemental to the mainline RTIC, a research prototype@mrtic2025 of the framework has been developed to study---in a modular way---implementations of features including syntax extensions and extended source code analysis.
 //However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
-The research prototype /*RTIC-eVo*/ provides a set of compilation passes that gradually lower the /*Domain Specific Language*/ DSL-augmented source artifact towards a plain Rust implementation, and then further into an executable/* (thus RTIC can be seen as an executable model)*/. /*The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target-specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.*/
+In the research prototype/*RTIC-eVo*/, the compilation process is separated into a set of subsequent passes that gradually lower the /*Domain Specific Language*/ DSL-augmented source artifact towards a plain Rust implementation, and then further into an executable/* (thus RTIC can be seen as an executable model)*/. /*The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target-specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.*/
 In @sec:rw-pass, the modular research prototype is leveraged to sketch out the implementation of readers-writer resources/* in RTIC-eVo*/.
 
 = Baseline model (SRP) /* "Existing theory */
@@ -448,18 +448,14 @@ Read and write accesses need to be treated as distinct from each other.  In effe
 - reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource, and
 - writer ceiling $ceil(R)_w$: maximum priority among jobs with _read or write access_ to the resource.
 
-The final compilation pass /*`core-pass`*/in the pipeline takes as input the DSL with write access to shared resources#heksa[Unclear what is meant by the prior sentence. A DSL cannot have write access.], i.e., the core-pass will compute $pi(J)$ of any job $J$ with shared access to the resource $R$.
-
-Assume a prior compiler-pass ("`rw-pass`") to:
+The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock API and a pre-compilation pass. As the API, a #box[`read_lock(Fn(&T)->R)`] method should be provided, which should call the pre-existing `lock` API---with the ceiling set to $ceil(R)_r$---and pass a shared, immutable reference to the underlying data structure as the closure argument. Then, during pre-compilation `rw-pass` should:
 
 - identify all jobs with access to each resource $R$ and compute $ceil(R)_w$ correspondingly, and
-- transform the DSL read accesses to write accesses.
+- transform all DSL read accesses to write accesses to conform to the conventional model.
 
-The final pass /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
-
-The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, which will internally call the existing `lock` API (with ceiling set to $ceil(R)_r$), and pass on an immutable reference to the underlying data structure to the closure argument.
-
-In this way, no additional target specific code generation is required, as the target specific `lock` implementation will be reused.
+The main DSL compilation pass /*`core-pass`*/ takes as input the DSL with knowledge of all write accesses to shared resources. Then, the $pi(J)$ of any job $J$ with shared access to the resource $R$ is computed.
+The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
+In this way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
 Notice however, that the final pass/*`core-pass`*/ will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.#todo[Mention this in the future work section]#heksa[This entire paragraph could just move to future work.]
 
