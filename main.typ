@@ -84,15 +84,16 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 // Contributions
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
-#box[
-  Key contributions of this paper are:
-  - Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.#footnote[To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less signifacance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers locks while keeping the scheduling and resource locking overhead near zero.]
-  - Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-  - The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
-  //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
-  - Description of code generation for readers-writer resources in RTIC.
-  //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
-]
+Key contributions of this paper are:
+- Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.#footnote({
+    set text(hyphenate: true)
+    [To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less significance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers locks while keeping the scheduling and resource locking overhead near zero.]
+  })
+- Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+- The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
+//- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
+- Description of code generation for readers-writer resources in RTIC.
+//- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
 = Prior work
 
@@ -137,7 +138,10 @@ In @sec:rw-pass, the modular research prototype is leveraged to sketch out the i
 
 SRP assumes a fixed number of run-to-completion jobs running on a single core, sharing a fixed number of multi-unit resources. The maximum resource needs are assumed to be known _a priori_. Jobs are assumed to request anything from zero to the full amount of a multi-unit resource.
 
-In SRP, a job#footnote[The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.] $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
+In SRP, a job#footnote({
+  set text(hyphenate: true)
+  [The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.]
+}) $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
