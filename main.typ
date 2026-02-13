@@ -456,6 +456,7 @@ In this way, no additional target specific code generation is required, as the t
 
 At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
+/*
 == Implementation sketch
 
 Each pass first parses the input DSL into an internal abstract syntax tree (AST) representation, later used for analysis and DSL transformation. For the purpose of this paper, we make the assumption that *all* shared resources may be accessible for reader-writer access. (In case a resource abstracts underlying hardware, reads may have side effects, thus in a future work we will return to distinguishing such resources from pure data structures.)
@@ -472,7 +473,7 @@ The `rw-pass` will then perform the following steps:
 - Transform the DSL merging `read_shared` into `shared` resources.
 
 In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid model in the final pass/*`core-pass`*/.
-
+*/
 /*
 = Cool use cases
 #heksa[Left for ECRTs.]
