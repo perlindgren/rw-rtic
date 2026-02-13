@@ -103,7 +103,7 @@ PCP describes a locking protocol for binary semaphores, for which priority inver
 
 == Rust aliasing guarantees
 
-The Rust rules regarding _place_ and _move_ expressions#footnote[@rust-ref[[expr.place-value.value-expr-kinds], [expr.move]]], and _pointer_#footnote[@rust-ref[[type.pointer.reference]]] types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_ and _raw pointer dereferences_#footnote[@rust-ref[[interior-mut], [type.pointer.raw.safety]]]. To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs).
+The Rust rules regarding _place_ and _move_ expressions#footnote[@rust-ref[[expr.place-value.value-expr-kinds], [expr.move]]], and _pointer_#footnote[@rust-ref[[type.pointer.reference]]] types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_ and _raw pointer dereferences_#footnote[@rust-ref[[interior-mut], [type.pointer.raw.safety]]]. To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs). It should be carefully noted that certain hardware operations such as side-effectful reads from hardware-internal buffers should be considered writes from a software-and-concurrency point of view, and should be modelled as such in Rust (cf. `Read` trait in embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
 
 /*
 It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library, presented in @lst:embedded-io-read.
@@ -122,7 +122,7 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
 )<lst:embedded-io-read>
 */
 
-Rust's alias rules coincide with the semantics of readers-writer locks. In other words, the interfaces of the lock may grant shared references to readers, while mutable references can be granted to writers, all the while conforming to Rust's notion of safety. Both kinds of references should be scoped to match the duration of the lock.
+Rust's alias rules coincide with the semantics of readers-writer locks. In other words, the interfaces of the lock may grant shared references to readers, while mutable references can be granted to writers, all the while conforming to Rust's notion of safety. Both kinds of references should be scoped to match the duration that the lock is held.
 
 == RTIC//, RTIC v2, RTIC eVo / MRTIC
 
@@ -446,16 +446,18 @@ Read and write accesses need to be treated as distinct from each other.  In effe
 - reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource, and
 - writer ceiling $ceil(R)_w$: maximum priority among jobs with _read or write access_ to the resource.
 
-The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock API and a pre-compilation pass. As the API, a #box[`read_lock(Fn(&T)->R)`] method should be provided, which should call the pre-existing `lock` API---with the ceiling set to $ceil(R)_r$---and pass a shared, immutable reference to the underlying data structure as the closure argument. Then, during pre-compilation `rw-pass` should:
+The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_r$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
+
+During pre-compilation `rw-pass` should:
 
 - identify all jobs with access to each resource $R$ and compute $ceil(R)_w$ correspondingly, and
 - transform all DSL read accesses to write accesses to conform to the conventional model.
 
-The main DSL compilation pass /*`core-pass`*/ takes as input the DSL with knowledge of all write accesses to shared resources. Then, the $pi(J)$ of any job $J$ with shared access to the resource $R$ is computed.
+The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all write accesses to shared resources. Then, the preemption level $pi(J)$ is computed of/*for or based on*/ any job $J$ with shared access to the resource $R$.
 The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
-In this way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
+This way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
-At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
+//At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
 /*
 == Implementation sketch
