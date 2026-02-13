@@ -6,6 +6,7 @@
 // Local overrides
 #set figure(placement: top)
 #show "readers-writer": "readers\u{2011}writer"
+#show "readers-write": "readers\u{2011}write"
 #show "single-processor": "single\u{2011}processor"
 #show "compiler-verified": "compiler\u{2011}verified"
 #show "RISC-V": "RISC\u{2011}V"
