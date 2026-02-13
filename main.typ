@@ -68,15 +68,15 @@
 // binary semaphores, based on a simplified model.
 The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension#todo[improvement?] to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution.
 
-The original theory for SRP@baker1990srp-1 describes a scheduling policy for a system using multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a binary semaphore, i.e., mutex locks.
+The original theory for SRP@baker1990srp-1 describes a scheduling policy for a system with multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a mutex based on the binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
-When applicable, replacing binary semaphores with readers-writer locks lowers the estimates for blocking time, meaning that when using scheduling tests including worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying or the RM specific utilization factor test @sha1989pcpmode for schedulability.], more systems will pass the test.
+Replacing the binary semaphore with a readers-writer lock lowers the estimate for blocking time, when applicable, meaning that when using scheduling tests including worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying or the RM specific utilization factor test @sha1989pcpmode for schedulability.], more systems will pass the test.
 
-The rationale for the current constrained implementation of RTIC is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability under SRP.
+The rationale for the current constrained implementation of RTIC is that a binary semaphore is sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability under SRP.
 
 // Contributions
 However, in situations where the highest priority contender is not a write, a readers-writer lock would improve the response time of the highest priority reader/*, allowing to expedite higher priority tasks that only need to read the resource*/. Therefore, inclusion of the readers-writer lock in RTIC's supported lock types would extend RTIC's applicability across real-time systems with high-priority readers/* requiring priority-ordered preemption among readers of shared resources*/. //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
-This paper describes a declarative model of SRP-compliant readers-write locks that can be implemented in RTIC at no additional cost, when compared to a binary semaphore. General multi-unit resources are also of interest. However, an overhead-free implementation has not been identified, and is therefore left for future work.
+This paper describes a declarative model of SRP-compliant readers-write locks that can be implemented in RTIC at no additional cost, when compared to a mutex based on a binary semaphore. General multi-unit resources are also of interest. However, an overhead-free implementation has not been identified, and is therefore left for future work.
 
 /* RTAS 2024 FAQ:
  * > The paper should clearly state the research problem, together with
@@ -86,12 +86,12 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Key contributions of this paper are:
-- Proof, that the declarative lock behavior descibed in SRP can be relaxed for readable-writable resources, as it is relaxed for binary semaphore-protected resources as described in @Eriksson2013-rtfm.#footnote({
+- Proof, that the lock behavior described in SRP can be relaxed for readable-writable resources, as it is relaxed for binary semaphore-protected resources as described in @Eriksson2013-rtfm.#footnote({
     set text(hyphenate: true)
     [To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less significance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers locks while keeping the scheduling and resource locking overhead near zero.]
   })
-- Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphores. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-- The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
+- Declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+- The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
 - Description of code generation for readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
