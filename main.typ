@@ -239,13 +239,13 @@ $
 
 where $ceil(R)_0$ is a compile-time known constant.
 
-The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation.
+The key contribution of this paper is to show that with multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation. That is, a relaxation to the SRP defined system ceiling behavior can be made when a lock is taken on a readable-writable resource. /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/ A formalization and a proof of the statements follows:
 
-*Proof, that for reader or write lock on $R$, the system ceiling can be raised to a compile-time known constant while staying SRP compliant* #valhe[!!! This must be laid out in a better way. Now it seems that the proof starts after this bolded part, but instead, the *theorem* starts after it, and the actual proof follows the theorem.]
+*Theorem*
 
-Assuming @eq:resource-ceiling and $pi = p$, when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP. _This means that no extra overhead is introduced to RTIC when implementing the readers-writer locks, as the readers-writer lock compiles similarly to mutex locks._#valhe[The last part is not part of the theorem but a corollary.]
+Assuming @eq:resource-ceiling and $pi = p$, /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP.
 
-Formally, SRP compliance is maintained when:
+                                            Formally,*/ SRP compliance is maintained when:
 
 + a read-lock of resource $R$ is taken, if the system ceiling $macron(Pi)$ is changed to
   $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_r) $<eq:rw-lock-ceil-r>
