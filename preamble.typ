@@ -9,7 +9,7 @@
     return
   }
 
-  set text(size: 8pt)
+  set text(size: 8pt, hyphenate: true, lang: "en")
   set par(justify: false)
   dashy.todo(..it)
 }
