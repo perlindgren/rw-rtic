@@ -68,7 +68,7 @@
 // binary semaphores, based on a simplified model.
 The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension#todo[improvement?] to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution.
 
-The original theory for SRP@baker1990srp-1 describes a scheduling policy for a system using multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a binary semaphore.
+The original theory for SRP@baker1990srp-1 describes a scheduling policy for a system using multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a binary semaphore, i.e., mutex locks.
 // The question then: why does RTIC only implement binary semaphores.
 When applicable, replacing binary semaphores with readers-writer locks lowers the estimates for blocking time, meaning that when using scheduling tests including worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying or the RM specific utilization factor test @sha1989pcpmode for schedulability.], more systems will pass the test.
 
@@ -86,11 +86,11 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Key contributions of this paper are:
-- Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.#footnote({
+- Proof, that the declarative lock behavior descibed in SRP can be relaxed for readable-writable resources, as it is relaxed for binary semaphore-protected resources as described in @Eriksson2013-rtfm.#footnote({
     set text(hyphenate: true)
     [To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less significance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers locks while keeping the scheduling and resource locking overhead near zero.]
   })
-- Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+- Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphores. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
 - Description of code generation for readers-writer resources in RTIC.
