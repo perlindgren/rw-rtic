@@ -4,5 +4,32 @@
         "NVIC",
         "RTIC"
     ],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.enabled": true,
+    "cSpell.words": [
+        "ECRTS",
+        "heksa",
+        "RTAS",
+        "schedulability"
+    ],
+    "cSpell.ignoreRegExpList": [
+        /* Ignore typst citations
+         *
+         * Anything that starts with '@' until the first space. */
+        "/@[^\\s]*/g",
+        /* Ignore typst labels */
+        "<[^>\\s]+>",
+        /* Ignore multiline code blocks */
+        "^\\s*```[\\s\\S]*?^\\s*```",
+        /* Ignore short code blocks */
+        "`[\\s\\S]*`",
+        /* Ignore comments */
+        "CStyleComment",
+        /* Ignore typst show & let statements */
+        "^(#show:|#let\\s)[\\s\\S]*?(?:\\n\\s*\\n|$)",
+        /* Ignore basic typst keywords starting with '#' */
+        "#[a-zA-Z_][a-zA-Z0-9_-]*",
+        /* Ignore basic typst keywords of the form '#*[]' */
+        "#[a-zA-Z_][a-zA-Z0-9_-]*\\[",
+    ],
 }
