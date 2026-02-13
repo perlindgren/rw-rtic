@@ -123,23 +123,15 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
 
 Rust's alias rules coincide with the semantics of the readers-writer lock, which means that in a Rust program, shared references can be safely granted to readers, while mutable references can be granted to writers. Both kinds of references should be scoped to match the duration of the lock.
 
-== RTIC, RTIC v2, RTIC eVo / MRTIC
+== RTIC//, RTIC v2, RTIC eVo / MRTIC
 
-=== The RTIC framework
+The RTIC framework is a Rust-first, free-and-open-source, real-time framework, rooted in research on modeling and implementation of (hard) real-time systems. Over the last decade, the first two major versions of RTIC---cortex-m-rtic and RTIC v2---have gained wide adoption with a combined download count of more than a million on crates.io.
+For the developer, RTIC provides a declarative, SRP-compliant, tasks-and-resources model as a thin, integrated DSL in the form of attributes applied on _items_#footnote[@rust-ref[[items]]] in Rust code. RTIC also provides facilities for compile time analysis, code generation, and the zero-cost abstractions for implementing the concurrency model.
 
-#heksa(position: "inline")[Download count here.]
-
-- Declarative job/resource model in Rust
-- Compile time analysis and code generation
-- Zero Cost abstractions for implementing the concurrency model
-
-=== RTIC Evolution
-
-The RTIC framework is a Rust-first open source development rooted in research on modelling and implementation of (hard) real-time systems. Over the last decade RTIC has reached wide adoption (with a million downloads). However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
-
-RTIC-eVo provides a set of compilation passes, gradually lowering the Domain Specific Language (DSL) model towards a plain Rust executable (thus RTIC can be seen as an executable model). The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.
-
-In @sec:rw-pass, we will leverage this modularity to sketch the implementation of readers-writer resources in RTIC-eVo.
+Supplemental to the mainline RTIC, a research prototype@mrtic2025 of the framework has been developed to study---in a modular way---implementations of features including syntax extensions and extended source code analysis.
+//However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
+The research prototype /*RTIC-eVo*/ provides a set of compilation passes that gradually lower the /*Domain Specific Language*/ DSL-augmented source artifact towards a plain Rust implementation, and then further into an executable/* (thus RTIC can be seen as an executable model)*/. /*The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target-specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.*/
+In @sec:rw-pass, the modular research prototype is leveraged to sketch out the implementation of readers-writer resources/* in RTIC-eVo*/.
 
 = Baseline model (SRP) /* "Existing theory */
 
