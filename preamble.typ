@@ -10,6 +10,7 @@
   }
 
   set text(size: 8pt)
+  set par(justify: false)
   dashy.todo(..it)
 }
 
