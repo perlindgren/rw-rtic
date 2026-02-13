@@ -17,16 +17,9 @@
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. In the paper, we review the theory, and lay out the static analysis#heksa[What is meant by 'static analysis'?] and code generation implementations in RTIC for the ARM Cortex-M and RISC-V architectures. // Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS]
+    In this paper we explore multi-unit resources that model readers-writer locks in the context of SRP and Rust aliasing invariants. We show that readers-writer resources can be implemented in RTIC at zero cost, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. In the paper, we review the theory/* and lay out the static analysis#heksa[What is meant by 'static analysis'?]*/ and code generation implementations in RTIC for the ARM Cortex-M and RISC-V architectures. // Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS]
   ],
   authors: (
-    (
-      name: "Anonymous Authors for review",
-      department: [Anonymous],
-      organization: [Anonymous],
-      location: [Anonymous],
-      email: "anonymous@example.com",
-    ),
     (
       name: "Anonymous Authors for review",
       department: [Anonymous],
@@ -74,7 +67,7 @@
 The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution. The original theory@baker1990srp-1 also describes#valhe[update preceding] a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
 
 // The question then: why does RTIC only implement binary semaphores.
-The rationale for the constrained implementation is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability#valhe[preceding applies to SRP but not to necessarily to other policies].
+The rationale for the constrained implementation is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability.#valhe[preceding applies to SRP but not to necessarily to other policies]
 
 // Contributions
 However, in situations where the highest priority contender is not a write, a readers-writer lock improves the response time of the highest priority reader/*, allowing to expedite higher priority tasks that only need to read the resource*/. Extending RTIC's supported lock types to include readers-writer locks extends RTIC's applicability across static-priority real-time systems requiring priority-ordered preemption among readers of shared resources. //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
@@ -86,9 +79,9 @@ In this paper, we describe an extension of the declarative, "RTIC restricted mod
 #box[
   Key contributions of this paper are:
   - Proof that with multi-unit resources of the readers-writer type, a relaxation can be made to the SRP-described behavior of the system ceiling.
-  - Implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore, allowed by said relaxation. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+  - Declarative model for a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore, allowed by said relaxation. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
   - The observation that said relaxation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
-  - Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]
+  //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
   - Description of code generation for readers-writer resources in RTIC.
   //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 ]
@@ -199,9 +192,11 @@ Depending on the MCU, interrupts can be masked either using the `BASEPRI` regist
 
 == RISC-V
 
-The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For #box[per-interrupt] priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with, e.g., `mintthresh`.~@lindgren2023hw-support
+The base RISC-V ISA@riscv-unprivileged-spec does not directly require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this domain-specific mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register `mintthresh` that can be used to filter interrupts by preemption level. For #box[per-interrupt] priority and preemption level controls, the CLIC defines a register `clicintctl`. On RISC-V, priority is used to determine which interrupt handler is dispatched first when multiple lines are pended, and preemption level is used to determine preemptability with, e.g., `mintthresh`.~@lindgren2023hw-support#heksa[RTIC can be emulated on any RISC-V (SLINT)]
 
+/*
 = Example of determining the resource ceilings from @baker1990srp-1
+#heksa[Left for ECRTS]
 
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the maximum resource needs as specified in @tab:example-needs.
 
@@ -231,7 +226,7 @@ Using @tab:example-needs, it can be determined which is the highest preemption l
 ))<tab:example-ceilings>
 
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
-
+*/
 
 = SRP compliant readers-writer lock<sect:proof>
 
@@ -384,9 +379,11 @@ proving @eq:rw-lock-ceil-w.
 
 #todo(position: "inline")[Review the section below]
 
-= Improved schedulability using readers-write locks
+= Improved response time of high-priority #box[readers]// using readers-write locks
 
-Implementing readers-writers locks improves schedulability when the implementation introduces no overhead.
+#valhe(position: "inline")[Replace with a section describing how the worst-case analysis rule can be relaxed.]
+/*
+Implementing readers-writers locks improves schedulability when the implementation introduces no overhead.#valhe[Incorrect. Update.]
 
 #todo[Figures have incorrect arrival label. A $t_1$ should be $t_5$.]
 @fig:example[Figure] shows an example system with some shared single-unit resource $R$ between the jobs $J_1,..J_5$ with priorities $1,..5$ respectively. Tasks $J_1, J_4$ and $J_5$ are only reading the shared  while jobs $J_3$ and $J_4$ writes the resource. Under the single-unit model, with each lock, the system ceiling is raised to $ceil(R)_0 = 5$ after each lock operation on the read-write resource (the maximum priority of any job accessing the shared resource, $5$ in this case). Arrows in the figure indicate the arrival of requests for job execution.
@@ -413,6 +410,7 @@ Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blockin
   ) <fig:example>
 
 ]
+
 === Behavior difference between mutex locks and readers-writers locks
 
 @fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$; the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
@@ -424,7 +422,7 @@ When $J_1$ claims the shared resource for read access, the system ceiling raised
 Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the readers-writer lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
 
 When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
-
+*/
 
 = Readers-writer lock implementation in #box[RTIC-eVo] <sec:rw-pass>
 
@@ -467,18 +465,21 @@ The `rw-pass` will then perform the following steps:
 
 In this way, given a valid input model, the `rw-pass` will lower the DSL into a valid `core-pass` model.
 
+/*
 = Cool use cases
+#heksa[Left for ECRTs.]
 - Update set point in low-priority. Execute read algorithm / motor control in high priority.
+*/
 
 = Future work
 
-For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, as a count of remaining resources would need to be kept. The viability of general multi-resource support for RTIC is left for future work.
+#todo(position: "inline")[Future work: actual code]
 
+For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. Support for general multi-unit resources would mean additional code in the locking functions, as a count of remaining resources would need to be kept. The viability of general multi-resource support for RTIC is left for future work.#valhe[Unify with what is said previously about multi-unit.]
 
 = Conclusion
 
-We have shown that SRP compliant readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.
-
+We have shown that SRP compliant readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.#todo[Update to reflect key contributions.]
 
 
 //  table(
