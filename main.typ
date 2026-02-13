@@ -6,7 +6,11 @@
 // Local overrides
 #set figure(placement: top)
 #show "readers-writer": "readers\u{2011}writer"
+#show "single-processor": "single\u{2011}processor"
 #show "compiler-verified": "compiler\u{2011}verified"
+#show "RISC-V": "RISC\u{2011}V"
+#show "Cortex-v7m": "Cortex\u{2011}v7m"
+#show "Cortex-M": "Cortex\u{2011}M"
 
 #show: ieee.with(
   title: [Work in Progress: Zero Cost Readers-Writer Locks for the RTIC Framework],
