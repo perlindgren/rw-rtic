@@ -75,7 +75,7 @@ The rationale for the current constrained implementation of RTIC is that binary 
 
 // Contributions
 However, in situations where the highest priority contender is not a write, a readers-writer lock would improve the response time of the highest priority reader/*, allowing to expedite higher priority tasks that only need to read the resource*/. Therefore, inclusion of the readers-writer lock in RTIC's supported lock types would extend RTIC's applicability across real-time systems with high-priority readers/* requiring priority-ordered preemption among readers of shared resources*/. //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
-This paper describes a declarative model of SRP-compliant readers-write locks that can be implemented in RTIC at no additional cost, when compared to a binary semaphore. General multi-unit resources are also of interest. However, an overhead-free implementation has not yet been identified, and is therefore left for future work.#valhe[Revisit]
+This paper describes a declarative model of SRP-compliant readers-write locks that can be implemented in RTIC at no additional cost, when compared to a binary semaphore. General multi-unit resources are also of interest. However, an overhead-free implementation has not been identified, and is therefore left for future work.
 
 /* RTAS 2024 FAQ:
  * > The paper should clearly state the research problem, together with
@@ -471,7 +471,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 #todo(position: "inline")[Future work: actual code]
 
-For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. An overhead-free implementation has not yet been identified, and the viability of general multi-resource support for RTIC is left for future work.
+For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left for future work.
 
 = Conclusion
 
