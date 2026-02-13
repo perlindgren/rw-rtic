@@ -14,7 +14,7 @@
 #show "Cortex-M": "Cortex\u{2011}M"
 
 #show: ieee.with(
-  title: [Work in Progress: Zero Cost Readers-Writer Locks for the RTIC Framework],
+  title: [Work in Progress: Zero-cost Readers-Writer Locks for the RTIC Framework],
   abstract: [
     The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
