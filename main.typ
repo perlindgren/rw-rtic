@@ -122,7 +122,7 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
 )<lst:embedded-io-read>
 */
 
-Rust's alias rules coincide with the semantics of the readers-writer lock, which means that in a Rust program, shared references can be safely granted to readers, while mutable references can be granted to writers. Both kinds of references should be scoped to match the duration of the lock.
+Rust's alias rules coincide with the semantics of readers-writer locks. In other words, the interfaces of the lock may grant shared references to readers, while mutable references can be granted to writers, all the while conforming to Rust's notion of safety. Both kinds of references should be scoped to match the duration of the lock.
 
 == RTIC//, RTIC v2, RTIC eVo / MRTIC
 
@@ -167,7 +167,7 @@ where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the t
 
 Readers-writer resources are a special case of multi-unit resources. In the SRP context, they can be modeled as an abstract resource with a count equaling the number of jobs accessing the resource, and writers consuming all units of the resource, while readers consume only one unit. This allows multiple readers but only one writer at a time.
 
-Generally, an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single mutable reference (`&mut T`) at any time.
+Generally, an infinite number of readers is allowed, but only a single write at any time. This model coincides with the Rust aliasing model, which allows for any number of immutable references (`&T`), but only a single #box[mutable reference (`&mut T`)] at any time.
 
 = RTIC restricted model
 
