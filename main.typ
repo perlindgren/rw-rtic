@@ -86,7 +86,7 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 
 #box[
   Key contributions of this paper are:
-  - Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.#footnote[To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less signifacance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers while keeping the scheduling and resource locking overhead near zero.]
+  - Proof, that in an SRP implementing system, there is no need to keep count of the availability of a a multi-unit resource if it's of the readable-writable type.#footnote[To the best of the authors' knowledge, there is no other implementation of SRP that uses this observation, e.g., @santiprabhob1991-ada. The observation has less signifacance in the context of SRP implementations in general, but it enables the RTIC implementation of readers-writers locks while keeping the scheduling and resource locking overhead near zero.]
   - Declarative model for implementation of a readers-writer lock in RTIC with no additional overhead when compared to binary semaphore. //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
   - The observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model.
   //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
