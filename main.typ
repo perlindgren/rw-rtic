@@ -171,7 +171,7 @@ Generally, an infinite number of readers is allowed, but only a single write at 
 
 = RTIC restricted model
 
-RTIC compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
+RTIC compiles the static priority, programmer-defined jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. The lock closures in the code are compiled into instructions that update the system ceiling to a value determined by the compiler,and restore it upon unlock. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
 
 In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
