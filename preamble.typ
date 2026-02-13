@@ -10,7 +10,8 @@
   }
 
   set text(size: 8pt, hyphenate: true, lang: "en")
-  set par(justify: false)
+  // `par(justify: false)` cannot be used---breaks paragraphs
+  //set par(justify: false)
   dashy.todo(..it)
 }
 
