@@ -68,6 +68,8 @@
 The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution. The original theory@baker1990srp-1 also describes#valhe[update preceding] a mathematical model of multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements the first of these.
 
 // The question then: why does RTIC only implement binary semaphores.
+When applicable, replacing mutex locks with readers-writer locks lowers the estimates for blocking time, meaning that when using worst-case response time based scheduling tests inluding worst-case blocking factors#footnote[E.g., the recurrent worst-case response time test~@audsley1993-applying for schedulability.], more systems will pass the test.
+
 The rationale for the constrained implementation is that binary semaphores are sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides optimal schedulability.#valhe[preceding applies to SRP but not to necessarily to other policies]
 
 // Contributions
@@ -378,10 +380,9 @@ $
 $
 proving @eq:rw-lock-ceil-w.
 
-= Improved response time of high-priority #box[readers]// using readers-write locks
-
-#valhe(position: "inline")[Replace with a section describing how the worst-case analysis rule can be relaxed.]
 /*
+= Some title here
+
 Implementing readers-writers locks improves schedulability when the implementation introduces no overhead.#valhe[Incorrect. Update.]
 
 #todo[Figures have incorrect arrival label. A $t_1$ should be $t_5$.]
