@@ -13,6 +13,7 @@
 #show "Cortex-v7m": "Cortex\u{2011}v7m"
 #show "Cortex-M": "Cortex\u{2011}M"
 #show "interrupt-specific": "interrupt\u{2011}specific"
+#show "side-effectful": "side\u{2011}effectful"
 
 #show: ieee.with(
   title: [Work in Progress: Zero-cost Readers-Writer Locks for the RTIC Framework],
