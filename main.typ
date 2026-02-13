@@ -491,7 +491,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 #todo(position: "inline")[Future work: actual code]
 
-For general multi-unit resources, the new system ceiling value is different for each number of remaining resouces. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left for future work.
+For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left for future work.
 
 = Conclusion
 
