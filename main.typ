@@ -440,7 +440,7 @@ The backend for the `rw-pass` will introduce a new `read_lock(Fn(&T)->R)` API, w
 
 In this way, no additional target specific code generation is required, as the target specific `lock` implementation will be reused.
 
-Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+Notice however, that the `core-pass` will generate write access code for resources marked as reader only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ takes all accesses into account. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.#todo[Mention this in the future work section]
 
 At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
