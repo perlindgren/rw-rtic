@@ -449,10 +449,10 @@ The protocol bindings and necessary analysis can be provided by a module ("`rw-p
 
 During pre-compilation `rw-pass` should:
 
-- identify all jobs with access to each resource $R$, compute $ceil(R)_r$ and $ceil(R)_w$ according to their definition, and
-- transform all DSL read accesses to binary-semaphore-based locks to conform to the conventional model.
+- identify all jobs with write-access to each resource $R$, compute $ceil(R)_r$ according to its definition, and
+- transform all DSL read accesses to binary-semaphore-based locks with ceiling set to $ceil(R)_r$.
 
-The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all shared (write) accesses to shared resources. Then, the preemption level is computed based on all jobs $J$ with shared access to the resource $R$.
+The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all accesses to shared resources. /*Then, the $ceil(R)_w$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
 The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
 This way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
