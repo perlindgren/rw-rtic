@@ -31,9 +31,9 @@
 #show: ieee.with(
   title: [Work in Progress: Efficient Readers-Writer Locks for the RTIC Framework],
   abstract: [
-    The RTIC framework provides an executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
+    The RTIC framework provides a hardware-accelerated, executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
 
-    We review the theoretical foundations of readers-writer locks in the context of SRP to show that they can be implemented in RTIC at zero cost when compared to existing binary-semaphore-based locks, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. We provide declarative model for the implementation of code generation for RTIC, compatible with the ARM Cortex-M and RISC-V architectures. /* Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS] */
+    We review the theoretical foundations of readers-writer locks in the context of SRP to show that they can be implemented in RTIC at zero cost when compared to its existing binary-semaphore-based locks, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. We provide a declarative model for the implementation of code generation in RTIC, compatible with the ARM Cortex-M and RISC-V architectures. /* Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS] */
   ],
   authors: (
     (
@@ -119,7 +119,7 @@ PCP describes a locking protocol for binary semaphores, for which priority inver
     #text(rr.pos().map(r => [[#r]]).join(", "))]
 ]
 
-The Rust rules regarding _place_ and _move_ expressions#rustref([expr.place-value.value-expr-kinds], [expr.move]), and _pointer_#rustref([type.pointer.reference]) types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_ and _raw pointer dereferences_#rustref([interior-mut], [type.pointer.raw.safety]). To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs). It should be carefully noted that certain hardware operations such as side-effectful reads from hardware-internal buffers should be considered writes from a software-and-concurrency point of view, and should be modelled as such in Rust (cf. `Read` trait in embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
+The Rust rules regarding _place_ and _move_ expressions#rustref([expr.place-value.value-expr-kinds], [expr.move]), and _pointer_#rustref([type.pointer.reference]) types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_ and _raw pointer dereferences_#rustref([interior-mut], [type.pointer.raw.safety]). To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs). It should be carefully noted that certain hardware operations such as side-effectful reads from hardware buffers should be considered writes from a #box[software~and~concurrency] point of view, and should be modelled as such in Rust (cf. `Read` trait in embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
 
 /*
 It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library, presented in @lst:embedded-io-read.
@@ -425,7 +425,7 @@ Implementing readers-writers locks improves schedulability when the implementati
 
 Filled color indicates the job execution. The bold black line indicates the current system ceiling $macron(Pi)$. A closed lock symbol indicates a lock being taken, and an open lock symbol indicates a lock being released. Hatched color indicates a job being blocked, and a cross-hatched color indicates the blocking is due to a higher priority job.#todo[Needs to be updated.]
 
-Notice under SRP jobs may only be blocked from being dispatched; once executing, they run to completion free of blocking.
+Notice under SRP jobs may only be blocked from being dispatched; once executing, they run-to-completion free of blocking.
 
 Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blocking due to the locks held by jobs $J_1$ and $J_3$.
 
