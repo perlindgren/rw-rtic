@@ -182,17 +182,17 @@ Readers-writer resources are a special case of multi-unit resources. In the cont
 
 RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. Lock closures defined in user code are automatically wrapped with instructions that stack and update the system ceiling using predefined values. The targets supported by RTIC must support prioritized interrupts and interrupt masking. Interrupt masking is used to create a hardware implementation of the SRP-defined system ceiling.
 
-In RTIC so far, only single-unit resources have been allowed, as with them, the resource ceiling can only be either zero or a single, predefined number for each resource. Since the number is known at compile time, RTIC can be used to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
+In RTIC so far, only single-unit resources have been allowed, as with them, the resource ceiling can only be either zero or a single, predefined number for each resource. Since the number is known at compile time, RTIC can be used to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. /*The means of disabling the appropriate interrupts depend on the implementation target.*/
 
-Formally, in RTIC, preemption level equals priority, $pi = p$, and the resource ceiling is defined as
+Formally, in RTIC, preemption level equals priority, #box[$pi = p$], and the resource ceiling is defined as
 
 $
   ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
 $<eq:resource-ceiling>
 
-where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed due to hardware running the jobs in preemptive priority order, making it part of the effective system ceiling.~@Eriksson2013-rtfm
+where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed, as hardware runs the jobs in preemptive priority order, making $p(J_"cur")$ part of the effective system ceiling.~@Eriksson2013-rtfm
 
-With this set-up and using only single-unit resources, HW implements SRP compliant scheduling, when each lock operation on $R$ raises the system ceiling to
+With this set-up, and using only single-unit resources, HW implements SRP compliant scheduling, when each lock operation on $R$ raises the system ceiling to
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_0)
 $<eq:rtic-new-ceiling>
@@ -246,7 +246,7 @@ When a resource $R$ is locked, the system ceiling is raised to the maximum of th
 
 = SRP compliant readers-writer lock<sect:proof>
 
-As already discussed, the current version of RTIC uses only single-unit resources. With multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation---just like in @eq:rtic-new-ceiling, but with a distinction of whether the lock is a read or a write lock. /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/ A formalization and a proof of the statements follows:
+The current version of RTIC uses only single-unit resources. With multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation---just like in @eq:rtic-new-ceiling, but with a distinction of whether the lock is a read or a write lock. /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/ A formalization and a proof of the statements follows:
 
 *Theorem*
 
