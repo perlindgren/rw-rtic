@@ -162,8 +162,9 @@ $<eq:srp-resource-ceiling>
 where $J_"cur"$ is the currently executing job, $v_R$ is the current availability of $R$, and $mu_R (J)$ is the maximum need of job $J$ for $R$.
 Assuming the system has resources $R_i, i in {0, ..., n}$,
 $
-  macron(Pi) = max({ceil(R_i) mid(|) i in {0, ..., n}}).
+  macron(Pi) = max{ceil(R_i) mid(|) i in {0, ..., n}}.
 $<eq:system-ceiling>
+Alternatively, the term $pi(J)_"cur"$ can be removed from @eq:srp-resource-ceiling and be included in @eq:system-ceiling.
 
 From the definition, it follows that the system ceiling $macron(Pi)$ changes only when a resource is locked or unlocked or when a new job starts executing. When a lock on $R$ is obtained, the system ceiling is updated to
 
@@ -183,13 +184,13 @@ RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers tha
 
 In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
-Formally, in RTIC, the preemption levels equal the priority: $pi = p$, and the resource ceiling is defined as
+Formally, in RTIC, preemption level equals priority, $pi = p$, and the resource ceiling is defined as
 
 $
   ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
 $<eq:resource-ceiling>
 
-where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed due to hardware running the jobs in preemptive priority order, making it part of the system ceiling.~@Eriksson2013-rtfm
+where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed due to hardware running the jobs in preemptive priority order, making it part of the effective system ceiling.~@Eriksson2013-rtfm
 
 With this set-up and using only single-unit resources, HW implements SRP compliant scheduling, when each lock operation on $R$ raises the system ceiling to
 $
