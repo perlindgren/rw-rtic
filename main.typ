@@ -296,8 +296,8 @@ $<eq:proof2>
 It can be shown that after the locking, the system ceiling is
 $
   macron(Pi) = & max(
-                   { macron(Pi)_"cur"} \
-                                       & union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                   &           & { macron(Pi)_"cur"} \
+                   & union max &                     & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
                  ),
 $<eq:proof2>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
@@ -358,8 +358,8 @@ $
   =>^#ref(<eq:proof3>) macron(Pi)
   = max(
           & { macron(Pi)_"cur"} \
-    union & {pi(J) mid(|) J "has read access to" R_m} \
-    union & {pi(J) mid(|) J "has write access to" R_m}
+    union & {pi(J) mid(|) J "may read" R_m} \
+    union & {pi(J) mid(|) J "may write" R_m}
   )
 $<eq:proof4>*/
 
@@ -368,25 +368,25 @@ $
   macron(Pi)
   = max(
           & { macron(Pi)_"cur"} \
-    union & {pi(J) mid(|) J "has read access to" R_m} \
-    union & {pi(J) mid(|) J "has write access to" R_m}
+    union & {pi(J) mid(|) J "may read" R_m} \
+    union & {pi(J) mid(|) J "may write" R_m}
   ).
 $<eq:proof4>
 
 Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
 $
-  pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}.
+  pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
 #box[
   Continuing from @eq:proof4,
   $
     =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
                                           && { macron(Pi)_"cur"} union {pi(t_"cur")} \
-                                          &&                                         & union {pi(J) mid(|) J "has write access to" R_m}
+                                          &&                                         & union {pi(J) mid(|) J "may write" R_m}
                                         ) \
                                       & =^#move(dy: -0.5em, box(width: 0pt, box(width: 10em, $script(macron(Pi) >= pi(J_"cur"))$))) max(
                                           && { macron(Pi)_"cur"} \
-                                          &&                     & union{pi(J) mid(|) J "has write access to" R_m}
+                                          &&                     & union{pi(J) mid(|) J "may write" R_m}
                                         ) \
                                       & = max(&&macron(Pi)_"cur", ceil(R)_r),
   $
@@ -474,7 +474,7 @@ Each pass first parses the input DSL into an internal abstract syntax tree (AST)
 
 The final pass /*`core-pass`*/ DSL models the system in terms of jobs with local and shared resources. The model is declarative, where each job definition is attributed with the set of shared resources accessible (e.g., `shared = [A, B, C]`, indicates that the job is given access to the shared resources `A`, `B` and `C`).
 
-The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job has read access to resources `A` and `C`.
+The `rw-pass` will extend the DSL to allow indicating reader access. For sake of demonstration, we adopt `read_shared = [A, C]` to indicate that the job may read resources `A` and `C`.
 
 The `rw-pass` will then perform the following steps:
 
