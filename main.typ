@@ -493,11 +493,11 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Future work
 
-Implementation details for the analysis and code generation is left as future work.
-
 With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between accesses. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
 
 For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left as future work.
+
+//Concrete implementation of the necessary analysis and code generation in RTIC is left as future work.
 
 = Conclusion
 
