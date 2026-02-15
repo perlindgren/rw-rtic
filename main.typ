@@ -5,17 +5,28 @@
 
 // Local overrides
 #set figure(placement: top)
+
+// = Hyphenation
+// Avoid breaking very short words & abbreviations
+#show "RISC-V": "RISC\u{2011}V"
+#show "Cortex-M": "Cortex\u{2011}M"
+#show "Cortex-v7m": "Cortex\u{2011}v7m"
+#show "write-lock": "write\u{2011}lock"
+#show "RM-specific": "RM\u{2011}specific"
+
+// Break longer, already-hyphenated words *only* at the hyphen (keep the
+// following commented out).
+/*
+#show "SRP-compliant": "SRP\u{2011}compliant"
 #show "readers-write": "readers\u{2011}write"
 #show "readers-writer": "readers\u{2011}writer"
+#show "side-effectful": "side\u{2011}effectful"
 #show "single-processor": "single\u{2011}processor"
 #show "compiler-verified": "compiler\u{2011}verified"
-#show "RISC-V": "RISC\u{2011}V"
-#show "Cortex-v7m": "Cortex\u{2011}v7m"
-#show "Cortex-M": "Cortex\u{2011}M"
 #show "interrupt-specific": "interrupt\u{2011}specific"
-#show "side-effectful": "side\u{2011}effectful"
 #show "binary-semaphore-based": "binary\u{2011}semaphore\u{2011}based"
-#show "write-lock": "write\u{2011}lock"
+#show "hardware-accelerated": "hardware\u{2011}accelerated"
+*/
 
 #show: ieee.with(
   title: [Work in Progress: Efficient Readers-Writer Locks for the RTIC Framework],
@@ -69,11 +80,11 @@
 
 // Motivation, introduce the problem at hand and in brief: RTIC only implements
 // binary semaphores, based on a simplified model.
-The RTIC framework provides a Rust-language executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution.
+The RTIC framework provides a Rust-language, hardware-accelerated, executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution.
 
 The original theory for SRP/*@baker1990srp-1*/ describes a scheduling policy for a system with multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a mutex based on the binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
-Replacing the binary semaphore with a readers-writer lock, when applicable, lowers the estimate for blocking time. More systems will pass those scheduling tests that include worst-case blocking factors, such as the recurrent worst-case response time test~@audsley1993-applying or the RM-specific utilization factor test @sha1989rwpcp.
+Replacing the binary semaphore with a readers-writer lock, when applicable, lowers the estimate for blocking time. More systems will pass those scheduling tests that include worst-case blocking factors, such as the recurrent worst-case response time test@audsley1993-applying or the RM-specific utilization factor test@sha1989rwpcp.
 
 The rationale for the current constrained implementation of RTIC is that a binary semaphore is sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides similar schedulability to readers-writer locks under SRP.
 
@@ -89,9 +100,9 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Our contributions are:
-- the observation and proof that for each read- and write-lock operation, it is possible to compute such a single, distinct ceiling value at compile time, that SRP compliant resource protection can be implemented in constant time,
+- the observation and proof that for each read- and write-lock operation, it is possible to compute such a single, distinct ceiling value at compile time, that SRP-compliant resource protection can be implemented in constant time,
 - a declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-- the observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
+- the observation that the implementation aligns the SRP-compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
 - a description of target-independent code generation for readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
@@ -192,7 +203,7 @@ $<eq:resource-ceiling>
 
 where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed, as hardware runs the jobs in preemptive priority order, making $p(J_"cur")$ part of the effective system ceiling.~@Eriksson2013-rtfm
 
-With this set-up, and using only single-unit resources, HW implements SRP compliant scheduling, when each lock operation on $R$ raises the system ceiling to
+With this set-up, and using only single-unit resources, HW implements SRP-compliant scheduling, when each lock operation on $R$ raises the system ceiling to
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_0)
 $<eq:rtic-new-ceiling>
@@ -244,7 +255,7 @@ Using @tab:example-needs, it can be determined which is the highest preemption l
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
 */
 
-= SRP compliant readers-writer lock<sect:proof>
+= SRP-compliant readers-writer lock<sect:proof>
 
 The current version of RTIC uses only single-unit resources. With multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation---just like in @eq:rtic-new-ceiling, but with a distinction of whether the lock is a read or a write lock. /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/ A formalization and a proof of the statements follows:
 
@@ -502,7 +513,7 @@ For general multi-unit resources, the new system ceiling value is different for 
 
 = Conclusion
 
-We have shown that for each read or write lock operation, such a single, distinct ceiling value can be computed at compile time, that SRP compliant resource protection can be implemented at a similar cost to the corresponding single-unit/mutex lock./* A readers-write lock---based on this observation---can be implemented in RTIC at a similar cost to the corresponding single-unit/mutex lock.*/ The declarative model can be enforced using Rust ownership rules and the readers-write lock can be implemented in RTIC without the need to change the target-specific implementation.
+We have shown that for each read or write lock operation, such a single, distinct ceiling value can be computed at compile time, that SRP-compliant resource protection can be implemented at a similar cost to the corresponding single-unit/mutex lock./* A readers-write lock---based on this observation---can be implemented in RTIC at a similar cost to the corresponding single-unit/mutex lock.*/ The declarative model can be enforced using Rust ownership rules and the readers-write lock can be implemented in RTIC without the need to change the target-specific implementation.
 
 
 //  table(
