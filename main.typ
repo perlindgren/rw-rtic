@@ -154,7 +154,7 @@ $
 
 For static priority assignments, $pi(J) = p(J)$.
 
-The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or higher than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, resource ceiling is any function that satisfies
+The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or higher than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, the resource ceiling can be any function that satisfies
 $
   ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
 $<eq:srp-resource-ceiling>
@@ -164,7 +164,7 @@ Assuming the system has resources $R_i, i in {0, ..., n}$,
 $
   macron(Pi) = max{ceil(R_i) mid(|) i in {0, ..., n}}.
 $<eq:system-ceiling>
-Alternatively, the term $pi(J)_"cur"$ can be removed from @eq:srp-resource-ceiling and be included in @eq:system-ceiling.
+Alternatively, the term $pi(J)_"cur"$ can be removed from @eq:srp-resource-ceiling and included in @eq:system-ceiling.
 
 From the definition, it follows that the system ceiling $macron(Pi)$ changes only when a resource is locked or unlocked or when a new job starts executing. When a lock on $R$ is obtained, the system ceiling is updated to
 
@@ -174,9 +174,9 @@ $<eq:new-ceiling>
 
 where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the remaining amount of unlocked $R$.
 
-== Readers-writer Resources
+== Readers-writer resources
 
-Readers-writer resources are a special case of multi-unit resources. In the SRP context, they can be modeled as an abstract resource with a count equaling the number of jobs accessing the resource, and writers consuming all units of the resource, while readers consume only one unit. This allows multiple readers but only one writer at a time. Generally, an infinite number of readers is allowed, but only a single write at any time.
+Readers-writer resources are a special case of multi-unit resources. In the context of SRP, they can be modeled as abstract resources with a count equaling the number of jobs accessing the resource, where writers consume all units of the resource, while readers consume only one unit. This allows multiple readers but only one writer at a time. Generally, an infinite number of readers is allowed, but only a single writer at any one time.
 
 = RTIC restricted model
 
