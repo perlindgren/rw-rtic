@@ -100,7 +100,7 @@ Our contributions are:
 
 == SRP-based scheduling
 
-PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by execution time of the longest critical section of a lower-priority job.~@sha1987pcp PCP has been extended to apply to readers-writer resources@sha1989rwpcp, and multi-processor systems @rajkumar1988multi. SRP extends single-core PCP and allows the use of both static and dynamic priority assignments, and multi-unit resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-core.]*/ PCP and SRP-based methods remain of interest for hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis.~@baker1991srp-journal@buttazzo2011-hard
+PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by the execution time of the longest critical section of a lower-priority job.~@sha1987pcp PCP has been extended to apply to readers-writer resources by Sha et al.@sha1989rwpcp, with results similar to those presented for SRP in the current paper. PCP has been extended to multiprocessor systems@rajkumar1988multi. SRP extends single-processor PCP and allows the use of both static and dynamic priority assignments, and multi-unit resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/ PCP and SRP-based methods remain of interest for hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis.~@baker1991srp-journal@buttazzo2011-hard
 
 == Rust aliasing guarantees
 
@@ -141,11 +141,11 @@ In @sec:rw-pass, the modular research prototype is leveraged to sketch out the i
 
 = Baseline model (SRP) /* "Existing theory */
 
-SRP assumes a fixed number of run-to-completion jobs running on a single core, sharing a fixed number of multi-unit resources. The maximum resource needs are assumed to be known _a priori_. Jobs are assumed to request anything from zero to the full amount of a multi-unit resource.
+SRP assumes a fixed number of run-to-completion jobs running on a single processor, sharing a fixed number of multi-unit resources. The maximum resource needs are assumed to be known _a priori_. Jobs are assumed to request anything from zero to the full amount of a multi-unit resource.
 
 In SRP, a job#footnote({
   set text(hyphenate: true)
-  [The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, ass with static priority jobs, this distinction is not necessary.]
+  [The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, as with static priority jobs, this distinction is not necessary.]
 }) $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
 
 $
@@ -159,7 +159,7 @@ $
   ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
 $<eq:srp-resource-ceiling>
 
-where $J_"cur"$ is the curently executing job, $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$.
+where $J_"cur"$ is the currently executing job, $v_R$ is the current availability of $R$, and $mu_R (J)$ is the maximum need of job $J$ for $R$.
 Assuming the system has resources $R_i, i in {0, ..., n}$,
 $
   macron(Pi) = max({ceil(R_i) mid(|) i in {0, ..., n}}).
@@ -179,7 +179,7 @@ Readers-writer resources are a special case of multi-unit resources. In the SRP 
 
 = RTIC restricted model
 
-RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. The lock closures in the code are compiled into instructions that update the system ceiling to a value determined by the compiler, and restore it upon unlock. The targets supported by RTIC must have prioritized interrupts and support for interrupt masking. The interrupt masking is used to create a hardware implementation of the SRP defined system ceiling.
+RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. Lock closures defined in user code are automatically wrapped with instructions that stack and update the system ceiling using predefined values. The targets supported by RTIC must support prioritized interrupts and interrupt masking. Interrupt masking is used to create a hardware implementation of the SRP-defined system ceiling.
 
 In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
