@@ -1,6 +1,6 @@
 // === Heksa's playground ===
 
-#let show-todo = true
+#let show-todo = false
 
 // TODO-notes that can easily be made to vanish with the above boolean
 #import "@preview/dashy-todo:0.1.3" as dashy
