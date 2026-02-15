@@ -295,10 +295,10 @@ $<eq:proof2>
 */
 It can be shown that after the locking, the system ceiling is
 $
-  macron(Pi) = & max(
-                   &           & { macron(Pi)_"cur"} \
-                   & union max &                     & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
-                 ),
+  macron(Pi) = && max(
+                    & { macron(Pi)_"cur"} \
+                    &                     & union max & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                  ),
 $<eq:proof2>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
 
@@ -377,18 +377,19 @@ Assuming the same job does not take several nested read locks, for there to be z
 $
   pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
+#let place-super(x) = move(dy: -0.6em, box(width: 0pt, box(width: 10em, $script(#x)$)))
 #box[
   Continuing from @eq:proof4,
   $
-    =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
-                                          && { macron(Pi)_"cur"} union {pi(t_"cur")} \
-                                          &&                                         & union {pi(J) mid(|) J "may write" R_m}
-                                        ) \
-                                      & =^#move(dy: -0.5em, box(width: 0pt, box(width: 10em, $script(macron(Pi) >= pi(J_"cur"))$))) max(
-                                          && { macron(Pi)_"cur"} \
-                                          &&                     & union{pi(J) mid(|) J "may write" R_m}
-                                        ) \
-                                      & = max(&&macron(Pi)_"cur", ceil(R)_"r"),
+    =>^(#ref(<eq:proof5>)) macron(Pi) & =                                           & max(
+                                                                                        & { macron(Pi)_"cur"} union {pi(t_"cur")} \
+                                                                                        &                                         & union & {pi(J) mid(|) J "may write" R_m}
+                                                                                      ) \
+                                      & =^#place-super($macron(Pi) >= pi(J_"cur")$) & max(
+                                                                                        & { macron(Pi)_"cur"} \
+                                                                                        &                     & union & {pi(J) mid(|) J "may write" R_m}
+                                                                                      ) \
+                                      & =                                           & max(&macron(Pi)_"cur", ceil(R)_"r"),
   $
   which proves @eq:rw-lock-ceil-r.
 ]
@@ -397,8 +398,8 @@ $<eq:proof5>
 
 If the lock was a write-lock, $v'_R_m = 0$. Continuing from~@eq:proof2
 $
-  => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-                = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
+  => macron(Pi) = & max({macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
+                = & max({macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
                 = & max(macron(Pi)_"cur", ceil(R)_"w"),
 $
 proving @eq:rw-lock-ceil-w.
@@ -493,7 +494,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Future work
 
-With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between accesses. However, from a modeling perspective rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between accesses. However, from a modeling perspective, rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
 
 For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left as future work.
 
