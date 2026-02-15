@@ -89,7 +89,7 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Our contributions are:
-- the observation and proof that for each read- and write-lock operation, it is possible to compute such a distinct ceiling value at compile time, that SRP compliant resource protection can be implemented in constant time,
+- the observation and proof that for each read- and write-lock operation, it is possible to compute such a single, distinct ceiling value at compile time, that SRP compliant resource protection can be implemented in constant time,
 - a declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - the observation that the implementation aligns the SRP compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
@@ -200,11 +200,11 @@ and upon unlock---at the end of the lock closure---the old value is restored. In
 
 == ARM Cortex-M
 
-/*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/ On Cortex-M @arm-v6m-ref @arm-v7m-ref @arm-v8m-ref, external interrupts can be controlled and configured with the Nested Vectored Interrupt Controller (NVIC). Registers called `NVIC_IPR` control the priorities of the external interrupts.
+/*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/ On Cortex-M#footnote[ARM Architecture Reference Manuals ARMv6-M, ARMv7-M, ARMv8-M, available: #link("https://developer.arm.com/documentation/")/* @arm-v6m-ref @arm-v7m-ref @arm-v8m-ref*/], external interrupts can be controlled and configured with the Nested Vectored Interrupt Controller (NVIC). Registers called `NVIC_IPR` control the priorities of the external interrupts.
 
 /*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/ The context of a   preempted ISR is pushed to stack and restored automatically by the hardware. An ISR can be preempted safely while it is saving the context, increasing the responsiveness of high priority ISRs.
 
-Depending on the architecture, interrupts can be masked either using the `BASEPRI` register, or if it's not implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The `BASEPRI` register blocks interrupts of lower or equal priority than its value, but it can not block interrupts with maximum possible priority. /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The `NVIC_ISER` and `NVIC_ICER` registers bits enable or disable individual interrupts.
+Depending on the architecture, interrupts can be masked either using the `BASEPRI` register, or if it's not implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The `BASEPRI` register blocks interrupts of lower or equal priority than its set value, but it can not block interrupts with maximum possible priority. /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The `NVIC_ISER` and `NVIC_ICER` registers may be used to enable or disable individual interrupts.
 
 == RISC-V
 
@@ -501,7 +501,7 @@ For general multi-unit resources, the new system ceiling value is different for 
 
 = Conclusion
 
-We have shown that for each read or write lock-operation, a distinct ceiling value can be computed at compile time, and a readers-write lock can be implemented in RTIC at similar cost to the corresponding single-unit/mutex lock. The declarative model can be enforced using Rust ownership rules. The readers-write lock can be implemented as compiler pass in RTIC eVo.
+We have shown that for each read or write lock operation, such a single, distinct ceiling value can be computed at compile time, that SRP compliant resource protection can be implemented at a similar cost to the corresponding single-unit/mutex lock./* A readers-write lock---based on this observation---can be implemented in RTIC at a similar cost to the corresponding single-unit/mutex lock.*/ The declarative model can be enforced using Rust ownership rules and the readers-write lock can be implemented in RTIC without the need to change the target-specific implementation.
 
 
 //  table(
