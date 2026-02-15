@@ -102,7 +102,7 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 Our contributions are:
 - the observation and proof that for each read- and write-lock operation, it is possible to compute such a single, distinct ceiling value at compile time, that SRP-compliant resource protection can be implemented in constant time,
 - a declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-- the observation that the implementation aligns the SRP-compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics.
+- the observation that the implementation aligns the SRP-compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics,
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
 - a description of target-independent code generation for readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
