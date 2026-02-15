@@ -374,22 +374,23 @@ $<eq:proof4>
 
 Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
 $
-  pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}
+  pi(t_"cur") = max{pi(J) mid(|) J "has read access to" R_m}.
 $<eq:proof5>
-Continuing from @eq:proof4,
-$
-  =>^(#ref(<eq:proof5>)) macron(Pi) = max(
-                                                     & { macron(Pi)_"cur"} union {pi(t_"cur")} \
-    union {pi(J) mid(|) J "has write access to" R_m}
-  )\
-  =^(macron(Pi) >= pi(J_"cur")) max(
-    { macron(Pi)_"cur"} \
-    union {pi(J) mid(|) J "has write access to" R_m}
-  ) \
-  = max(macron(Pi)_"cur", ceil(R)_r),
-$
-which proves @eq:rw-lock-ceil-r.
-
+#box[
+  Continuing from @eq:proof4,
+  $
+    =>^(#ref(<eq:proof5>)) macron(Pi) & = max(
+                                          && { macron(Pi)_"cur"} union {pi(t_"cur")} \
+                                          &&                                         & union {pi(J) mid(|) J "has write access to" R_m}
+                                        ) \
+                                      & =^#move(dy: -0.5em, box(width: 0pt, box(width: 10em, $script(macron(Pi) >= pi(J_"cur"))$))) max(
+                                          && { macron(Pi)_"cur"} \
+                                          &&                     & union{pi(J) mid(|) J "has write access to" R_m}
+                                        ) \
+                                      & = max(&&macron(Pi)_"cur", ceil(R)_r),
+  $
+  which proves @eq:rw-lock-ceil-r.
+]
 
 *Proof for @eq:rw-lock-ceil-w (write-lock):*
 
