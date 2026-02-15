@@ -182,7 +182,7 @@ Readers-writer resources are a special case of multi-unit resources. In the SRP 
 
 RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. Lock closures defined in user code are automatically wrapped with instructions that stack and update the system ceiling using predefined values. The targets supported by RTIC must support prioritized interrupts and interrupt masking. Interrupt masking is used to create a hardware implementation of the SRP-defined system ceiling.
 
-In RTIC so far, only single-unit resources have been allowed, as with them, the system ceiling needs to be updated to a single, compile-time known number for each resource. RTIC leverages this to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
+In RTIC so far, only single-unit resources have been allowed, as with them, the resource ceiling can only be either zero or a single, predefined number for each resource. Since the number is known at compile time, RTIC can be used to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. The means of disabling the appropriate interrupts depend on the implementation target.
 
 Formally, in RTIC, preemption level equals priority, $pi = p$, and the resource ceiling is defined as
 
