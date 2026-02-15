@@ -250,18 +250,18 @@ The current version of RTIC uses only single-unit resources. With multi-unit res
 
 *Theorem*
 
-Assuming @eq:resource-ceiling and $pi = p$, /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_r$ for read and $ceil(R)_w$ for write, and the system is still compliant to SRP.
+Assuming @eq:resource-ceiling and $pi = p$, /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_"w"$ for write, and the system is still compliant to SRP.
 
                                             Formally,*/ SRP compliance is maintained when:
 
 + upon taking a read-lock of resource $R$ is taken, the system ceiling $macron(Pi)$ is updated to
-  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_r) $<eq:rw-lock-ceil-r>
+  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"r") $<eq:rw-lock-ceil-r>
 
-  where $ceil(R)_r$ is the highest preemption level of jobs with write-access to $R$, and
+  where $ceil(R)_"r"$ is the highest preemption level of jobs with write-access to $R$, and
 + upon taking a write-lock of resource $R$, the system ceiling $macron(Pi)$ changes to
-  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_w), $<eq:rw-lock-ceil-w>
+  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"w"), $<eq:rw-lock-ceil-w>
 
-  where $ceil(R)_w$ is the highest preemption level of jobs that need $R$.
+  where $ceil(R)_"w"$ is the highest preemption level of jobs that need $R$.
 
 *Proof*
 
@@ -388,7 +388,7 @@ $<eq:proof5>
                                           && { macron(Pi)_"cur"} \
                                           &&                     & union{pi(J) mid(|) J "may write" R_m}
                                         ) \
-                                      & = max(&&macron(Pi)_"cur", ceil(R)_r),
+                                      & = max(&&macron(Pi)_"cur", ceil(R)_"r"),
   $
   which proves @eq:rw-lock-ceil-r.
 ]
@@ -399,7 +399,7 @@ If the lock was a write-lock, $v'_R_m = 0$. Continuing from~@eq:proof2
 $
   => macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
                 = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
-                = & max(macron(Pi)_"cur", ceil(R)_w),
+                = & max(macron(Pi)_"cur", ceil(R)_"w"),
 $
 proving @eq:rw-lock-ceil-w.
 
@@ -438,31 +438,31 @@ Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blockin
 
 @fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$; the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
-Now, with each write lock, the system ceiling is raised to $ceil(R)_w$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_r$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_w = 5$ and $ceil(R)_r = 3$.
+Now, with each write lock, the system ceiling is raised to $ceil(R)_"w"$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_"r"$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_"w" = 5$ and $ceil(R)_"r" = 3$.
 
-When $J_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_r = 3$, allowing job $J_4$ to be directly executed (without being blocked). Similarly, when $J_4$ claims the resource, the system ceiling is raised to $ceil(R)_r = 3$.
+When $J_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_"r" = 3$, allowing job $J_4$ to be directly executed (without being blocked). Similarly, when $J_4$ claims the resource, the system ceiling is raised to $ceil(R)_"r" = 3$.
 
 Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the readers-writer lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
 
-When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_w = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
+When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_"w" = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 */
 
 = Readers-writer lock implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
 
 Read and write accesses need to be treated as distinct from each other.  In effect, two ceilings per resource $R$ are required:
 
-- reader ceiling $ceil(R)_r$: maximum priority among jobs with _write access_ to the resource, and
-- writer ceiling $ceil(R)_w$: maximum priority among jobs with _read or write access_ to the resource.
+- reader ceiling $ceil(R)_"r"$: maximum priority among jobs with _write access_ to the resource, and
+- writer ceiling $ceil(R)_"w"$: maximum priority among jobs with _read or write access_ to the resource.
 
-The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock user API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_r$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
+The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock user API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_"r"$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
 
 During pre-compilation `rw-pass` should:
 
-- identify all jobs with write-access to each resource $R$, compute $ceil(R)_r$ according to its definition, and
-- transform all DSL read accesses to binary-semaphore-based locks with ceiling set to $ceil(R)_r$.
+- identify all jobs with write-access to each resource $R$, compute $ceil(R)_"r"$ according to its definition, and
+- transform all DSL read accesses to binary-semaphore-based locks with ceiling set to $ceil(R)_"r"$.
 
-The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all accesses to shared resources. /*Then, the $ceil(R)_w$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
-The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_w$.
+The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all accesses to shared resources. /*Then, the $ceil(R)_"w"$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
+The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_"w"$.
 This way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
 
 //At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
