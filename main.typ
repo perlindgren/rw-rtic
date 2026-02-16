@@ -175,7 +175,7 @@ Assuming the system has resources $R_i, i in {0, ..., n}$,
 $
   macron(Pi) = max{ceil(R_i) mid(|) i in {0, ..., n}}.
 $<eq:system-ceiling>
-Alternatively, the term $pi(J)_"cur"$ can be removed from @eq:srp-resource-ceiling and included in @eq:system-ceiling.
+Alternatively, the term $pi(J_"cur")$ can be removed from @eq:srp-resource-ceiling and included in @eq:system-ceiling.
 
 From the definition, it follows that the system ceiling $macron(Pi)$ changes only when a resource is locked or unlocked or when a new job starts executing. When a lock on $R$ is obtained, the system ceiling is updated to
 
