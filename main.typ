@@ -384,7 +384,7 @@ $
   ).
 $<eq:proof4>
 
-Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that only read $R_m$ while they were holding a lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
+Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that access $R_m$ while they were holding a read lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
