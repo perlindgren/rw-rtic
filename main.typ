@@ -109,13 +109,14 @@ hardware-accelerated, executable model for concurrent
 applications as a set of static priority, preemptive,
 run-to-completion jobs with shared resources. At run-time,
 the system is scheduled in compliance with Stack Resource
-Policy #box[(SRP)@baker1990srp-1]---an extension to Priority
-Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees
-a number of desirable features for single-processor
-scheduling. Features of SRP include race- and deadlock-free
-execution, bounded, single-context-switch-per-job blocking,
-prevention of multiple priority inversion, and simple,
-efficient, single-shared-stack execution.
+Policy #box[(SRP)~@baker1990srp-1]---an extension to
+Priority Ceiling Protocol (PCP)~#ref(<sha1987pcp>)---which
+guarantees a number of desirable features for
+single-processor scheduling. Features of SRP include race-
+and deadlock-free execution, bounded,
+single-context-switch-per-job blocking, prevention of
+multiple priority inversion, and simple, efficient,
+single-shared-stack execution.
 
 The original theory for SRP/*@baker1990srp-1*/ describes a
 scheduling policy for a system with multi-unit resources
@@ -128,8 +129,8 @@ Replacing the binary semaphore with a readers-writer lock,
 when applicable, lowers the estimate for blocking time. More
 systems will pass those scheduling tests that include
 worst-case blocking factors, such as the recurrent
-worst-case response time test@audsley1993-applying or the
-RM-specific utilization factor test@sha1989rwpcp.
+worst-case response time test~@audsley1993-applying or the
+RM-specific utilization factor test~@sha1989rwpcp.
 
 The rationale for the current constrained implementation of
 RTIC is that a binary semaphore is sufficient to provide
@@ -269,7 +270,7 @@ analysis, code generation, and the zero-cost abstractions
 for implementing the concurrency model.
 
 Supplemental to the mainline RTIC, a research
-prototype@mrtic2025 of the framework has been developed to
+prototype~@mrtic2025 of the framework has been developed to
 study---in a modular way---implementations of features
 including syntax extensions and extended source code
 analysis.
@@ -433,12 +434,12 @@ or disable individual interrupts.
 
 == RISC-V
 
-The base RISC-V ISA@riscv-unprivileged-spec does not require
-a sufficient mechanism for individually configurable
+The base RISC-V ISA~@riscv-unprivileged-spec does not
+require a sufficient mechanism for individually configurable
 preemption levels or threshold-based interrupt filtering.
 Instead, this /*domain-specific */mechanism is typically
 supplied through an interrupt controller specification. For
-instance, the CLIC@riscv-clic-spec defines an adjustable
+instance, the CLIC~@riscv-clic-spec defines an adjustable
 interrupt threshold register (`mintthresh`) that can be used
 to filter interrupts by preemption level. For
 interrupt-specific priority and preemption controls, the
@@ -446,7 +447,7 @@ CLIC defines the `clicintctl` register. On RISC-V, when
 multiple lines are pended, priority is used to determine
 which interrupt handler is to be dispatched first, while
 preemption level is used to control
-preemptability.@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
+preemptability.~@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
 
 /*
 = Example of determining the resource ceilings from @baker1990srp-1
