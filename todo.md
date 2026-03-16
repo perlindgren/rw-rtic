@@ -2,8 +2,6 @@ TODO
 
 - please citations consistently at the end of the sentence
 - Capitalize section headings correctly
-- "may be used to" -> "allow to"  (the registers are intended to do this)
-- Sec.V: v_R_1, ... *,* v_R_n  (add "," after "...")
 - the link in [1] is not accessible
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - p. 2 define DSI

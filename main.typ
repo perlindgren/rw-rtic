@@ -432,8 +432,8 @@ implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The
 priority than its set value, but it can not block interrupts
 with the maximum possible priority.
 /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The
-`NVIC_ISER` and `NVIC_ICER` registers may be used to enable
-or disable individual interrupts.
+`NVIC_ISER` and `NVIC_ICER` registers allow to enable or
+disable individual interrupts.
 
 == RISC-V
 
@@ -524,7 +524,7 @@ Formally,*/ SRP compliance is maintained when:
 *Proof*
 
 Assume the system has resources $R_1, ..., R_n$ and their
-availability is $v_R_1, ... v_R_n$ before taking the lock.
+availability is $v_R_1, ..., v_R_n$ before taking the lock.
 /*Now, by definition @eq:system-ceiling, the system ceiling is
 $
   macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
