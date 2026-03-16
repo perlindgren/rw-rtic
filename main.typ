@@ -63,11 +63,11 @@
       email: "anonymous@example.com",
     ),
     (
-      name: "Anonymous Authors for review",
-      department: [Anonymous],
-      organization: [Anonymous],
-      location: [Anonymous],
-      email: "anonymous@example.com",
+      name: "Henri Lunnikivi",
+      department: [Computing Sciences],
+      organization: [Tampere University],
+      location: [Tampere, Finland],
+      email: "henri.lunnikivi@tuni.fi",
     ),
     (
       name: "Anonymous Authors for review",
