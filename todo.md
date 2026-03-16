@@ -6,14 +6,12 @@ TODO
 - Sec.V: v_R_1, ... *,* v_R_n  (add "," after "...")
 - the link in [1] is not accessible
 - p. 1 consider defining RTIC
-- p. 1 "OSes" -> "operating systems"
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - p. 2 define DSI
 - p. 2 should Eq. (3) define Pi_cur?  If not, consider adding clarification around Eq. (4)
 - p. 2 Sec. III-A - not sure a subsection label is needed here with only one subsection
 - p. 3 consider making footnote 7 a citation instead
 - p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
-- p. "zero R_m after" -> "zero R_m available after" or "zero units of R_m available after"
 
 - Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
 - Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."

@@ -200,8 +200,9 @@ and allows the use of both static and dynamic priority
 assignments, and multi-unit
 resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
 PCP and SRP-based methods remain of interest for hard
-real-time scheduling, as conventional OSes cannot provide
-bounded blocking suitable for real-time schedulability
+real-time scheduling, as conventional operating systems
+cannot provide bounded blocking suitable for real-time
+schedulability
 analysis.~@baker1991srp-journal@buttazzo2011-hard
 
 == Rust aliasing guarantees
@@ -636,11 +637,11 @@ $
 $<eq:proof4>
 
 Assuming the same job does not take several nested read
-locks, for there to be zero $R_m$ after a read lock, the job
-must have preempted all other jobs that access $R_m$ while
-they were holding a read lock on resource $R_m$. For that to
-be possible, the job has to be the highest priority job with
-read access to $R_m$, i.e.,
+locks, for there to be zero units of $R_m$ available after a
+read lock, the job must have preempted all other jobs that
+access $R_m$ while they were holding a read lock on resource
+$R_m$. For that to be possible, the job has to be the
+highest priority job with read access to $R_m$, i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
