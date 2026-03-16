@@ -23,8 +23,6 @@ TODO
 
 - The term "lock closures" would benefit from explanation.
 
-- Address this: Before the presentation of Eq. (5), it seems that there can only be a single unit for each resource.  In Eq. (5), then, are v_R and mu_R(J) both either zero or one?  Or is this the start of the generalization of the existing supported approaches?
-
 - In the theorem, the naming of R_r and R_w initially seems backwards; this could benefit from additional explanation.
 
 - In Sec. VI, clarify if the module rw-pass is a new module that is being presented by this paper or an existing module that can be used.

@@ -332,7 +332,7 @@ current availability of $R$, and $mu_R (J)$ is the maximum
 need of job $J$ for $R$. Assuming the system has resources
 $R_i, i in {0, ..., n}$,
 $
-  macron(Pi) = max{ceil(R_i) mid(|) i in {0, ..., n}}.
+  macron(Pi) = max{ceil(R_i)_v_R mid(|) i in {0, ..., n}}.
 $<eq:system-ceiling>
 Alternatively, the term $pi(J_"cur")$ can be removed from
 @eq:srp-resource-ceiling and included in @eq:system-ceiling.
@@ -387,14 +387,17 @@ Formally, in RTIC, preemption level equals priority,
 #box[$pi = p$], and the resource ceiling is defined as
 
 $
-  ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
+  ceil(R)_v_R = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
 $<eq:resource-ceiling>
 
 where $v_R$ is the current availability of $R$ and
-$mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion
-of $p(J_"cur")$ is not needed, as the hardware runs the jobs
-in preemptive priority order, making $p(J_"cur")$ part of
-the effective system ceiling.~@Eriksson2013-rtfm
+$mu_R (J)$ is the maximum need of job $J$ for $R$. The
+values $v_R$ and $mu_R (J)$ are always zero or one, as the
+current version of RTIC supports only single-unit resources.
+Inclusion of $p(J_"cur")$ is not needed in
+@eq:resource-ceiling, as the hardware runs the jobs in
+preemptive priority order, making $p(J_"cur")$ part of the
+effective system ceiling.~@Eriksson2013-rtfm
 
 With this set-up, and using only single-unit resources, the
 HW implements SRP-compliant scheduling, when each lock
