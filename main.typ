@@ -151,6 +151,7 @@ supported lock types would extend RTIC's applicability
 across real-time systems with high-priority
 readers/* requiring priority-ordered preemption among readers of shared resources*/.
 //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
+
 This paper describes a declarative model of SRP-compliant
 readers-write locks that can be implemented in RTIC at no
 additional cost, when compared to a mutex based on a binary
@@ -427,7 +428,7 @@ either using the `BASEPRI` register, or if it's not
 implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The
 `BASEPRI` register blocks interrupts of lower or equal
 priority than its set value, but it can not block interrupts
-with maximum possible priority.
+with the maximum possible priority.
 /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The
 `NVIC_ISER` and `NVIC_ICER` registers may be used to enable
 or disable individual interrupts.
@@ -444,9 +445,9 @@ interrupt threshold register (`mintthresh`) that can be used
 to filter interrupts by preemption level. For
 interrupt-specific priority and preemption controls, the
 CLIC defines the `clicintctl` register. On RISC-V, when
-multiple lines are pended, priority is used to determine
-which interrupt handler is to be dispatched first, while
-preemption level is used to control
+multiple lines are pending, the priority is used to
+determine which interrupt handler is to be dispatched first,
+while the preemption level is used to control
 preemptability.~@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
 
 /*
@@ -551,8 +552,7 @@ $
                                                             ).
 $<eq:proof2>
 */
-It can be shown that after the locking, the system ceiling
-is
+It can be shown that after locking, the system ceiling is
 $
   macron(Pi) = && max(
                     & { macron(Pi)_"cur"} \

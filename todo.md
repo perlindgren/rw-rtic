@@ -1,17 +1,12 @@
 TODO
 
 - please citations consistently at the end of the sentence
-- Sec.I: This paper describes ... -> put this on a new paragraph
 - Capitalize section headings correctly
 - Sec.IV: ... as *the* hardware runs the jobs ...
 - With this set-up, ...  *the* HW implements ...
 - Sec.IV.A: is pushed to *the* stack ...  of high*er* priority ISRs.
-- with *the* maximum possible priority.
 - "may be used to" -> "allow to"  (the registers are intended to do this)
-- Sec.IV.B: ... are pend*ed->ing*, *the* priority is used ...
-- while *the* preemption level ..
 - Sec.V: v_R_1, ... *,* v_R_n  (add "," after "...")
-- It can be shown that after the locking, ... -> remove "the"
 - the link in [1] is not accessible
 - p. 1 consider defining RTIC
 - p. 1 "readers-write locks" -> "readers-writer locks"
