@@ -2,14 +2,10 @@ TODO
 
 - please citations consistently at the end of the sentence
 - Capitalize section headings correctly
-- Sec.IV: ... as *the* hardware runs the jobs ...
-- With this set-up, ...  *the* HW implements ...
-- Sec.IV.A: is pushed to *the* stack ...  of high*er* priority ISRs.
 - "may be used to" -> "allow to"  (the registers are intended to do this)
 - Sec.V: v_R_1, ... *,* v_R_n  (add "," after "...")
 - the link in [1] is not accessible
 - p. 1 consider defining RTIC
-- p. 1 "readers-write locks" -> "readers-writer locks"
 - p. 1 "OSes" -> "operating systems"
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - p. 2 define DSI

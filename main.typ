@@ -153,7 +153,7 @@ readers/* requiring priority-ordered preemption among readers of shared resource
 //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
 
 This paper describes a declarative model of SRP-compliant
-readers-write locks that can be implemented in RTIC at no
+readers-writer locks that can be implemented in RTIC at no
 additional cost, when compared to a mutex based on a binary
 semaphore. General multi-unit resources are also of
 interest. However, an overhead-free implementation has not
@@ -390,12 +390,12 @@ $<eq:resource-ceiling>
 
 where $v_R$ is the current availability of $R$ and
 $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion
-of $p(J_"cur")$ is not needed, as hardware runs the jobs in
-preemptive priority order, making $p(J_"cur")$ part of the
-effective system ceiling.~@Eriksson2013-rtfm
+of $p(J_"cur")$ is not needed, as the hardware runs the jobs
+in preemptive priority order, making $p(J_"cur")$ part of
+the effective system ceiling.~@Eriksson2013-rtfm
 
-With this set-up, and using only single-unit resources, HW
-implements SRP-compliant scheduling, when each lock
+With this set-up, and using only single-unit resources, the
+HW implements SRP-compliant scheduling, when each lock
 operation on $R$ raises the system ceiling to
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_0)
@@ -418,10 +418,10 @@ Vectored Interrupt Controller (NVIC). Registers called
 interrupts.
 
 /*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/
-The context of a preempted ISR is pushed to stack and
+The context of a preempted ISR is pushed to the stack and
 restored automatically by the hardware. An ISR can be
 preempted safely while it is saving the context, increasing
-the responsiveness of high priority ISRs.
+the responsiveness of higher priority ISRs.
 
 Depending on the architecture, interrupts can be masked
 either using the `BASEPRI` register, or if it's not
