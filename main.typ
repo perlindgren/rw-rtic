@@ -267,11 +267,11 @@ and RTIC v2---have gained wide adoption with a combined
 download count of more than a million on crates.io. For the
 developer, RTIC provides a declarative, SRP-compliant,
 tasks-and-resources model as a thin, integrated
-domain-specific language (DSL) layer in the form of
-attributes applied on _items_#rustref([items]) in Rust code.
-RTIC also provides facilities for compile time analysis,
-code generation, and the zero-cost abstractions for
-implementing the concurrency model.
+domain-specific language (DSL) in the form of attributes
+applied on _items_#rustref([items]) in Rust code. RTIC also
+provides facilities for compile time analysis, code
+generation, and the zero-cost abstractions for implementing
+the concurrency model.
 
 Supplemental to the mainline RTIC, a research
 prototype~@mrtic2025 of the framework has been developed to
