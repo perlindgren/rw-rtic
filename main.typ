@@ -319,8 +319,8 @@ each resource that depend on their own, current
 availability. The resource ceiling $ceil(R)$ must always be
 equal or higher than the preemption level of the running
 job, and all the preemption levels of jobs that might need
-$R$ more than what is currently available. Formally, the
-resource ceiling can be any function that satisfies
+more units of $R$ than are currently available. Formally,
+the resource ceiling can be any function that satisfies
 $
   ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
 $<eq:srp-resource-ceiling>
