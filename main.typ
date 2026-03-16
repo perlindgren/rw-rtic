@@ -29,11 +29,29 @@
 */
 
 #show: ieee.with(
-  title: [Work in Progress: Efficient Readers-Writer Locks for the RTIC Framework],
+  title: [Work in Progress: Efficient Readers-Writer Locks
+    for the RTIC Framework],
   abstract: [
-    The RTIC framework provides a hardware-accelerated, executable model for concurrent applications as a set of static priority, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy (SRP), which guarantees race- and deadlock-free execution for single-processor systems. While the original work on SRP allows for multi-unit resources, the RTIC framework uses a model that is constrained to single-unit resources.
+    The RTIC framework provides a hardware-accelerated,
+    executable model for concurrent applications as a set of
+    static priority, run-to-completion jobs with shared
+    resources. At run-time, the system is scheduled in
+    compliance with Stack Resource Policy (SRP), which
+    guarantees race- and deadlock-free execution for
+    single-processor systems. While the original work on SRP
+    allows for multi-unit resources, the RTIC framework uses
+    a model that is constrained to single-unit resources.
 
-    We review the theoretical foundations of readers-writer locks in the context of SRP to show that they can be implemented in RTIC at zero cost when compared to its existing binary-semaphore-based locks, while relaxing the constraints of the worst-case-blocking-time-based schedulability test. We provide a declarative model for the implementation of code generation in RTIC, compatible with the ARM Cortex-M and RISC-V architectures. /* Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS] */
+    We review the theoretical foundations of readers-writer
+    locks in the context of SRP to show that they can be
+    implemented in RTIC at zero cost when compared to its
+    existing binary-semaphore-based locks, while relaxing
+    the constraints of the worst-case-blocking-time-based
+    schedulability test. We provide a declarative model for
+    the implementation of code generation in RTIC,
+    compatible with the ARM Cortex-M and RISC-V
+    architectures.
+    /* Finally, we evaluate the implementation with a set of benchmarks and real world applications. #heksa[left for ECRTS] */
   ],
   authors: (
     (
@@ -58,7 +76,13 @@
       email: "anonymous@example.com",
     ),
   ),
-  index-terms: ("Real-Time Systems", "Stack Resource Policy", "Readers-Writer Locks", "RTIC", "Rust"),
+  index-terms: (
+    "Real-Time Systems",
+    "Stack Resource Policy",
+    "Readers-Writer Locks",
+    "RTIC",
+    "Rust",
+  ),
   bibliography: bibliography("refs.bib"),
   figure-supplement: [Figure],
 )
@@ -80,17 +104,58 @@
 
 // Motivation, introduce the problem at hand and in brief: RTIC only implements
 // binary semaphores, based on a simplified model.
-The RTIC framework provides a Rust-language, hardware-accelerated, executable model for concurrent applications as a set of static priority, preemptive, run-to-completion jobs with shared resources. At run-time, the system is scheduled in compliance with Stack Resource Policy~#box[(SRP)@baker1990srp-1]---an extension to Priority Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees a number of desirable features for single-processor scheduling. Features of SRP include race- and deadlock-free execution, bounded, single-context-switch-per-job blocking, prevention of multiple priority inversion, and simple, efficient, single-shared-stack execution.
+The RTIC framework provides a Rust-language,
+hardware-accelerated, executable model for concurrent
+applications as a set of static priority, preemptive,
+run-to-completion jobs with shared resources. At run-time,
+the system is scheduled in compliance with Stack Resource
+Policy #box[(SRP)@baker1990srp-1]---an extension to Priority
+Ceiling Protocol (PCP)#ref(<sha1987pcp>)---which guarantees
+a number of desirable features for single-processor
+scheduling. Features of SRP include race- and deadlock-free
+execution, bounded, single-context-switch-per-job blocking,
+prevention of multiple priority inversion, and simple,
+efficient, single-shared-stack execution.
 
-The original theory for SRP/*@baker1990srp-1*/ describes a scheduling policy for a system with multi-unit resources that can be used to implement binary semaphores, readers-writer locks, and general semaphores. RTIC---_however_---only implements a mutex based on the binary semaphore.
+The original theory for SRP/*@baker1990srp-1*/ describes a
+scheduling policy for a system with multi-unit resources
+that can be used to implement binary semaphores,
+readers-writer locks, and general semaphores.
+RTIC---_however_---only implements a mutex based on the
+binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
-Replacing the binary semaphore with a readers-writer lock, when applicable, lowers the estimate for blocking time. More systems will pass those scheduling tests that include worst-case blocking factors, such as the recurrent worst-case response time test@audsley1993-applying or the RM-specific utilization factor test@sha1989rwpcp.
+Replacing the binary semaphore with a readers-writer lock,
+when applicable, lowers the estimate for blocking time. More
+systems will pass those scheduling tests that include
+worst-case blocking factors, such as the recurrent
+worst-case response time test@audsley1993-applying or the
+RM-specific utilization factor test@sha1989rwpcp.
 
-The rationale for the current constrained implementation of RTIC is that a binary semaphore is sufficient to provide safe access to shared resources/*, and can be implemented in a straightforward, efficient way on most hardware*/. Furthermore, in read-write situations where the highest priority contender for a resource is a job of the writing type, a binary semaphore already provides similar schedulability to readers-writer locks under SRP.
+The rationale for the current constrained implementation of
+RTIC is that a binary semaphore is sufficient to provide
+safe access to shared
+resources/*, and can be implemented in a straightforward, efficient way on most hardware*/.
+Furthermore, in read-write situations where the highest
+priority contender for a resource is a job of the writing
+type, a binary semaphore already provides similar
+schedulability to readers-writer locks under SRP.
 
 // Contributions
-However, in situations where the highest priority contender is not a write, a readers-writer lock would improve the response time of high-priority readers/*, allowing to expedite higher priority tasks that only need to read the resource*/. Therefore, inclusion of the readers-writer lock in RTIC's supported lock types would extend RTIC's applicability across real-time systems with high-priority readers/* requiring priority-ordered preemption among readers of shared resources*/. //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
-This paper describes a declarative model of SRP-compliant readers-write locks that can be implemented in RTIC at no additional cost, when compared to a mutex based on a binary semaphore. General multi-unit resources are also of interest. However, an overhead-free implementation has not been identified, and is therefore left for future work.
+However, in situations where the highest priority contender
+is not a write, a readers-writer lock would improve the
+response time of high-priority
+readers/*, allowing to expedite higher priority tasks that only need to read the resource*/.
+Therefore, inclusion of the readers-writer lock in RTIC's
+supported lock types would extend RTIC's applicability
+across real-time systems with high-priority
+readers/* requiring priority-ordered preemption among readers of shared resources*/.
+//Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
+This paper describes a declarative model of SRP-compliant
+readers-write locks that can be implemented in RTIC at no
+additional cost, when compared to a mutex based on a binary
+semaphore. General multi-unit resources are also of
+interest. However, an overhead-free implementation has not
+been identified, and is therefore left for future work.
 
 /* RTAS 2024 FAQ:
  * > The paper should clearly state the research problem, together with
@@ -100,18 +165,42 @@ This paper describes a declarative model of SRP-compliant readers-write locks th
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Our contributions are:
-- the observation and proof that for each read- and write-lock operation, it is possible to compute such a single, distinct ceiling value at compile time, that SRP-compliant resource protection can be implemented in constant time,
-- a declarative model for the implementation of a readers-writer lock in RTIC with no additional overhead when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
-- the observation that the implementation aligns the SRP-compliant readers-writer lock with the Rust aliasing model, allowing lock APIs to integrate seamlessly with Rust's reference semantics,
+- the observation and proof that for each read- and
+  write-lock operation, it is possible to compute such a
+  single, distinct ceiling value at compile time, that
+  SRP-compliant resource protection can be implemented in
+  constant time,
+- a declarative model for the implementation of a
+  readers-writer lock in RTIC with no additional overhead
+  when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+- the observation that the implementation aligns the
+  SRP-compliant readers-writer lock with the Rust aliasing
+  model, allowing lock APIs to integrate seamlessly with
+  Rust's reference semantics,
 //- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
-- a description of target-independent code generation for readers-writer resources in RTIC.
+- a description of target-independent code generation for
+  readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
 = Prior work
 
 == SRP-based scheduling
 
-PCP describes a locking protocol for binary semaphores, for which priority inversion is bounded by the execution time of the longest critical section of a lower-priority job.~@sha1987pcp PCP has been extended to apply to readers-writer resources by Sha et al.@sha1989rwpcp, with results similar to those presented for SRP in the current paper. PCP has been extended to multiprocessor systems@rajkumar1988multi. SRP extends single-processor PCP and allows the use of both static and dynamic priority assignments, and multi-unit resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/ PCP and SRP-based methods remain of interest for hard real-time scheduling, as conventional OSes cannot provide bounded blocking suitable for real-time schedulability analysis.~@baker1991srp-journal@buttazzo2011-hard
+PCP describes a locking protocol for binary semaphores, for
+which priority inversion is bounded by the execution time of
+the longest critical section of a lower-priority
+job.~@sha1987pcp PCP has been extended to apply to
+readers-writer resources by Sha et al.@sha1989rwpcp, with
+results similar to those presented for SRP in the current
+paper. PCP has been extended to multiprocessor
+systems@rajkumar1988multi. SRP extends single-processor PCP
+and allows the use of both static and dynamic priority
+assignments, and multi-unit
+resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
+PCP and SRP-based methods remain of interest for hard
+real-time scheduling, as conventional OSes cannot provide
+bounded blocking suitable for real-time schedulability
+analysis.~@baker1991srp-journal@buttazzo2011-hard
 
 == Rust aliasing guarantees
 
@@ -119,7 +208,25 @@ PCP describes a locking protocol for binary semaphores, for which priority inver
     #text(rr.pos().map(r => [[#r]]).join(", "))]
 ]
 
-The Rust rules regarding _place_ and _move_ expressions#rustref([expr.place-value], [expr.move]), and _pointer_#rustref([type.pointer.reference]) types require that any memory location referenced by the program is either shared for reading, or only accessible for writing from _one_ code location concurrently, in absence of _interior mutability_ and _raw pointer dereferences_#rustref([interior-mut], [type.pointer.raw.safety]). To access the exceptions, an explicit, `unsafe` code block is always required. The alias rules can be extended to apply to other kinds of resources including hardware peripherals by modeling them as #box[Zero-Sized] Types~(ZSTs). It should be carefully noted that certain hardware operations such as side-effectful reads from hardware buffers should be considered writes from a #box[software~and~concurrency] point of view, and should be modelled as such in Rust (cf. `Read` trait in embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
+The Rust rules regarding _place_ and _move_
+expressions#rustref([expr.place-value], [expr.move]), and
+_pointer_#rustref([type.pointer.reference]) types require
+that any memory location referenced by the program is either
+shared for reading, or only accessible for writing from
+_one_ code location concurrently, in absence of _interior
+mutability_ and _raw pointer dereferences_#rustref(
+  [interior-mut],
+  [type.pointer.raw.safety],
+). To access the exceptions, an explicit, `unsafe` code
+block is always required. The alias rules can be extended to
+apply to other kinds of resources including hardware
+peripherals by modeling them as #box[Zero-Sized]
+Types~(ZSTs). It should be carefully noted that certain
+hardware operations such as side-effectful reads from
+hardware buffers should be considered writes from a
+#box[software~and~concurrency] point of view, and should be
+modelled as such in Rust (cf. `Read` trait in
+embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
 
 /*
 It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be observed in SRP theory. Rust may allow enforcing of exclusivity requirements "beyond" the theory.] that for the purposes of behavioral non-interference, memory and hardware behave differently. Unlike memory, hardware may change its internal state on reads. To properly integrate with the Rust aliasing rules, this _can_ and _should_ be modeled at the hardware abstraction layer. The problem and its solution are well-demonstrated by the `Read` trait in the `embedded-io` community library, presented in @lst:embedded-io-read.
@@ -138,26 +245,65 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
 )<lst:embedded-io-read>
 */
 
-Rust's alias rules coincide with the semantics of readers-writer locks. In other words, the interfaces of the lock may grant shared references to readers, while mutable references can be granted to writers, all the while conforming to Rust's notion of safety. Both kinds of references should be scoped to match the duration that the lock is held.
+Rust's alias rules coincide with the semantics of
+readers-writer locks. In other words, the interfaces of the
+lock may grant shared references to readers, while mutable
+references can be granted to writers, all the while
+conforming to Rust's notion of safety. Both kinds of
+references should be scoped to match the duration that the
+lock is held.
 
 == RTIC//, RTIC v2, RTIC eVo / MRTIC
 
-The RTIC framework is a Rust-first, free-and-open-source, real-time framework, rooted in research on modeling and implementation of (hard) real-time systems. Over the last decade, the first two major versions of RTIC---cortex-m-rtic and RTIC v2---have gained wide adoption with a combined download count of more than a million on crates.io.
-For the developer, RTIC provides a declarative, SRP-compliant, tasks-and-resources model as a thin, integrated DSL in the form of attributes applied on _items_#rustref([items]) in Rust code. RTIC also provides facilities for compile time analysis, code generation, and the zero-cost abstractions for implementing the concurrency model.
+The RTIC framework is a Rust-first, free-and-open-source,
+real-time framework, rooted in research on modeling and
+implementation of (hard) real-time systems. Over the last
+decade, the first two major versions of RTIC---cortex-m-rtic
+and RTIC v2---have gained wide adoption with a combined
+download count of more than a million on crates.io. For the
+developer, RTIC provides a declarative, SRP-compliant,
+tasks-and-resources model as a thin, integrated DSL in the
+form of attributes applied on _items_#rustref([items]) in
+Rust code. RTIC also provides facilities for compile time
+analysis, code generation, and the zero-cost abstractions
+for implementing the concurrency model.
 
-Supplemental to the mainline RTIC, a research prototype@mrtic2025 of the framework has been developed to study---in a modular way---implementations of features including syntax extensions and extended source code analysis.
+Supplemental to the mainline RTIC, a research
+prototype@mrtic2025 of the framework has been developed to
+study---in a modular way---implementations of features
+including syntax extensions and extended source code
+analysis.
 //However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
-In the research prototype/*RTIC-eVo*/, the compilation process is separated into a set of subsequent passes that gradually lower the /*Domain Specific Language*/ DSL-augmented source artifact towards a plain Rust implementation, and then further into an executable/* (thus RTIC can be seen as an executable model)*/. /*The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target-specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.*/
-In @sec:rw-pass, the modular research prototype is leveraged to sketch out the implementation of readers-writer resources/* in RTIC-eVo*/.
+In the research prototype/*RTIC-eVo*/, the compilation
+process is separated into a set of subsequent passes that
+gradually lower the /*Domain Specific Language*/
+DSL-augmented source artifact towards a plain Rust
+implementation, and then further into an
+executable/* (thus RTIC can be seen as an executable model)*/.
+/*The user facing DSL is defined by a distribution, which composes a selected set of compilation passes and their target-specific backend implementations. The framework is highly flexible, as new passes (and their backends) can be developed and tested in isolation before being integrated into a distribution. The only requirement is that the output DSL of each pass conforms to the input DSL of subsequent passes.*/
+In @sec:rw-pass, the modular research prototype is leveraged
+to sketch out the implementation of readers-writer
+resources/* in RTIC-eVo*/.
 
 = Baseline model (SRP) /* "Existing theory */
 
-SRP assumes a fixed number of run-to-completion jobs running on a single processor, sharing a fixed number of multi-unit resources. The maximum resource needs are assumed to be known _a priori_. Jobs are assumed to request anything from zero to the full amount of a multi-unit resource.
+SRP assumes a fixed number of run-to-completion jobs running
+on a single processor, sharing a fixed number of multi-unit
+resources. The maximum resource needs are assumed to be
+known _a priori_. Jobs are assumed to request anything from
+zero to the full amount of a multi-unit resource.
 
 In SRP, a job#footnote({
   set text(hyphenate: true)
-  [The original theory distinguishes a job $J$ and it's execution or request $cal(J)$. However, in this paper, only $J$ is used, as with static priority jobs, this distinction is not necessary.]
-}) $J$ will preempt another if its _preemption level_ $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and it's the oldest and highest priority of any pending job. The preemption level of a job $pi(J)$ is defined as any static function that satisfies
+  [The original theory distinguishes a job $J$ and it's
+    execution or request $cal(J)$. However, in this paper,
+    only $J$ is used, as with static priority jobs, this
+    distinction is not necessary.]
+}) $J$ will preempt another if its _preemption level_
+$pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and
+it's the oldest and highest priority of any pending job. The
+preemption level of a job $pi(J)$ is defined as any static
+function that satisfies
 
 $
   p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
@@ -165,61 +311,142 @@ $
 
 For static priority assignments, $pi(J) = p(J)$.
 
-The system ceiling $macron(Pi)$ is defined as the maximum of current _resource ceilings_, which are values assigned to each resource that depend on their own, current availability. The resource ceiling $ceil(R)$ must always be equal or higher than the preemption level of the running job, and all the preemption levels of jobs that might need $R$ more than what is currently available. Formally, the resource ceiling can be any function that satisfies
+The system ceiling $macron(Pi)$ is defined as the maximum of
+current _resource ceilings_, which are values assigned to
+each resource that depend on their own, current
+availability. The resource ceiling $ceil(R)$ must always be
+equal or higher than the preemption level of the running
+job, and all the preemption levels of jobs that might need
+$R$ more than what is currently available. Formally, the
+resource ceiling can be any function that satisfies
 $
   ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
 $<eq:srp-resource-ceiling>
 
-where $J_"cur"$ is the currently executing job, $v_R$ is the current availability of $R$, and $mu_R (J)$ is the maximum need of job $J$ for $R$.
-Assuming the system has resources $R_i, i in {0, ..., n}$,
+where $J_"cur"$ is the currently executing job, $v_R$ is the
+current availability of $R$, and $mu_R (J)$ is the maximum
+need of job $J$ for $R$. Assuming the system has resources
+$R_i, i in {0, ..., n}$,
 $
   macron(Pi) = max{ceil(R_i) mid(|) i in {0, ..., n}}.
 $<eq:system-ceiling>
-Alternatively, the term $pi(J_"cur")$ can be removed from @eq:srp-resource-ceiling and included in @eq:system-ceiling.
+Alternatively, the term $pi(J_"cur")$ can be removed from
+@eq:srp-resource-ceiling and included in @eq:system-ceiling.
 
-From the definition, it follows that the system ceiling $macron(Pi)$ changes only when a resource is locked or unlocked or when a new job starts executing. When a lock on $R$ is obtained, the system ceiling is updated to
+From the definition, it follows that the system ceiling
+$macron(Pi)$ changes only when a resource is locked or
+unlocked or when a new job starts executing. When a lock on
+$R$ is obtained, the system ceiling is updated to
 
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
 $<eq:new-ceiling>
 
-where $macron(Pi)_"cur"$ is the prior system ceiling, and $ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the remaining amount of unlocked $R$.
+where $macron(Pi)_"cur"$ is the prior system ceiling, and
+$ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the
+remaining amount of unlocked $R$.
 
 == Readers-writer resources
 
-Readers-writer resources are a special case of multi-unit resources. In the context of SRP, they can be modeled as abstract resources with a count equaling the number of jobs accessing the resource, where writers consume all units of the resource, while readers consume only one unit. This allows multiple readers but only one writer at a time. Generally, an infinite number of readers is allowed, but only a single writer at any one time.
+Readers-writer resources are a special case of multi-unit
+resources. In the context of SRP, they can be modeled as
+abstract resources with a count equaling the number of jobs
+accessing the resource, where writers consume all units of
+the resource, while readers consume only one unit. This
+allows multiple readers but only one writer at a time.
+Generally, an infinite number of readers is allowed, but
+only a single writer at any one time.
 
 = RTIC restricted model
 
-RTIC compiles programmer-defined and -prioritized jobs to interrupt handlers that get a corresponding, relative priority level. The jobs---now ISRs---are run preemptively, in priority order, by the hardware. Lock closures defined in user code are automatically wrapped with instructions that stack and update the system ceiling using predefined values. The targets supported by RTIC must support prioritized interrupts and interrupt masking. Interrupt masking is used to create a hardware implementation of the SRP-defined system ceiling.
+RTIC compiles programmer-defined and -prioritized jobs to
+interrupt handlers that get a corresponding, relative
+priority level. The jobs---now ISRs---are run preemptively,
+in priority order, by the hardware. Lock closures defined in
+user code are automatically wrapped with instructions that
+stack and update the system ceiling using predefined values.
+The targets supported by RTIC must support prioritized
+interrupts and interrupt masking. Interrupt masking is used
+to create a hardware implementation of the SRP-defined
+system ceiling.
 
-In RTIC so far, only single-unit resources have been allowed, as with them, the resource ceiling can only be either zero or a single, predefined number for each resource. Since the number is known at compile time, RTIC can be used to implement near zero-cost locking. With each lock operation on a resource, the interrupts with a lower priority than the compile-time known number are disabled. /*The means of disabling the appropriate interrupts depend on the implementation target.*/
+In RTIC so far, only single-unit resources have been
+allowed, as with them, the resource ceiling can only be
+either zero or a single, predefined number for each
+resource. Since the number is known at compile time, RTIC
+can be used to implement near zero-cost locking. With each
+lock operation on a resource, the interrupts with a lower
+priority than the compile-time known number are disabled.
+/*The means of disabling the appropriate interrupts depend on the implementation target.*/
 
-Formally, in RTIC, preemption level equals priority, #box[$pi = p$], and the resource ceiling is defined as
+Formally, in RTIC, preemption level equals priority,
+#box[$pi = p$], and the resource ceiling is defined as
 
 $
   ceil(R) = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
 $<eq:resource-ceiling>
 
-where $v_R$ is the current availability of $R$ and $mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion of $p(J_"cur")$ is not needed, as hardware runs the jobs in preemptive priority order, making $p(J_"cur")$ part of the effective system ceiling.~@Eriksson2013-rtfm
+where $v_R$ is the current availability of $R$ and
+$mu_R (J)$ is the maximum need of job $J$ for $R$. Inclusion
+of $p(J_"cur")$ is not needed, as hardware runs the jobs in
+preemptive priority order, making $p(J_"cur")$ part of the
+effective system ceiling.~@Eriksson2013-rtfm
 
-With this set-up, and using only single-unit resources, HW implements SRP-compliant scheduling, when each lock operation on $R$ raises the system ceiling to
+With this set-up, and using only single-unit resources, HW
+implements SRP-compliant scheduling, when each lock
+operation on $R$ raises the system ceiling to
 $
   macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_0)
 $<eq:rtic-new-ceiling>
-and upon unlock---at the end of the lock closure---the old value is restored. In combination with the Rust ownership system and compliance with SRP, controlled access to shared, single-unit resources is guaranteed.
+and upon unlock---at the end of the lock closure---the old
+value is restored. In combination with the Rust ownership
+system and compliance with SRP, controlled access to shared,
+single-unit resources is guaranteed.
 
 == ARM Cortex-M
 
-/*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/ On Cortex-M#footnote[ARM Architecture Reference Manuals ARMv6-M, ARMv7-M, ARMv8-M, available: #link("https://developer.arm.com/documentation/")/* @arm-v6m-ref @arm-v7m-ref @arm-v8m-ref*/], external interrupts can be controlled and configured with the Nested Vectored Interrupt Controller (NVIC). Registers called `NVIC_IPR` control the priorities of the external interrupts.
+/*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/
+On Cortex-M#footnote[ARM Architecture Reference Manuals
+  ARMv6-M, ARMv7-M, ARMv8-M, available: #link(
+    "https://developer.arm.com/documentation/",
+  )/* @arm-v6m-ref @arm-v7m-ref @arm-v8m-ref*/], external
+interrupts can be controlled and configured with the Nested
+Vectored Interrupt Controller (NVIC). Registers called
+`NVIC_IPR` control the priorities of the external
+interrupts.
 
-/*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/ The context of a   preempted ISR is pushed to stack and restored automatically by the hardware. An ISR can be preempted safely while it is saving the context, increasing the responsiveness of high priority ISRs.
+/*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/
+The context of a preempted ISR is pushed to stack and
+restored automatically by the hardware. An ISR can be
+preempted safely while it is saving the context, increasing
+the responsiveness of high priority ISRs.
 
-Depending on the architecture, interrupts can be masked either using the `BASEPRI` register, or if it's not implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The `BASEPRI` register blocks interrupts of lower or equal priority than its set value, but it can not block interrupts with maximum possible priority. /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The `NVIC_ISER` and `NVIC_ICER` registers may be used to enable or disable individual interrupts.
+Depending on the architecture, interrupts can be masked
+either using the `BASEPRI` register, or if it's not
+implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The
+`BASEPRI` register blocks interrupts of lower or equal
+priority than its set value, but it can not block interrupts
+with maximum possible priority.
+/*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The
+`NVIC_ISER` and `NVIC_ICER` registers may be used to enable
+or disable individual interrupts.
 
 == RISC-V
 
-The base RISC-V ISA@riscv-unprivileged-spec does not require a sufficient mechanism for individually configurable preemption levels or threshold-based interrupt filtering. Instead, this /*domain-specific */mechanism is typically supplied through an interrupt controller specification. For instance, the CLIC@riscv-clic-spec defines an adjustable interrupt threshold register (`mintthresh`) that can be used to filter interrupts by preemption level. For interrupt-specific priority and preemption controls, the CLIC defines the `clicintctl` register. On RISC-V, when multiple lines are pended, priority is used to determine which interrupt handler is to be dispatched first, while preemption level is used to control preemptability.~@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
+The base RISC-V ISA@riscv-unprivileged-spec does not require
+a sufficient mechanism for individually configurable
+preemption levels or threshold-based interrupt filtering.
+Instead, this /*domain-specific */mechanism is typically
+supplied through an interrupt controller specification. For
+instance, the CLIC@riscv-clic-spec defines an adjustable
+interrupt threshold register (`mintthresh`) that can be used
+to filter interrupts by preemption level. For
+interrupt-specific priority and preemption controls, the
+CLIC defines the `clicintctl` register. On RISC-V, when
+multiple lines are pended, priority is used to determine
+which interrupt handler is to be dispatched first, while
+preemption level is used to control
+preemptability.@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
 
 /*
 = Example of determining the resource ceilings from @baker1990srp-1
@@ -257,30 +484,49 @@ When a resource $R$ is locked, the system ceiling is raised to the maximum of th
 
 = SRP-compliant readers-writer lock<sect:proof>
 
-The current version of RTIC uses only single-unit resources. With multi-unit resources of the readers-writer type, there is still a single compile-time known number that the system ceiling needs to be raised to with each lock operation---just like in @eq:rtic-new-ceiling, but with a distinction of whether the lock is a read or a write lock. /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/ A formalization and a proof of the statements follows:
+The current version of RTIC uses only single-unit resources.
+With multi-unit resources of the readers-writer type, there
+is still a single compile-time known number that the system
+ceiling needs to be raised to with each lock
+operation---just like in @eq:rtic-new-ceiling, but with a
+distinction of whether the lock is a read or a write lock.
+/*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/
+A formalization and a proof of the statements follows:
 
 *Theorem*
 
-Assuming @eq:resource-ceiling and $pi = p$, /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_"w"$ for write, and the system is still compliant to SRP.
+Assuming @eq:resource-ceiling and $pi = p$,
+/*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_"w"$ for write, and the system is still compliant to SRP.
 
-                                            Formally,*/ SRP compliance is maintained when:
+Formally,*/ SRP compliance is maintained when:
 
-+ upon taking a read-lock of resource $R$ is taken, the system ceiling $macron(Pi)$ is updated to
-  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"r") $<eq:rw-lock-ceil-r>
++ upon taking a read-lock of resource $R$ is taken, the
+  system ceiling $macron(Pi)$ is updated to
+  $
+    macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"r")
+  $<eq:rw-lock-ceil-r>
 
-  where $ceil(R)_"r"$ is the highest preemption level of jobs with write-access to $R$, and
-+ upon taking a write-lock of resource $R$, the system ceiling $macron(Pi)$ changes to
-  $ macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"w"), $<eq:rw-lock-ceil-w>
+  where $ceil(R)_"r"$ is the highest preemption level of
+  jobs with write-access to $R$, and
++ upon taking a write-lock of resource $R$, the system
+  ceiling $macron(Pi)$ changes to
+  $
+    macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"w"),
+  $<eq:rw-lock-ceil-w>
 
-  where $ceil(R)_"w"$ is the highest preemption level of jobs that need $R$.
+  where $ceil(R)_"w"$ is the highest preemption level of
+  jobs that need $R$.
 
 *Proof*
 
-Assume the system has resources $R_1, ..., R_n$ and their availability is $v_R_1, ... v_R_n$ before taking the lock. /*Now, by definition @eq:system-ceiling, the system ceiling is
-                                                                                                                     $
-                                                                                                                       macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
-                                                                                                                     $<eq:proof0>*/
-Assume the read or write lock operation concerns resource $R_m$, $m in 1, ..., n$.
+Assume the system has resources $R_1, ..., R_n$ and their
+availability is $v_R_1, ... v_R_n$ before taking the lock.
+/*Now, by definition @eq:system-ceiling, the system ceiling is
+$
+  macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
+$<eq:proof0>*/
+Assume the read or write lock operation concerns resource
+$R_m$, $m in 1, ..., n$.
 /*
 After the locking, the system ceiling is, by definition,
 $
@@ -304,11 +550,12 @@ $
                                                             ).
 $<eq:proof2>
 */
-It can be shown that after the locking, the system ceiling is
+It can be shown that after the locking, the system ceiling
+is
 $
   macron(Pi) = && max(
                     & { macron(Pi)_"cur"} \
-                    &                     & union max & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                    & & union max & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
                   ),
 $<eq:proof2>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
@@ -354,9 +601,12 @@ The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e
 
 *Proof for @eq:rw-lock-ceil-r (read-lock):*
 
-After locking, either $v'_R_m in {1, ..., n-1}$ or $v_R_m = 0$.
+After locking, either $v'_R_m in {1, ..., n-1}$ or
+$v_R_m = 0$.
 
-In the former case, the condition $v'_R_m < mu_R_m (J)$ in @eq:proof2 corresponds to $J$ having write access to $R_m$, proving @eq:rw-lock-ceil-r.
+In the former case, the condition $v'_R_m < mu_R_m (J)$ in
+@eq:proof2 corresponds to $J$ having write access to $R_m$,
+proving @eq:rw-lock-ceil-r.
 
 /*In the latter case, the condition $v'_R_m < mu_R_m (J)$ corresponds $J$ having access to $R_m$ in general, as both reading and writing jobs are blocked when there is zero $R_m$, i.e.
 
@@ -384,34 +634,43 @@ $
   ).
 $<eq:proof4>
 
-Assuming the same job does not take several nested read locks, for there to be zero $R_m$ after a read lock, the job must have preempted all other jobs that access $R_m$ while they were holding a read lock on resource $R_m$. For that to be possible, the job has to be the highest priority job with read access to $R_m$, i.e.,
+Assuming the same job does not take several nested read
+locks, for there to be zero $R_m$ after a read lock, the job
+must have preempted all other jobs that access $R_m$ while
+they were holding a read lock on resource $R_m$. For that to
+be possible, the job has to be the highest priority job with
+read access to $R_m$, i.e.,
 $
   pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
-#let place-super(x) = move(dy: -0.6em, box(width: 0pt, box(width: 10em, $script(#x)$)))
+#let place-super(x) = move(dy: -0.6em, box(width: 0pt, box(
+  width: 10em,
+  $script(#x)$,
+)))
 #box[
   Continuing from @eq:proof4,
   $
-    =>^(#ref(<eq:proof5>)) macron(Pi) & =                                           & max(
-                                                                                        & { macron(Pi)_"cur"} union {pi(t_"cur")} \
-                                                                                        &                                         & union & {pi(J) mid(|) J "may write" R_m}
-                                                                                      ) \
-                                      & =^#place-super($macron(Pi) >= pi(J_"cur")$) & max(
-                                                                                        & { macron(Pi)_"cur"} \
-                                                                                        &                     & union & {pi(J) mid(|) J "may write" R_m}
-                                                                                      ) \
-                                      & =                                           & max(&macron(Pi)_"cur", ceil(R)_"r"),
+    =>^(#ref(<eq:proof5>)) macron(Pi) & = & max(
+      & { macron(Pi)_"cur"} union {pi(t_"cur")} \
+      & & union & {pi(J) mid(|) J "may write" R_m}
+    ) \
+    & =^#place-super($macron(Pi) >= pi(J_"cur")$) & max(
+      & { macron(Pi)_"cur"} \
+      & & union & {pi(J) mid(|) J "may write" R_m}
+    ) \
+    & = & max(&macron(Pi)_"cur", ceil(R)_"r"),
   $
   which proves @eq:rw-lock-ceil-r.
 ]
 
 *Proof for @eq:rw-lock-ceil-w (write-lock):*
 
-If the lock was a write-lock, $v'_R_m = 0$. Continuing from~@eq:proof2
+If the lock was a write-lock, $v'_R_m = 0$. Continuing
+from~@eq:proof2
 $
   => macron(Pi) = & max({macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-                = & max({macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
-                = & max(macron(Pi)_"cur", ceil(R)_"w"),
+  = & max({macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
+  = & max(macron(Pi)_"cur", ceil(R)_"w"),
 $
 proving @eq:rw-lock-ceil-w.
 
@@ -461,21 +720,43 @@ When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)
 
 = Readers-writer lock implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
 
-Read and write accesses need to be treated as distinct from each other.  In effect, two ceilings per resource $R$ are required:
+Read and write accesses need to be treated as distinct from
+each other. In effect, two ceilings per resource $R$ are
+required:
 
-- reader ceiling $ceil(R)_"r"$: maximum priority among jobs with _write access_ to the resource, and
-- writer ceiling $ceil(R)_"w"$: maximum priority among jobs with _read or write access_ to the resource.
+- reader ceiling $ceil(R)_"r"$: maximum priority among jobs
+  with _write access_ to the resource, and
+- writer ceiling $ceil(R)_"w"$: maximum priority among jobs
+  with _read or write access_ to the resource.
 
-The protocol bindings and necessary analysis can be provided by a module ("`rw-pass`") implementing the read-lock user API and a pre-compilation pass. As the API, a method should be provided with the signature #box[`read_lock(Fn(&T)->R)`]. The method may be implemented simply by calling the conventional `lock` method with the ceiling set to $ceil(R)_"r"$. As the closure argument, the method should pass a shared, immutable reference to the underlying data structure. Since the resource~(`&T`) is exposed to user code as a shared reference, user code is required by the compiler to conform to the rules concerning shared references, i.e., reads only.
+The protocol bindings and necessary analysis can be provided
+by a module ("`rw-pass`") implementing the read-lock user
+API and a pre-compilation pass. As the API, a method should
+be provided with the signature #box[`read_lock(Fn(&T)->R)`].
+The method may be implemented simply by calling the
+conventional `lock` method with the ceiling set to
+$ceil(R)_"r"$. As the closure argument, the method should
+pass a shared, immutable reference to the underlying data
+structure. Since the resource~(`&T`) is exposed to user code
+as a shared reference, user code is required by the compiler
+to conform to the rules concerning shared references, i.e.,
+reads only.
 
 During pre-compilation `rw-pass` should:
 
-- identify all jobs with write-access to each resource $R$, compute $ceil(R)_"r"$ according to its definition, and
-- transform all DSL read accesses to binary-semaphore-based locks with ceiling set to $ceil(R)_"r"$.
+- identify all jobs with write-access to each resource $R$,
+  compute $ceil(R)_"r"$ according to its definition, and
+- transform all DSL read accesses to binary-semaphore-based
+  locks with ceiling set to $ceil(R)_"r"$.
 
-The main DSL compilation /*`core-pass`*/ takes as input the DSL with knowledge of all accesses to shared resources. /*Then, the $ceil(R)_"w"$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
-The implementation /*`core-pass`*/ will now take into account all accesses (both read and write) when computing the ceiling $ceil(R)_"w"$.
-This way, no additional target specific code generation is required, as the target specific `lock` implementation can be reused.
+The main DSL compilation /*`core-pass`*/ takes as input the
+DSL with knowledge of all accesses to shared resources.
+/*Then, the $ceil(R)_"w"$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
+The implementation /*`core-pass`*/ will now take into
+account all accesses (both read and write) when computing
+the ceiling $ceil(R)_"w"$. This way, no additional target
+specific code generation is required, as the target specific
+`lock` implementation can be reused.
 
 //At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
@@ -505,15 +786,35 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Future work
 
-With the current implementation, write access code will be generated for resources that are technically read-only. From a safety perspective this is perfectly sound, as the computed ceiling value $ceil(R)$ does not differentiate between accesses. However, from a modeling perspective, rejecting write accesses to jobs with read only privileges would be preferable. Strengthening the model is out of scope for this paper and left as future work.
+With the current implementation, write access code will be
+generated for resources that are technically read-only. From
+a safety perspective this is perfectly sound, as the
+computed ceiling value $ceil(R)$ does not differentiate
+between accesses. However, from a modeling perspective,
+rejecting write accesses to jobs with read only privileges
+would be preferable. Strengthening the model is out of scope
+for this paper and left as future work.
 
-For general multi-unit resources, the new system ceiling value is different for each number of remaining resources. An overhead-free implementation has not been identified, and the viability of general multi-resource support for RTIC is left as future work.
+For general multi-unit resources, the new system ceiling
+value is different for each number of remaining resources.
+An overhead-free implementation has not been identified, and
+the viability of general multi-resource support for RTIC is
+left as future work.
 
 //Concrete implementation of the necessary analysis and code generation in RTIC is left as future work.
 
 = Conclusion
 
-We have shown that for each read or write lock operation, such a single, distinct ceiling value can be computed at compile time, that SRP-compliant resource protection can be implemented at a similar cost to the corresponding single-unit/mutex lock./* A readers-write lock---based on this observation---can be implemented in RTIC at a similar cost to the corresponding single-unit/mutex lock.*/ The declarative model can be enforced using Rust ownership rules and the readers-write lock can be implemented in RTIC without the need to change the target-specific implementation.
+We have shown that for each read or write lock operation,
+such a single, distinct ceiling value can be computed at
+compile time, that SRP-compliant resource protection can be
+implemented at a similar cost to the corresponding
+single-unit/mutex
+lock./* A readers-write lock---based on this observation---can be implemented in RTIC at a similar cost to the corresponding single-unit/mutex lock.*/
+The declarative model can be enforced using Rust ownership
+rules and the readers-write lock can be implemented in RTIC
+without the need to change the target-specific
+implementation.
 
 
 //  table(
