@@ -32,15 +32,16 @@
   title: [Work in Progress: Efficient Readers-Writer Locks
     for the RTIC Framework],
   abstract: [
-    The RTIC framework provides a hardware-accelerated,
-    executable model for concurrent applications as a set of
-    static priority, run-to-completion jobs with shared
-    resources. At run-time, the system is scheduled in
-    compliance with Stack Resource Policy (SRP), which
-    guarantees race- and deadlock-free execution for
-    single-processor systems. While the original work on SRP
-    allows for multi-unit resources, the RTIC framework uses
-    a model that is constrained to single-unit resources.
+    The Real-Time Interrupt-driven Concurrency (RTIC)
+    framework provides a hardware-accelerated, executable
+    model for concurrent applications as a set of static
+    priority, run-to-completion jobs with shared resources.
+    At run-time, the system is scheduled in compliance with
+    Stack Resource Policy (SRP), which guarantees race- and
+    deadlock-free execution for single-processor systems.
+    While the original work on SRP allows for multi-unit
+    resources, the RTIC framework uses a model that is
+    constrained to single-unit resources.
 
     We review the theoretical foundations of readers-writer
     locks in the context of SRP to show that they can be
