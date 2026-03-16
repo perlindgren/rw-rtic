@@ -340,15 +340,18 @@ Alternatively, the term $pi(J_"cur")$ can be removed from
 From the definition, it follows that the system ceiling
 $macron(Pi)$ changes only when a resource is locked or
 unlocked or when a new job starts executing. When a lock on
-$R$ is obtained, the system ceiling is updated to
+$R$ is obtained, new system ceiling value $macron(Pi)_"new"$
+can be calculated based on the old system ceiling value
+$macron(Pi)_"old"$ by
 
 $
-  macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_v_R),
+  macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_v'_R),
 $<eq:new-ceiling>
 
-where $macron(Pi)_"cur"$ is the prior system ceiling, and
-$ceil(R)_v_R$ is the the ceiling of $R$ corresponding to the
-remaining amount of unlocked $R$.
+where $ceil(R)_v'_R$ is the the ceiling of $R$ corresponding
+to the new, remaining amount of unlocked $R$, denoted here
+by $v'_R$. This way of calculating $macron(Pi)$ is
+interchangable with @eq:system-ceiling.
 
 == Readers-writer resources
 
@@ -403,7 +406,7 @@ With this set-up, and using only single-unit resources, the
 HW implements SRP-compliant scheduling, when each lock
 operation on $R$ raises the system ceiling to
 $
-  macron(Pi)_"new" = max(macron(Pi)_"cur", ceil(R)_0)
+  macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_0)
 $<eq:rtic-new-ceiling>
 and upon unlock---at the end of the lock closure---the old
 value is restored. In combination with the Rust ownership
@@ -510,7 +513,7 @@ Formally,*/ SRP compliance is maintained when:
 + upon taking a read-lock of resource $R$ is taken, the
   system ceiling $macron(Pi)$ is updated to
   $
-    macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"r")
+    macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
   $<eq:rw-lock-ceil-r>
 
   where $ceil(R)_"r"$ is the highest preemption level of
@@ -518,7 +521,7 @@ Formally,*/ SRP compliance is maintained when:
 + upon taking a write-lock of resource $R$, the system
   ceiling $macron(Pi)$ changes to
   $
-    macron(Pi) = max(macron(Pi)_"cur", ceil(R)_"w"),
+    macron(Pi) = max(macron(Pi)_"old", ceil(R)_"w"),
   $<eq:rw-lock-ceil-w>
 
   where $ceil(R)_"w"$ is the highest preemption level of
@@ -560,7 +563,7 @@ $<eq:proof2>
 It can be shown that after locking, the system ceiling is
 $
   macron(Pi) = && max(
-                    & { macron(Pi)_"cur"} \
+                    & { macron(Pi)_"old"} \
                     & & union max & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
                   ),
 $<eq:proof2>
@@ -634,7 +637,7 @@ In the latter case, @eq:proof2 can be expanded to
 $
   macron(Pi)
   = max(
-          & { macron(Pi)_"cur"} \
+          & { macron(Pi)_"old"} \
     union & {pi(J) mid(|) J "may read" R_m} \
     union & {pi(J) mid(|) J "may write" R_m}
   ).
@@ -647,7 +650,7 @@ access $R_m$ while they were holding a read lock on resource
 $R_m$. For that to be possible, the job has to be the
 highest priority job with read access to $R_m$, i.e.,
 $
-  pi(t_"cur") = max{pi(J) mid(|) J "may read" R_m}.
+  pi(J_"cur") = max{pi(J) mid(|) J "may read" R_m}.
 $<eq:proof5>
 #let place-super(x) = move(dy: -0.6em, box(width: 0pt, box(
   width: 10em,
@@ -657,14 +660,14 @@ $<eq:proof5>
   Continuing from @eq:proof4,
   $
     =>^(#ref(<eq:proof5>)) macron(Pi) & = & max(
-      & { macron(Pi)_"cur"} union {pi(t_"cur")} \
+      & { macron(Pi)_"old"} union {pi(J_"cur")} \
       & & union & {pi(J) mid(|) J "may write" R_m}
     ) \
     & =^#place-super($macron(Pi) >= pi(J_"cur")$) & max(
-      & { macron(Pi)_"cur"} \
+      & { macron(Pi)_"old"} \
       & & union & {pi(J) mid(|) J "may write" R_m}
     ) \
-    & = & max(&macron(Pi)_"cur", ceil(R)_"r"),
+    & = & max(&macron(Pi)_"old", ceil(R)_"r"),
   $
   which proves @eq:rw-lock-ceil-r.
 ]
@@ -674,9 +677,9 @@ $<eq:proof5>
 If the lock was a write-lock, $v'_R_m = 0$. Continuing
 from~@eq:proof2
 $
-  => macron(Pi) = & max({macron(Pi)_"cur"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-  = & max({macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m}) \
-  = & max(macron(Pi)_"cur", ceil(R)_"w"),
+  => macron(Pi) = & max({macron(Pi)_"old"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
+  = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
+  = & max(macron(Pi)_"old", ceil(R)_"w"),
 $
 proving @eq:rw-lock-ceil-w.
 

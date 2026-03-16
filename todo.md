@@ -5,7 +5,6 @@ TODO
 - heksa: the link in [1] is not accessible
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - p. 2 define DSI
-- p. 2 should Eq. (3) define Pi_cur?  If not, consider adding clarification around Eq. (4)
 - p. 2 Sec. III-A - not sure a subsection label is needed here with only one subsection
 - p. 3 consider making footnote 7 a citation instead
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
