@@ -565,10 +565,10 @@ $<eq:proof2>
 */
 It can be shown that after locking, the system ceiling is
 $
-  macron(Pi) = && max(
-                    & { macron(Pi)_"old"} \
-                    & & union max & {pi(J) mid(|) v'_R_m < mu_R_m (J)}
-                  ),
+  macron(Pi) = & max(
+                   { macron(Pi)_"old"} \
+                   & union max {pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                 ),
 $<eq:proof2>
 where $v_(R_m)^'$ is the new availability of resource $R_m$.
 
@@ -639,11 +639,11 @@ $<eq:proof4>*/
 In the latter case, @eq:proof2 can be expanded to
 $
   macron(Pi)
-  = max(
-          & { macron(Pi)_"old"} \
-    union & {pi(J) mid(|) J "may read" R_m} \
-    union & {pi(J) mid(|) J "may write" R_m}
-  ).
+  = & max(
+        { macron(Pi)_"old"} \
+        & union {pi(J) mid(|) J "may read" R_m} \
+        & union {pi(J) mid(|) J "may write" R_m}
+      ).
 $<eq:proof4>
 
 Assuming the same job does not take several nested read
@@ -662,15 +662,15 @@ $<eq:proof5>
 #box[
   Continuing from @eq:proof4,
   $
-    =>^(#ref(<eq:proof5>)) macron(Pi) & = & max(
-      & { macron(Pi)_"old"} union {pi(J_"cur")} \
-      & & union & {pi(J) mid(|) J "may write" R_m}
+    =>^(#ref(<eq:proof5>)) macron(Pi) & = && max(
+      { macron(Pi)_"old"} union {pi(J_"cur")} \
+      &&& union {pi(J) mid(|) J "may write" R_m}
     ) \
-    & =^#place-super($macron(Pi) >= pi(J_"cur")$) & max(
-      & { macron(Pi)_"old"} \
-      & & union & {pi(J) mid(|) J "may write" R_m}
+    & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
+      { macron(Pi)_"old"} \
+      &&& union {pi(J) mid(|) J "may write" R_m}
     ) \
-    & = & max(&macron(Pi)_"old", ceil(R)_"r"),
+    & = && max(macron(Pi)_"old", ceil(R)_"r"),
   $
   which proves @eq:rw-lock-ceil-r.
 ]
