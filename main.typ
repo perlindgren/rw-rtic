@@ -212,24 +212,24 @@ analysis.~@baker1991srp-journal@buttazzo2011-hard
     #text(rr.pos().map(r => [[#r]]).join(", "))]
 ]
 
+//Rust's ownership and borrowing rules ensure
 The Rust rules regarding _place_ and _move_
 expressions#rustref([expr.place-value], [expr.move]), and
 _pointer_#rustref([type.pointer.reference]) types require
 that any memory location referenced by the program is either
-shared for reading, or only accessible for writing from
-_one_ code location concurrently, in absence of _interior
+shared for reading, or only accessible for writing through a
+single exclusive mutable reference, in absence of _interior
 mutability_ and _raw pointer dereferences_#rustref(
   [interior-mut],
   [type.pointer.raw.safety],
-). To access the exceptions, an explicit, `unsafe` code
-block is always required. The alias rules can be extended to
-apply to other kinds of resources including hardware
-peripherals by modeling them as #box[Zero-Sized]
-Types~(ZSTs). It should be carefully noted that certain
-hardware operations such as side-effectful reads from
-hardware buffers should be considered writes from a
-#box[software~and~concurrency] point of view, and should be
-modelled as such in Rust (cf. `Read` trait in
+). To use the latter two, an explicit, `unsafe` code block
+is always required. The alias rules can be extended to
+non-memory resources such as hardware peripherals by
+modeling them as ownership-guarded types. It should be
+carefully noted that certain hardware operations such as
+side-effectful reads from hardware buffers should be
+considered writes from a concurrency point of view, and
+should be modelled as such in Rust (cf. `Read` trait in
 embedded-io#footnote[https://docs.rs/embedded-io/latest/embedded_io/trait.Read.html]).
 
 /*
@@ -249,13 +249,21 @@ It's useful to observe#heksa[It's unclear whether this _is_ or _should_ be obser
 )<lst:embedded-io-read>
 */
 
-Rust's alias rules coincide with the semantics of
-readers-writer locks. In other words, the interfaces of the
-lock may grant shared references to readers, while mutable
-references can be granted to writers, all the while
-conforming to Rust's notion of safety. Both kinds of
-references should be scoped to match the duration that the
-lock is held.
+The alias rules serve a dual-purpose: first, they ensure
+that data races cannot occur in safe, concurrent, e.g.,
+preemptive code, but also second, that correct access
+constraints are enforced for downstream consumers of any
+resource. Rust's alias rules coincide with the semantics of
+readers-writer locks, i.e., multiple concurrent readers are
+allowed in absence of writers. This is convenient because
+the consumer of an API providing read-only access can be
+forbidden from mutating the resource, allowing the
+requirements of the to-be-presented execution model to be
+enforced.
+//Both kinds of references should be scoped to match the duration that the lock is held.
+/*Similarly, if a region containing only reads of shared data
+is preempted, data races are prevented in the absence of
+`unsafe` misuse.*/
 
 == RTIC//, RTIC v2, RTIC eVo / MRTIC
 
