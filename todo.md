@@ -20,8 +20,6 @@
 
 - Address this: "Additional guidance to the reader about the proposed approach could improve the presentation.  For example, early in Sec. IV, (or maybe Sec. V), there could be an explanation that the following work will describe how to take the fundamental components of the SRP and compute the priority ceiling in a way that is consistent with the desired behavior in the RTIC framework."
 
-- The term "lock closures" would benefit from explanation.
-
 - In the theorem, the naming of R_r and R_w initially seems backwards; this could benefit from additional explanation.
 
 - Address this: "Only in Sec. VII does it become clear that the manner in which read access is being supported is to redefine the priority ceiling to allow read preemptions, but that this is implemented overall with a write lock.  It would strengthen the paper to have this context described more clearly earlier in the paper."
