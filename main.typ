@@ -56,11 +56,12 @@
   ],
   authors: (
     (
-      name: "Anonymous Authors for review",
-      department: [Anonymous],
-      organization: [Anonymous],
-      location: [Anonymous],
-      email: "anonymous@example.com",
+      name: "Valhe Kouneli",
+      department: [Faculty of Information Technology and
+        Communication Sciences],
+      organization: [Tampere University],
+      location: [Tampere, Finland],
+      email: "valhe.kouneli@gmail.com",
     ),
     (
       name: "Henri Lunnikivi",
