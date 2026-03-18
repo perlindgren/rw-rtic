@@ -807,8 +807,11 @@ given full access to the resource, similarly to a mutex
 resource. This is not a problem, as the usage of the
 write-lock determines which tasks the `rw-pass` considers
 writers of the resource, and resources are not writable
-without using the write-lock. Strengthening the model is out
-of scope for this paper and left as future work.
+without using the write-lock. However, as the all resources
+are declared fully shared on the DSL level, we lose the
+ability to analyse the DSL to determine worst-case blocking
+times. Strengthening the model is out of scope for this
+paper and left as future work.
 
 For general multi-unit resources, the new system ceiling
 value is different for each number of remaining resources.
