@@ -354,8 +354,6 @@ to the new, remaining amount of unlocked $R$, denoted here
 by $v'_R$. This way of calculating $macron(Pi)$ is
 interchangable with @eq:system-ceiling.
 
-== Readers-writer resources
-
 Readers-writer resources are a special case of multi-unit
 resources. In the context of SRP, they can be modeled as
 abstract resources with a count equaling the number of jobs

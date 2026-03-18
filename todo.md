@@ -5,7 +5,6 @@
 - please citations consistently at the end of the sentence
 - Capitalize section headings correctly
 - p. 2 consider adding a citation for the "more than a million on crates.io"
-- p. 2 Sec. III-A - not sure a subsection label is needed here with only one subsection
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
 
 - Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
