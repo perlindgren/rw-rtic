@@ -726,7 +726,7 @@ When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)
 
 Read and write accesses need to be treated as distinct from
 each other. In effect, two ceilings per resource $R$ are
-required:
+required to be precomputed:
 
 - reader ceiling $ceil(R)_"r"$: maximum priority among jobs
   with _write access_ to the resource, and

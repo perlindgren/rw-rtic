@@ -10,7 +10,7 @@
 - Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
 - Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."
 
-- Address this: "It seems that the chosen approach will allow "read" access by allowing an ongoing read to be preempted by another read, but that the mechanism to achieve this would allow write access to either job in this scenario, which seems to lose some of the benefits of using a Rust-based framework"
+- Valhe: Address this: "It seems that the chosen approach will allow "read" access by allowing an ongoing read to be preempted by another read, but that the mechanism to achieve this would allow write access to either job in this scenario, which seems to lose some of the benefits of using a Rust-based framework"
 
 - Address this: "the limitations of the approach could be more clearly presented"
 
