@@ -1,7 +1,9 @@
 #import "preamble.typ": *
 #show: doc => preamble(doc)
 
-#import "@preview/charged-ieee:0.1.4": ieee
+// Depend on override from submodule
+//#import "@preview/charged-ieee:0.1.4": ieee
+#import "templates/charged-ieee/lib.typ": ieee
 
 // Local overrides
 #set figure(placement: top)
@@ -510,182 +512,187 @@ distinction of whether the lock is a read or a write lock.
 /*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/
 A formalization and a proof of the statements follows:
 
-*Theorem*
+#theorem([
+  Assuming @eq:resource-ceiling and $pi = p$,
+  /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
 
-Assuming @eq:resource-ceiling and $pi = p$,
-/*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
+  Formally,*/ SRP compliance is maintained when:
 
-Formally,*/ SRP compliance is maintained when:
-
-+ upon taking a read-lock of resource $R$ is taken, the
-  system ceiling $macron(Pi)$ is updated to
-  $
-    macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
-  $<eq:rw-lock-ceil-r>
-
-  where $ceil(R)_"r"$ is the highest preemption level of
-  jobs with write-access to $R$, and
-+ upon taking a write-lock of resource $R$, the system
-  ceiling $macron(Pi)$ changes to
-  $
-    macron(Pi) = max(macron(Pi)_"old", ceil(R)_0).
-  $<eq:rw-lock-ceil-w>
-
-*Proof*
-
-Assume the system has resources $R_1, ..., R_n$ and their
-availability is $v_R_1, ..., v_R_n$ before taking the lock.
-/*Now, by definition @eq:system-ceiling, the system ceiling is
-$
-  macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
-$<eq:proof0>*/
-Assume the read or write lock operation concerns resource
-$R_m$, $m in 1, ..., n$.
-/*
-After the locking, the system ceiling is, by definition,
-$
-  macron(Pi) = max(
-    {ceil(R_i)_v_R_i mid(|) i in {1, ..., n} "and" i in.not {m}} \
-    union {ceil(R_m)_v_(R_m)^'}
-  ),
-$<eq:proof1>
-where $v_(R_m)^'$ is the new availability of resource $R_m$.
-
-It can be shown that because
-
-$
-  ceil(R_m)_v_(R_m)^' >= ceil(R_m)_v_(R_m),
-$<eq:proof1.5>
-it follows that
-$
-  =>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = & max(
-                                                              { macron(Pi)_"cur"} \
-                                                                                  & union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
-                                                            ).
-$<eq:proof2>
-*/
-It can be shown that after locking, the system ceiling is
-$
-  macron(Pi) = & max(
-                   { macron(Pi)_"old"} \
-                   & union max {pi(J) mid(|) v'_R_m < mu_R_m (J)}
-                 ),
-$<eq:proof2>
-where $v_(R_m)^'$ is the new availability of resource $R_m$.
-
-/*
-The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e., $ceil(R_m)_v_R_m <= ceil(R_m)_v_(R_m)^'$, because $v_R_m > v_(R_m)^'$.
-
-#box[From this, it follows that we can add the lower value inside the maximum:
-
-  #math.equation(
+  + upon taking a read-lock of resource $R$ is taken, the
+    system ceiling $macron(Pi)$ is updated to
     $
-      =>^(#ref(<eq:proof1>)) & macron(Pi) = & max(
-                                                & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
-                                                &                                                              & union & {ceil(R_m)_v_R_m} union {ceil(R_m)_v_(R_m)^'}
-                                              ) \
-                         <=> & macron(Pi) = & max(
-                                                & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
-                                                &                                           & union & {ceil(R_m)_v_m^'}
-                                              ) \
-                         <=> & macron(Pi) = & max(
-                                                & max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
-                                                &                                                & union & {ceil(R_m)_v_(R_m)^'}
-                                              ) \
-       <=>^#ref(<eq:proof0>) & macron(Pi) = & max(&mid({ macron(Pi)_"cur"}) union {ceil(R_m)_v'_(R_m)}),
-    $,
-  )]
-  #box[
-  where the last term can be expanded to its definition:
+      macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
+    $<eq:rw-lock-ceil-r>
+
+    where $ceil(R)_"r"$ is the highest preemption level of
+    jobs with write-access to $R$, and
+  + upon taking a write-lock of resource $R$, the system
+    ceiling $macron(Pi)$ changes to
+    $
+      macron(Pi) = max(macron(Pi)_"old", ceil(R)_0).
+    $<eq:rw-lock-ceil-w>
+])
+
+#proof([
+  Assume the system has resources $R_1, ..., R_n$ and their
+  availability is $v_R_1, ..., v_R_n$ before taking the
+  lock.
+  /*Now, by definition @eq:system-ceiling, the system ceiling is
   $
-    <=>^#ref(<eq:resource-ceiling-orig>) & macron(Pi) = & max(
-      & { macron(Pi)_"cur"} \
-      &                     & union & {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (J)})}
-    ) \
-    <=> & macron(Pi) = & max(
-      & { macron(Pi)_"cur"} union {0} \
-      &                               & union & max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
-    ) \
-    <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+    macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
+  $<eq:proof0>*/
+  Assume the read or write lock operation concerns resource
+  $R_m$, $m in 1, ..., n$.
+  /*
+  After the locking, the system ceiling is, by definition,
+  $
+    macron(Pi) = max(
+      {ceil(R_i)_v_R_i mid(|) i in {1, ..., n} "and" i in.not {m}} \
+      union {ceil(R_m)_v_(R_m)^'}
+    ),
+  $<eq:proof1>
+  where $v_(R_m)^'$ is the new availability of resource $R_m$.
+
+  It can be shown that because
+
+  $
+    ceil(R_m)_v_(R_m)^' >= ceil(R_m)_v_(R_m),
+  $<eq:proof1.5>
+  it follows that
+  $
+    =>^(#ref(<eq:proof1>) #ref(<eq:proof1.5>)) macron(Pi) = & max(
+                                                                { macron(Pi)_"cur"} \
+                                                                                    & union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                                                              ).
   $<eq:proof2>
-  ]
+  */
+  It can be shown that after locking, the system ceiling is
+  $
+    macron(Pi) = & max(
+                     { macron(Pi)_"old"} \
+                     & union max {pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                   ),
+  $<eq:proof2>
+  where $v_(R_m)^'$ is the new availability of resource
+  $R_m$.
 
-*/
+  /*
+  The new resource ceiling of $R_m$ must be higher or equal than the previous, i.e., $ceil(R_m)_v_R_m <= ceil(R_m)_v_(R_m)^'$, because $v_R_m > v_(R_m)^'$.
 
-*Proof for @eq:rw-lock-ceil-r (read-lock):*
+  #box[From this, it follows that we can add the lower value inside the maximum:
 
-After locking, either $v'_R_m in {1, ..., n-1}$ or
-$v_R_m = 0$.
+    #math.equation(
+      $
+        =>^(#ref(<eq:proof1>)) & macron(Pi) = & max(
+                                                  & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m} "and" i in.not {m}} \
+                                                  &                                                              & union & {ceil(R_m)_v_R_m} union {ceil(R_m)_v_(R_m)^'}
+                                                ) \
+                           <=> & macron(Pi) = & max(
+                                                  & {ceil(R_i)_v_R_i mid(|) i in {1, ..., m}} \
+                                                  &                                           & union & {ceil(R_m)_v_m^'}
+                                                ) \
+                           <=> & macron(Pi) = & max(
+                                                  & max({ceil(R_i)_v_R_i mid(|) i in {1, ..., m}}) \
+                                                  &                                                & union & {ceil(R_m)_v_(R_m)^'}
+                                                ) \
+         <=>^#ref(<eq:proof0>) & macron(Pi) = & max(&mid({ macron(Pi)_"cur"}) union {ceil(R_m)_v'_(R_m)}),
+      $,
+    )]
+    #box[
+    where the last term can be expanded to its definition:
+    $
+      <=>^#ref(<eq:resource-ceiling-orig>) & macron(Pi) = & max(
+        & { macron(Pi)_"cur"} \
+        &                     & union & {max({0} union {pi(J) mid(|) v'_R_m < mu_R_m (J)})}
+      ) \
+      <=> & macron(Pi) = & max(
+        & { macron(Pi)_"cur"} union {0} \
+        &                               & union & max{pi(J) mid(|) v'_R_m < mu_R_m (J)}
+      ) \
+      <=>^(pi>=0) & macron(Pi) = & max(&{ macron(Pi)_"cur"} union max{pi(J) mid(|) v'_R_m < mu_R_m (J)}).
+    $<eq:proof2>
+    ]
 
-In the former case, the condition $v'_R_m < mu_R_m (J)$ in
-@eq:proof2 corresponds to $J$ having write access to $R_m$,
-proving @eq:rw-lock-ceil-r.
+  */
+])
 
-/*In the latter case, the condition $v'_R_m < mu_R_m (J)$ corresponds $J$ having access to $R_m$ in general, as both reading and writing jobs are blocked when there is zero $R_m$, i.e.
+#proof(title: [Proof for @eq:rw-lock-ceil-r (read-lock)], [
+  After locking, either $v'_R_m in {1, ..., n-1}$ or
+  $v_R_m = 0$.
 
-$
-  =>^#ref(<eq:proof2>) macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m})
-$<eq:proof3>
+  In the former case, the condition $v'_R_m < mu_R_m (J)$ in
+  @eq:proof2 corresponds to $J$ having write access to
+  $R_m$, proving @eq:rw-lock-ceil-r.
 
-It can be expanded to
-$
-  =>^#ref(<eq:proof3>) macron(Pi)
-  = max(
-          & { macron(Pi)_"cur"} \
-    union & {pi(J) mid(|) J "may read" R_m} \
-    union & {pi(J) mid(|) J "may write" R_m}
-  )
-$<eq:proof4>*/
+  /*In the latter case, the condition $v'_R_m < mu_R_m (J)$ corresponds $J$ having access to $R_m$ in general, as both reading and writing jobs are blocked when there is zero $R_m$, i.e.
 
-In the latter case, @eq:proof2 can be expanded to
-$
-  macron(Pi)
-  = & max(
+  $
+    =>^#ref(<eq:proof2>) macron(Pi) = & max({ macron(Pi)_"cur"} union {pi(J) mid(|) J "needs" R_m})
+  $<eq:proof3>
+
+  It can be expanded to
+  $
+    =>^#ref(<eq:proof3>) macron(Pi)
+    = max(
+            & { macron(Pi)_"cur"} \
+      union & {pi(J) mid(|) J "may read" R_m} \
+      union & {pi(J) mid(|) J "may write" R_m}
+    )
+  $<eq:proof4>*/
+
+  In the latter case, @eq:proof2 can be expanded to
+  $
+    macron(Pi)
+    = & max(
+          { macron(Pi)_"old"} \
+          & union {pi(J) mid(|) J "may read" R_m} \
+          & union {pi(J) mid(|) J "may write" R_m}
+        ).
+  $<eq:proof4>
+
+  Assuming the same job does not take several nested read
+  locks, for there to be zero units of $R_m$ available after
+  a read lock, the job must have preempted all other jobs
+  that access $R_m$ while they were holding a read lock on
+  resource $R_m$. For that to be possible, the job has to be
+  the highest priority job with read access to $R_m$, i.e.,
+  $
+    pi(J_"cur") = max{pi(J) mid(|) J "may read" R_m}.
+  $<eq:proof5>
+  #let place-super(x) = move(dy: -0.6em, box(
+    width: 0pt,
+    box(
+      width: 10em,
+      $script(#x)$,
+    ),
+  ))
+  #box[
+    Continuing from @eq:proof4,
+    $
+      =>^(#ref(<eq:proof5>)) macron(Pi) & = && max(
+        { macron(Pi)_"old"} union {pi(J_"cur")} \
+        &&& union {pi(J) mid(|) J "may write" R_m}
+      ) \
+      & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
         { macron(Pi)_"old"} \
-        & union {pi(J) mid(|) J "may read" R_m} \
-        & union {pi(J) mid(|) J "may write" R_m}
-      ).
-$<eq:proof4>
+        &&& union {pi(J) mid(|) J "may write" R_m}
+      ) \
+      & = && max(macron(Pi)_"old", ceil(R)_"r"),
+    $
+    which proves @eq:rw-lock-ceil-r.
+  ]
+])
 
-Assuming the same job does not take several nested read
-locks, for there to be zero units of $R_m$ available after a
-read lock, the job must have preempted all other jobs that
-access $R_m$ while they were holding a read lock on resource
-$R_m$. For that to be possible, the job has to be the
-highest priority job with read access to $R_m$, i.e.,
-$
-  pi(J_"cur") = max{pi(J) mid(|) J "may read" R_m}.
-$<eq:proof5>
-#let place-super(x) = move(dy: -0.6em, box(width: 0pt, box(
-  width: 10em,
-  $script(#x)$,
-)))
-#box[
-  Continuing from @eq:proof4,
+#proof(title: [Proof for @eq:rw-lock-ceil-w (write-lock)], [
+  If the lock was a write-lock, $v'_R_m = 0$. Continuing
+  from~@eq:proof2
   $
-    =>^(#ref(<eq:proof5>)) macron(Pi) & = && max(
-      { macron(Pi)_"old"} union {pi(J_"cur")} \
-      &&& union {pi(J) mid(|) J "may write" R_m}
-    ) \
-    & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
-      { macron(Pi)_"old"} \
-      &&& union {pi(J) mid(|) J "may write" R_m}
-    ) \
-    & = && max(macron(Pi)_"old", ceil(R)_"r"),
+    => macron(Pi) = & max({macron(Pi)_"old"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
+    // = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
+    = & max(macron(Pi)_"old", ceil(R)_0),
   $
-  which proves @eq:rw-lock-ceil-r.
-]
-
-*Proof for @eq:rw-lock-ceil-w (write-lock):*
-
-If the lock was a write-lock, $v'_R_m = 0$. Continuing
-from~@eq:proof2
-$
-  => macron(Pi) = & max({macron(Pi)_"old"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-  // = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
-  = & max(macron(Pi)_"old", ceil(R)_0),
-$
-proving @eq:rw-lock-ceil-w.
+  proving @eq:rw-lock-ceil-w.
+])
 
 /*
 = Some title here
