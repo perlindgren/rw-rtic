@@ -740,17 +740,17 @@ required:
   with _read or write access_ to the resource.
 
 The protocol bindings and necessary analysis can be provided
-by a module ("`rw-pass`") implementing the read-lock user
-API and a pre-compilation pass. As the API, a method should
-be provided with the signature #box[`read_lock(Fn(&T)->R)`].
-The method may be implemented simply by calling the
-conventional `lock` method with the ceiling set to
-$ceil(R)_"r"$. As the closure argument, the method should
-pass a shared, immutable reference to the underlying data
-structure. Since the resource~(`&T`) is exposed to user code
-as a shared reference, user code is required by the compiler
-to conform to the rules concerning shared references, i.e.,
-reads only.
+by a new module ("`rw-pass`") implementing the read-lock
+user API and a pre-compilation pass. As the API, a method
+should be provided with the signature
+#box[`read_lock(Fn(&T)->R)`]. The method may be implemented
+simply by calling the conventional `lock` method with the
+ceiling set to $ceil(R)_"r"$. As the closure argument, the
+method should pass a shared, immutable reference to the
+underlying data structure. Since the resource~(`&T`) is
+exposed to user code as a shared reference, user code is
+required by the compiler to conform to the rules concerning
+shared references, i.e., reads only.
 
 During pre-compilation `rw-pass` should:
 

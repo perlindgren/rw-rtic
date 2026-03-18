@@ -24,8 +24,6 @@
 
 - In the theorem, the naming of R_r and R_w initially seems backwards; this could benefit from additional explanation.
 
-- In Sec. VI, clarify if the module rw-pass is a new module that is being presented by this paper or an existing module that can be used.
-
 - Address this: "Only in Sec. VII does it become clear that the manner in which read access is being supported is to redefine the priority ceiling to allow read preemptions, but that this is implemented overall with a write lock.  It would strengthen the paper to have this context described more clearly earlier in the paper."
 
 - Address this misunderstanding: "The paper extends the Stack-based resource protocol (SRP) to
