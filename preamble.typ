@@ -23,3 +23,34 @@
 #let preamble(doc) = {
   doc
 }
+
+// Environment for theorems
+//
+// From the style guide:
+// "The preferred style is to set the head giving the theorem number as a tertiary heading (no Arabic numeral preceding)..."
+#let theorem(content) = {
+  set par(first-line-indent: 0pt)
+  (
+    heading(
+      level: 3,
+      [Theorem],
+    )
+      + [_#(content)_]
+  )
+}
+
+// Environment for proofs
+//
+// From the style guide:
+// "... and the proof head as a quaternary head"
+#let proof(content, title: [Proof]) = {
+  set par(first-line-indent: 0pt)
+  (
+    heading(
+      level: 4,
+      title,
+      numbering: none,
+    )
+      + content
+  )
+}
