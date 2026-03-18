@@ -2,7 +2,7 @@
 
 ## To be addressed
 
-- please citations consistently at the end of the sentence
+- (see formatting todo's below) please citations consistently at the end of the sentence
 - Capitalize section headings correctly
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
@@ -26,5 +26,16 @@ reader-writer locks."
 - Address this: If we assume that source masking is synchroneous and fine, couldn't we just mask out only the writer jobs? In your proposed model, a low-priority (L) reader would block a medium-priority (M) reader if a writer with p(J)>p(M) exists. With a more selective model, this could be done in a more fine-grained fashion. Of course, then we are leaving SRP land, but it might be a road worth investigating.
 
 - Check out, if relevant and should be addressed: "Also, I want to point to the Sloth-series of papers (https://www4.cs.fau.de/Research/Sloth/). They are essentially also mapping task systems to interrupt controllers."
+
+## IEEE formatting stuff
+
+- heksa: "Some articles do not conform to an outline style for theorems and proofs that is easily transformed into the normal heading sequence. The preferred style is to set the head giving the theorem number as a tertiary heading (no Arabic numeral preceding) and the proof head as a quaternary head"
+
+- Example of acceptable way to cite in text: "According to [1]; as demonstrated in [2]; as shown by Brown [4], [5]; as mentioned earlier [2], [4], [5], [6], [7], [9]; Smith [4] and Brown and Jones [5]; Wood et al. [7]"
+
+- "IEEE publications must list names of all authors, up to six names. If there are more than six names listed, use the primary author’s name followed by “et al.” For non-IEEE publications, “et al.” may be used if additional names are not provided."
+
+- Add date of publication for all refs. If not known, use this format: "BAR50 Series Infineon PIN Diode Datasheet. (n.d.). [Online]. Available: http://www.infineon.com"
+
 
 ## Willingly ignored
