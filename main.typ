@@ -170,7 +170,7 @@ been identified, and is therefore left for future work.
 Our contributions are:
 - the observation and proof that for each read- and
   write-lock operation, it is possible to compute such a
-  single, distinct ceiling value at compile time, that
+  _single_, distinct ceiling value at compile time, that
   SRP-compliant resource protection can be implemented in
   constant time,
 - a declarative model for the implementation of a
