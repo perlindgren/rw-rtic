@@ -411,9 +411,11 @@ $
   macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_0)
 $<eq:rtic-new-ceiling>
 and upon unlock---at the end of the lock closure---the old
-value is restored. In combination with the Rust ownership
-system and compliance with SRP, controlled access to shared,
-single-unit resources is guaranteed.
+value is restored. Note that $ceil(R)_0$ is the highest
+priority/pre-emption level of tasks accessing $R$. In
+combination with the Rust ownership system and compliance
+with SRP, controlled access to shared, single-unit resources
+is guaranteed.
 
 == ARM Cortex-M
 
@@ -508,7 +510,7 @@ A formalization and a proof of the statements follows:
 *Theorem*
 
 Assuming @eq:resource-ceiling and $pi = p$,
-/*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_"w"$ for write, and the system is still compliant to SRP.
+/*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
 
 Formally,*/ SRP compliance is maintained when:
 
@@ -523,11 +525,8 @@ Formally,*/ SRP compliance is maintained when:
 + upon taking a write-lock of resource $R$, the system
   ceiling $macron(Pi)$ changes to
   $
-    macron(Pi) = max(macron(Pi)_"old", ceil(R)_"w"),
+    macron(Pi) = max(macron(Pi)_"old", ceil(R)_0).
   $<eq:rw-lock-ceil-w>
-
-  where $ceil(R)_"w"$ is the highest preemption level of
-  jobs that need $R$.
 
 *Proof*
 
@@ -680,8 +679,8 @@ If the lock was a write-lock, $v'_R_m = 0$. Continuing
 from~@eq:proof2
 $
   => macron(Pi) = & max({macron(Pi)_"old"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
-  = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
-  = & max(macron(Pi)_"old", ceil(R)_"w"),
+  // = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
+  = & max(macron(Pi)_"old", ceil(R)_0),
 $
 proving @eq:rw-lock-ceil-w.
 
@@ -720,13 +719,13 @@ Here we can see that the jobs $J_4$ and $J_5$ are exposed to unnecessary blockin
 
 @fig:example[Figure] Bottom, shows an example system with a reader/writer resource shared between the jobs $J_1,..J_5$; the rest of the example remains the same as previous section. The dark lock symbols indicate a write lock and the light lock symbols indicate a read lock.
 
-Now, with each write lock, the system ceiling is raised to $ceil(R)_"w"$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_"r"$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_"w" = 5$ and $ceil(R)_"r" = 3$.
+Now, with each write lock, the system ceiling is raised to $ceil(R)_0$, the maximum priority of any job _accessing_ the resource, and with each read lock, to $ceil(R)_"r"$, the maximum priority of any job _writing_ the resource. In this case $ceil(R)_0 = 5$ and $ceil(R)_"r" = 3$.
 
 When $J_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_"r" = 3$, allowing job $J_4$ to be directly executed (without being blocked). Similarly, when $J_4$ claims the resource, the system ceiling is raised to $ceil(R)_"r" = 3$.
 
 Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the readers-writer lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
 
-When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_"w" = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
+When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_0 = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 */
 
 = Readers-writer lock implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
@@ -737,7 +736,7 @@ required:
 
 - reader ceiling $ceil(R)_"r"$: maximum priority among jobs
   with _write access_ to the resource, and
-- writer ceiling $ceil(R)_"w"$: maximum priority among jobs
+- writer ceiling $ceil(R)_0$: maximum priority among jobs
   with _read or write access_ to the resource.
 
 The protocol bindings and necessary analysis can be provided
@@ -762,10 +761,10 @@ During pre-compilation `rw-pass` should:
 
 The main DSL compilation /*`core-pass`*/ takes as input the
 DSL with knowledge of all accesses to shared resources.
-/*Then, the $ceil(R)_"w"$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
+/*Then, the $ceil(R)_0$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
 The implementation /*`core-pass`*/ will now take into
 account all accesses (both read and write) when computing
-the ceiling $ceil(R)_"w"$. This way, no additional target
+the ceiling $ceil(R)_0$. This way, no additional target
 specific code generation is required, as the target specific
 `lock` implementation can be reused.
 
