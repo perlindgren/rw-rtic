@@ -420,14 +420,10 @@ is guaranteed.
 == ARM Cortex-M
 
 /*Cortex-M family of microcontrollers implement a set of prioritized exception handlers and between 32 to 480 external interrupt lines.*/
-On Cortex-M#footnote[ARM Architecture Reference Manuals
-  ARMv6-M, ARMv7-M, ARMv8-M, available: #link(
-    "https://developer.arm.com/documentation/",
-  )/* @arm-v6m-ref @arm-v7m-ref @arm-v8m-ref*/], external
-interrupts can be controlled and configured with the Nested
-Vectored Interrupt Controller (NVIC). Registers called
-`NVIC_IPR` control the priorities of the external
-interrupts.
+On Cortex-M@arm-cortexm-arch-ref, external interrupts can be
+controlled and configured with the Nested Vectored Interrupt
+Controller (NVIC). Registers called `NVIC_IPR` control the
+priorities of the external interrupts.
 
 /*Pending interrupts are dispatched in priority order, and a higher priority interrupt handler will preempt a lower priority one.*/
 The context of a preempted ISR is pushed to the stack and
