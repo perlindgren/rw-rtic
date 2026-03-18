@@ -110,7 +110,7 @@ hardware-accelerated, executable model for concurrent
 applications as a set of static priority, preemptive,
 run-to-completion jobs with shared resources. At run-time,
 the system is scheduled in compliance with Stack Resource
-Policy #box[(SRP)~@baker1990srp-1]---an extension to
+Policy #box[(SRP)~@baker1991srp-journal]---an extension to
 Priority Ceiling Protocol (PCP)~#ref(<sha1987pcp>)---which
 guarantees a number of desirable features for
 single-processor scheduling. Features of SRP include race-
@@ -119,9 +119,9 @@ single-context-switch-per-job blocking, prevention of
 multiple priority inversion, and simple, efficient,
 single-shared-stack execution.
 
-The original theory for SRP/*@baker1990srp-1*/ describes a
-scheduling policy for a system with multi-unit resources
-that can be used to implement binary semaphores,
+The original theory for SRP/*@baker1991srp-journal*/
+describes a scheduling policy for a system with multi-unit
+resources that can be used to implement binary semaphores,
 readers-writer locks, and general semaphores.
 RTIC---_however_---only implements a mutex based on the
 binary semaphore.
@@ -199,7 +199,7 @@ paper. PCP has been extended to multiprocessor
 systems@rajkumar1988multi. SRP extends single-processor PCP
 and allows the use of both static and dynamic priority
 assignments, and multi-unit
-resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1990srp-1.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
+resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1991srp-journal.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
 PCP and SRP-based methods remain of interest for hard
 real-time scheduling, as conventional operating systems
 cannot provide bounded blocking suitable for real-time
@@ -460,7 +460,7 @@ while the preemption level is used to control
 preemptability.~@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
 
 /*
-= Example of determining the resource ceilings from @baker1990srp-1
+= Example of determining the resource ceilings from @baker1991srp-journal
 #heksa[Left for ECRTS]
 
 Assume there are jobs $J_x in J_1, J_2, J_3$, with priorities and preemption levels corresponding to their index ($pi(J_x)=p(J_x)=x$), and resources $R_1, R_2, R_3$ with amounts $N(R_1) = 3$, $N(R_2) = 1$, $N(R_3) = 3$, and the jobs have the maximum resource needs as specified in @tab:example-needs.
