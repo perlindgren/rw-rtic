@@ -1,4 +1,6 @@
-TODO
+# TODO
+
+## To be addressed
 
 - please citations consistently at the end of the sentence
 - Capitalize section headings correctly
@@ -34,3 +36,5 @@ reader-writer locks."
 - Address this: If we assume that source masking is synchroneous and fine, couldn't we just mask out only the writer jobs? In your proposed model, a low-priority (L) reader would block a medium-priority (M) reader if a writer with p(J)>p(M) exists. With a more selective model, this could be done in a more fine-grained fashion. Of course, then we are leaving SRP land, but it might be a road worth investigating.
 
 - Check out, if relevant and should be addressed: "Also, I want to point to the Sloth-series of papers (https://www4.cs.fau.de/Research/Sloth/). They are essentially also mapping task systems to interrupt controllers."
+
+## Willingly ignored
