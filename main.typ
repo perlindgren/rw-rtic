@@ -791,12 +791,12 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 = Future work
 
 From a modeling perspective, it would be preferable to be
-able to declare some tasks having only read-access to a
+able to declare some tasks as having only read-access to a
 readable-writable resource. In the suggested implementation,
-tasks only reading a readable-writable resource must be
+tasks that only read a readable-writable resource must be
 given full access to the resource, similarly to a mutex
 resource. This is not a problem, as the usage of the
-write-lock determines which tasks the `rw-pass` consideres
+write-lock determines which tasks the `rw-pass` considers
 writers of the resource, and resources are not writable
 without using the write-lock. Strengthening the model is out
 of scope for this paper and left as future work.
