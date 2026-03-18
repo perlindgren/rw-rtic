@@ -29,7 +29,7 @@ reader-writer locks."
 
 ## IEEE formatting stuff
 
-- heksa: "Some articles do not conform to an outline style for theorems and proofs that is easily transformed into the normal heading sequence. The preferred style is to set the head giving the theorem number as a tertiary heading (no Arabic numeral preceding) and the proof head as a quaternary head"
+- [x] heksa: "Some articles do not conform to an outline style for theorems and proofs that is easily transformed into the normal heading sequence. The preferred style is to set the head giving the theorem number as a tertiary heading (no Arabic numeral preceding) and the proof head as a quaternary head"
 
 - Example of acceptable way to cite in text: "According to [1]; as demonstrated in [2]; as shown by Brown [4], [5]; as mentioned earlier [2], [4], [5], [6], [7], [9]; Smith [4] and Brown and Jones [5]; Wood et al. [7]"
 
