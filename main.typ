@@ -796,14 +796,16 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 = Future work
 
-With the current implementation, write access code will be
-generated for resources that are technically read-only. From
-a safety perspective this is perfectly sound, as the
-computed ceiling value $ceil(R)$ does not differentiate
-between accesses. However, from a modeling perspective,
-rejecting write accesses to jobs with read only privileges
-would be preferable. Strengthening the model is out of scope
-for this paper and left as future work.
+From a modeling perspective, it would be preferable to be
+able to declare some tasks having only read-access to a
+readable-writable resource. In the suggested implementation,
+tasks only reading a readable-writable resource must be
+given full access to the resource, similarly to a mutex
+resource. This is not a problem, as the usage of the
+write-lock determines which tasks the `rw-pass` consideres
+writers of the resource, and resources are not writable
+without using the write-lock. Strengthening the model is out
+of scope for this paper and left as future work.
 
 For general multi-unit resources, the new system ceiling
 value is different for each number of remaining resources.
