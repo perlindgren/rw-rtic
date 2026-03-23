@@ -127,11 +127,11 @@ hardware-accelerated, executable model for concurrent
 applications as a set of static priority, preemptive,
 run-to-completion jobs with shared resources. At run-time,
 the system is scheduled in compliance with Stack Resource
-Policy #box[(SRP)~@baker1991srp-journal]---an extension to
-Priority Ceiling Protocol (PCP)~#ref(<sha1987pcp>)---which
-guarantees a number of desirable features for
-single-processor scheduling. Features of SRP include race-
-and deadlock-free execution, bounded,
+Policy (SRP)---an extension to Priority Ceiling Protocol
+(PCP)---which guarantees a number of desirable features for
+single-processor
+scheduling.~@baker1991srp-journal~@sha1987pcp Features of
+SRP include race- and deadlock-free execution, bounded,
 single-context-switch-per-job blocking, prevention of
 multiple priority inversion, and simple, efficient,
 single-shared-stack execution.
@@ -147,8 +147,8 @@ Replacing the binary semaphore with a readers-writer lock,
 when applicable, lowers the estimate for blocking time. More
 systems will pass those scheduling tests that include
 worst-case blocking factors, such as the recurrent
-worst-case response time test~@audsley1993-applying or the
-RM-specific utilization factor test~@sha1989rwpcp.
+worst-case response time test or the RM-specific utilization
+factor test.~@audsley1993-applying~@sha1989rwpcp
 
 The rationale for the current constrained implementation of
 RTIC is that a binary semaphore is sufficient to provide
@@ -213,7 +213,7 @@ job.~@sha1987pcp PCP has been extended to apply to
 readers-writer resources by Sha et al.~@sha1989rwpcp, with
 results similar to those presented for SRP in the current
 paper. PCP has been extended to multiprocessor
-systems~@rajkumar1988multi. SRP extends single-processor PCP
+systems.~@rajkumar1988multi SRP extends single-processor PCP
 and allows the use of both static and dynamic priority
 assignments, and multi-unit
 resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1991srp-journal.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
@@ -299,11 +299,10 @@ of attributes applied on _items_#rustref(
 time analysis, code generation, and the zero-cost
 abstractions for implementing the concurrency model.
 
-Supplemental to the mainline RTIC, a research
-prototype~@mrtic2025 of the framework has been developed to
-study---in a modular way---implementations of features
-including syntax extensions and extended source code
-analysis.
+Supplemental to the mainline RTIC, a research prototype of
+the framework has been developed to study---in a modular
+way---implementations of features including syntax
+extensions and extended source code analysis.~@mrtic2025
 //However, the underlying code base is largerly monolithic, hampering community contributions and evolvability. To this end, a modular re-implementation (RTIC-eVo in the following) has recently been proposed@mrtic2025. While still experimental, it serves the purpose of prototyping new features and concepts for RTIC.
 In the research prototype/*RTIC-eVo*/, the compilation
 process is separated into a set of subsequent passes that
@@ -473,9 +472,9 @@ require a sufficient mechanism for individually configurable
 preemption levels or threshold-based interrupt filtering.
 Instead, this /*domain-specific */mechanism is typically
 supplied through an interrupt controller specification. For
-instance, the CLIC~@riscv-clic-spec defines an adjustable
-interrupt threshold register (`mintthresh`) that can be used
-to filter interrupts by preemption level. For
+instance, the CLIC defines an adjustable interrupt threshold
+register (`mintthresh`) that can be used to filter
+interrupts by preemption level.~@riscv-clic-spec For
 interrupt-specific priority and preemption controls, the
 CLIC defines the `clicintctl` register. On RISC-V, when
 multiple lines are pending, the priority is used to

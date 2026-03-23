@@ -2,7 +2,6 @@
 
 ## To be addressed
 
-- valhe: (see formatting todo's below) please citations consistently at the end of the sentence
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
 
 - heksa: Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
