@@ -330,10 +330,9 @@ it's the oldest of highest priority pending jobs. The
 preemption level of a job $pi(J)$ is defined as any static
 function that satisfies
 
-$
-  p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
-$
-
+#box[#v(-0.35em)$
+    p(J') > p(J) "and" J' "arrives later" => pi(J') > pi(J).
+  $]
 For static priority assignments, $pi(J) = p(J)$.
 
 The system ceiling $macron(Pi)$ is defined as the maximum of
@@ -344,17 +343,18 @@ equal or higher than the preemption level of the running
 job, and all the preemption levels of jobs that might need
 more units of $R$ than are currently available. Formally,
 the resource ceiling can be any function that satisfies
-$
-  ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
-$<eq:srp-resource-ceiling>
 
+#box[#v(-0.35em)$
+    ceil(R)_v_R >= max({pi(J_"cur")} union { pi(J) mid(|) v_R < mu_R (J)}),
+  $<eq:srp-resource-ceiling>]
 where $J_"cur"$ is the currently executing job, $v_R$ is the
 current availability of $R$, and $mu_R (J)$ is the maximum
 need of job $J$ for $R$. Assuming the system has resources
 $R_i, i in {0, ..., n}$,
-$
-  macron(Pi) = max{ceil(R_i)_v_R mid(|) i in {0, ..., n}}.
-$<eq:system-ceiling>
+
+#box[#v(-0.35em)$
+    macron(Pi) = max{ceil(R_i)_v_R mid(|) i in {0, ..., n}}.
+  $<eq:system-ceiling>]
 Alternatively, the term $pi(J_"cur")$ can be removed from
 @eq:srp-resource-ceiling and included in @eq:system-ceiling.
 
@@ -365,10 +365,9 @@ $R$ is obtained, new system ceiling value $macron(Pi)_"new"$
 can be calculated based on the old system ceiling value
 $macron(Pi)_"old"$ by
 
-$
-  macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_v'_R),
-$<eq:new-ceiling>
-
+#box[#v(-0.35em)$
+    macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_v'_R),
+  $<eq:new-ceiling>]
 where $ceil(R)_v'_R$ is the the ceiling of $R$ corresponding
 to the new, remaining amount of unlocked $R$, denoted here
 by $v'_R$. This way of calculating $macron(Pi)$ is
@@ -409,10 +408,9 @@ priority than the compile-time known number are disabled.
 Formally, in RTIC, preemption level equals priority,
 #box[$pi = p$], and the resource ceiling is defined as
 
-$
-  ceil(R)_v_R = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
-$<eq:resource-ceiling>
-
+#box[#v(-0.35em)$
+    ceil(R)_v_R = max({0} union { p(J) mid(|) v_R < mu_R (J)}),
+  $<eq:resource-ceiling>]
 where $v_R$ is the current availability of $R$ and
 $mu_R (J)$ is the maximum need of job $J$ for $R$. The
 values $v_R$ and $mu_R (J)$ are always zero or one, as the
@@ -425,9 +423,10 @@ effective system ceiling.~@Eriksson2013-rtfm
 With this set-up, and using only single-unit resources, the
 HW implements SRP-compliant scheduling, when each lock
 operation on $R$ raises the system ceiling to
-$
-  macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_0)
-$<eq:rtic-new-ceiling>
+
+#box[#v(-0.35em)$
+    macron(Pi)_"new" = max(macron(Pi)_"old", ceil(R)_0)
+  $<eq:rtic-new-ceiling>]
 and upon unlock---at the end of the lock closure---the old
 value is restored. Note that $ceil(R)_0$ is the highest
 priority/pre-emption level of tasks accessing $R$. In
@@ -530,17 +529,18 @@ A formalization and a proof of the statements follows:
 
   + upon taking a read-lock of resource $R$ is taken, the
     system ceiling $macron(Pi)$ is updated to
-    $
-      macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
-    $<eq:rw-lock-ceil-r>
 
+    #box[$
+      macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
+    $<eq:rw-lock-ceil-r>]
     where $ceil(R)_"r"$ is the highest preemption level of
     jobs with write-access to $R$, and
   + upon taking a write-lock of resource $R$, the system
     ceiling $macron(Pi)$ changes to
-    $
+
+    #box[$
       macron(Pi) = max(macron(Pi)_"old", ceil(R)_0).
-    $<eq:rw-lock-ceil-w>
+    $<eq:rw-lock-ceil-w>]
 ])
 
 #proof([
@@ -577,12 +577,13 @@ A formalization and a proof of the statements follows:
   $<eq:proof2>
   */
   It can be shown that after locking, the system ceiling is
-  $
-    macron(Pi) = & max(
-                     { macron(Pi)_"old"} \
-                     & union max {pi(J) mid(|) v'_R_m < mu_R_m (J)}
-                   ),
-  $<eq:proof2>
+
+  #box[#v(-0.35em)$
+      macron(Pi) = & max(
+                       { macron(Pi)_"old"} \
+                       & union max {pi(J) mid(|) v'_R_m < mu_R_m (J)}
+                     ),
+    $<eq:proof2>]
   where $v_(R_m)^'$ is the new availability of resource
   $R_m$.
 
@@ -651,14 +652,15 @@ A formalization and a proof of the statements follows:
   $<eq:proof4>*/
 
   In the latter case, @eq:proof2 can be expanded to
-  $
+
+  #box[$
     macron(Pi)
     = & max(
           { macron(Pi)_"old"} \
           & union {pi(J) mid(|) J "may read" R_m} \
           & union {pi(J) mid(|) J "may write" R_m}
         ).
-  $<eq:proof4>
+  $<eq:proof4>]
 
   Assuming the same job does not take several nested read
   locks, for there to be zero units of $R_m$ available after
@@ -694,8 +696,8 @@ A formalization and a proof of the statements follows:
 ])
 
 #proof(title: [Proof for @eq:rw-lock-ceil-w (write-lock)], [
-  If the lock was a write-lock, $v'_R_m = 0$. Continuing
-  from~@eq:proof2
+  If the lock was a write-lock, #box[$v'_R_m = 0$].
+  Continuing from~@eq:proof2
   $
     => macron(Pi) = & max({macron(Pi)_"old"} union {pi(J) mid(|) 0 < mu_R_m (J)}) \
     // = & max({macron(Pi)_"old"} union {pi(J) mid(|) J "needs" R_m}) \
