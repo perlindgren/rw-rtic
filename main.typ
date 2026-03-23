@@ -155,9 +155,9 @@ RTIC is that a binary semaphore is sufficient to provide
 safe access to shared
 resources/*, and can be implemented in a straightforward, efficient way on most hardware*/.
 Furthermore, in read-write situations where the highest
-priority contender for a resource is a job of the writing
-type, a binary semaphore already provides similar
-schedulability to readers-writer locks under SRP.
+priority contender for a resource is a writer job, a binary
+semaphore already provides similar schedulability to
+readers-writer locks under SRP.
 
 // Contributions
 However, in situations where the highest priority contender
@@ -173,17 +173,13 @@ readers/* requiring priority-ordered preemption among readers of shared resource
 This paper describes a declarative model of SRP-compliant
 readers-writer locks that can be implemented in RTIC at no
 additional cost, when compared to a mutex based on a binary
-semaphore. General multi-unit resources are also of
-interest. However, an overhead-free implementation has not
-been identified, and is therefore left for future work.
-
+semaphore.
 /* RTAS 2024 FAQ:
  * > The paper should clearly state the research problem, together with
  * > information about the key contributions.
  */
 // Contributions
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
-
 Our contributions are:
 - the observation and proof that SRP-compliant protection
   for readable-writable resources can be implemented in
