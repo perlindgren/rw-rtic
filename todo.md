@@ -10,8 +10,7 @@
 
 
 
-- Address this misunderstanding: "The paper extends the Stack-based resource protocol (SRP) to
-reader-writer locks."
+
 
 - Address this: I asked myself, if source masking, which RTIC has to use for some Cortex-M machines, is actually race free. Couldn't it be the case that an IRQ is in flight while you mask its source? Then IRQ delivery, in absence of a BASEPRI register, would be racy. I didn't take a look at the NVIC manual but at least for distributed IRQ systems (CLINT+PLIC, GiC, IO/LAPIC) this could be the case, or?
 
@@ -38,3 +37,7 @@ reader-writer locks."
 
 - Address this: If we assume that source masking is synchroneous and fine, couldn't we just mask out only the writer jobs? In your proposed model, a low-priority (L) reader would block a medium-priority (M) reader if a writer with p(J)>p(M) exists. With a more selective model, this could be done in a more fine-grained fashion. Of course, then we are leaving SRP land, but it might be a road worth investigating.
   - Ignored due to: We would indeed leave SRP land, lol. And maybe get deadlocks etc.
+
+- Address this misunderstanding: "The paper extends the Stack-based resource protocol (SRP) to
+reader-writer locks."
+  - Ignored due to: we clearly state in the introduction that SRP had rw resources already. Maybe this commenter said SRP instead of RTIC accidentally.
