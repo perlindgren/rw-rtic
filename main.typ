@@ -457,10 +457,11 @@ the responsiveness of higher priority ISRs.
 
 Depending on the architecture, interrupts can be masked
 either using the `BASEPRI` register, or if it's not
-implemented, the `NVIC_ISER` and `NVIC_ICER` registers. The
-`BASEPRI` register blocks interrupts of lower or equal
-priority than its set value, but it can not block interrupts
-with the maximum possible priority.
+implemented, the `NVIC_ISER` and `NVIC_ICER` registers.
+Source masking is required to be atomic. The `BASEPRI`
+register blocks interrupts of lower or equal priority than
+its set value, but it can not block interrupts with the
+maximum possible priority.
 /*When RTIC needs to prevent other maximum priority interrupts from preempting the currently running one, interrupts are disabled globally. */The
 `NVIC_ISER` and `NVIC_ICER` registers allow to enable or
 disable individual interrupts.

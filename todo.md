@@ -8,12 +8,6 @@
 - heksa: Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
 - valhe: Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."
 
-
-
-
-
-- Address this: I asked myself, if source masking, which RTIC has to use for some Cortex-M machines, is actually race free. Couldn't it be the case that an IRQ is in flight while you mask its source? Then IRQ delivery, in absence of a BASEPRI register, would be racy. I didn't take a look at the NVIC manual but at least for distributed IRQ systems (CLINT+PLIC, GiC, IO/LAPIC) this could be the case, or?
-
 - Check out, if relevant and should be addressed: "Also, I want to point to the Sloth-series of papers (https://www4.cs.fau.de/Research/Sloth/). They are essentially also mapping task systems to interrupt controllers."
 
 ## IEEE formatting stuff
