@@ -202,9 +202,9 @@ Our contributions are:
   readers-writer resources in RTIC.
 //- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
-= Prior work
+= Prior Work
 
-== SRP-based scheduling
+== SRP-Based Scheduling
 
 PCP describes a locking protocol for binary semaphores, for
 which priority inversion is bounded by the execution time of
@@ -223,7 +223,7 @@ cannot provide bounded blocking suitable for real-time
 schedulability
 analysis.~@baker1991srp-journal@buttazzo2011-hard
 
-== Rust aliasing guarantees
+== Rust Aliasing Guarantees
 
 #let rustref(..rr) = footnote[@rust-ref[
     #text(rr.pos().map(r => [[#r]]).join(", "))]
@@ -315,7 +315,7 @@ In @sec:rw-pass, the modular research prototype is leveraged
 to sketch out the implementation of readers-writer
 resources/* in RTIC-eVo*/.
 
-= Baseline model (SRP) /* "Existing theory */
+= Baseline Model (SRP) /* "Existing theory */
 
 SRP assumes a fixed number of run-to-completion jobs running
 on a single processor, sharing a fixed number of multi-unit
@@ -388,7 +388,7 @@ allows multiple readers but only one writer at a time.
 Generally, an infinite number of readers is allowed, but
 only a single writer at any one time.
 
-= RTIC restricted model
+= RTIC Restricted Model
 
 RTIC compiles programmer-defined and -prioritized jobs to
 interrupt handlers that get a corresponding, relative
@@ -515,7 +515,7 @@ Using @tab:example-needs, it can be determined which is the highest preemption l
 When a resource $R$ is locked, the system ceiling is raised to the maximum of the current value and the value corresponding to the number of available $R$.
 */
 
-= SRP-compliant readers-writer lock<sect:proof>
+= SRP-Compliant Readers-Writer Lock<sect:proof>
 
 The current version of RTIC uses only single-unit resources.
 With multi-unit resources of the readers-writer type, there
@@ -752,7 +752,7 @@ Notice that  if the last possible read-lock was taken, leaving the availability 
 When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_0 = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 */
 
-= Readers-writer lock implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
+= Readers-Writer Lock Implementation in RTIC/*#box[RTIC-eVo]*/<sec:rw-pass>
 
 Read and write accesses need to be treated as distinct from
 each other. In effect, two ceilings per resource $R$ are
@@ -818,7 +818,7 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 - Update set point in low-priority. Execute read algorithm / motor control in high priority.
 */
 
-= Future work
+= Future Work
 
 From a modeling perspective, it would be preferable to be
 able to declare some tasks as having only read-access to a
