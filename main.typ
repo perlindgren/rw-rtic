@@ -285,10 +285,10 @@ implementation of (hard) real-time systems. Over the last
 decade, the first two major versions of RTIC---cortex-m-rtic
 and RTIC~v2---have gained wide adoption with a combined
 download count of more than a million on crates.io.
-@cortex-m-rtic@rtic For the developer, RTIC provides a
-declarative, SRP-compliant, tasks-and-resources model as a
-thin, integrated domain-specific language (DSL) in the form
-of attributes applied on _items_#rustref(
+@crates.io For the developer, RTIC provides a declarative,
+SRP-compliant, tasks-and-resources model as a thin,
+integrated domain-specific language (DSL) in the form of
+attributes applied on _items_#rustref(
   [items],
 ) in Rust code. RTIC also provides facilities for compile
 time analysis, code generation, and the zero-cost
