@@ -87,7 +87,21 @@
     "RTIC",
     "Rust",
   ),
-  bibliography: bibliography("refs.bib"),
+  bibliography: {
+    // HACK: workaround to display "no date" entries in bibliography.
+    //
+    // The IEEE formatting guide requires:
+    //
+    // "Add date of publication for all refs. If not known, use this format: "BAR50
+    // Series Infineon PIN Diode Datasheet. (n.d.). [Online]. Available:
+    // http://www.infineon.com"
+    //
+    // In refs.bib, we write "0000" which gets turned to '1 BC'. Then,
+    // here we override that to be displayed as (n.d.).
+    show "1 BC": "(n.d.)"
+
+    bibliography("refs.bib")
+  },
   figure-supplement: [Figure],
 )
 
