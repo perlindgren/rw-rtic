@@ -371,7 +371,7 @@ $macron(Pi)_"old"$ by
 where $ceil(R)_v'_R$ is the the ceiling of $R$ corresponding
 to the new, remaining amount of unlocked $R$, denoted here
 by $v'_R$. This way of calculating $macron(Pi)$ is
-interchangable with @eq:system-ceiling.
+interchangeable with @eq:system-ceiling.
 
 Readers-writer resources are a special case of multi-unit
 resources. In the context of SRP, they can be modeled as
