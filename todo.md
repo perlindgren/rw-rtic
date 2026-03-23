@@ -6,11 +6,7 @@
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
 
 - heksa: Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
-- Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."
-
-- Valhe: Address this: "It seems that the chosen approach will allow "read" access by allowing an ongoing read to be preempted by another read, but that the mechanism to achieve this would allow write access to either job in this scenario, which seems to lose some of the benefits of using a Rust-based framework"
-
-- Address this: "the limitations of the approach could be more clearly presented"
+- valhe: Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."
 
 - Address this: "Additional guidance to the reader about the proposed approach could improve the presentation.  For example, early in Sec. IV, (or maybe Sec. V), there could be an explanation that the following work will describe how to take the fundamental components of the SRP and compute the priority ceiling in a way that is consistent with the desired behavior in the RTIC framework."
 
