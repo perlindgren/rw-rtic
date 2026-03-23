@@ -161,12 +161,12 @@ schedulability to readers-writer locks under SRP.
 
 // Contributions
 However, in situations where the highest priority contender
-is not a write, a readers-writer lock would improve the
-response time of high-priority
+is not a write, a readers-writer lock improves the response
+time of high-priority
 readers/*, allowing to expedite higher priority tasks that only need to read the resource*/.
 Therefore, inclusion of the readers-writer lock in RTIC's
-supported lock types would extend RTIC's applicability
-across real-time systems with high-priority
+supported lock types extends RTIC's applicability across
+real-time systems with high-priority
 readers/* requiring priority-ordered preemption among readers of shared resources*/.
 //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
 
