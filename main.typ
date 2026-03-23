@@ -185,11 +185,11 @@ been identified, and is therefore left for future work.
 //In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
 
 Our contributions are:
-- the observation and proof that for each read- and
-  write-lock operation, it is possible to compute such a
-  _single_, distinct ceiling value at compile time, that
-  SRP-compliant resource protection can be implemented in
-  constant time,
+- the observation and proof that SRP-compliant protection
+  for readable-writable resources can be implemented in
+  constant time by computing only a _single_, distinct
+  ceiling value for each read- and write-lock operation at
+  compile time,
 - a declarative model for the implementation of a
   readers-writer lock in RTIC with no additional overhead
   when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]

@@ -6,7 +6,6 @@
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
 
 - heksa: Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
-- valhe: Address this: "Also, to me, the novelty w.r.t. related work is not clear. I was under the impression that a priority ceiling could be already computed offline."
 
 - Check out, if relevant and should be addressed: "Also, I want to point to the Sloth-series of papers (https://www4.cs.fau.de/Research/Sloth/). They are essentially also mapping task systems to interrupt controllers."
 
