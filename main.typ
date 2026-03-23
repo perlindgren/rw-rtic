@@ -326,7 +326,7 @@ In SRP, a job#footnote({
     distinction is not necessary.]
 }) $J$ will preempt another if its _preemption level_
 $pi(J)$ is higher than the _system ceiling_ $macron(Pi)$ and
-it's the oldest and highest priority of any pending job. The
+it's the oldest of highest priority pending jobs. The
 preemption level of a job $pi(J)$ is defined as any static
 function that satisfies
 
