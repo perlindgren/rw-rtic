@@ -3,7 +3,6 @@
 ## To be addressed
 
 - (see formatting todo's below) please citations consistently at the end of the sentence
-- Capitalize section headings correctly
 - p. 2 consider adding a citation for the "more than a million on crates.io"
 - heksa: p. 3 consider no indent formatting for Theorem and Proof (possibly starting following text on the same line as well)
 
