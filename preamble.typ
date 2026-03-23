@@ -54,3 +54,11 @@
       + content
   )
 }
+
+#let place-super(x) = move(dy: -0.6em, box(
+  width: 0pt,
+  box(
+    width: 10em,
+    $script(#x)$,
+  ),
+))

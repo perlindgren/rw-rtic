@@ -671,13 +671,6 @@ A formalization and a proof of the statements follows:
   $
     pi(J_"cur") = max{pi(J) mid(|) J "may read" R_m}.
   $<eq:proof5>
-  #let place-super(x) = move(dy: -0.6em, box(
-    width: 0pt,
-    box(
-      width: 10em,
-      $script(#x)$,
-    ),
-  ))
   #box[
     Continuing from @eq:proof4,
     $
