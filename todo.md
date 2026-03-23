@@ -10,7 +10,6 @@
 
 - Address this: "Additional guidance to the reader about the proposed approach could improve the presentation.  For example, early in Sec. IV, (or maybe Sec. V), there could be an explanation that the following work will describe how to take the fundamental components of the SRP and compute the priority ceiling in a way that is consistent with the desired behavior in the RTIC framework."
 
-- Address this: "Only in Sec. VII does it become clear that the manner in which read access is being supported is to redefine the priority ceiling to allow read preemptions, but that this is implemented overall with a write lock.  It would strengthen the paper to have this context described more clearly earlier in the paper."
 
 - Address this misunderstanding: "The paper extends the Stack-based resource protocol (SRP) to
 reader-writer locks."
@@ -33,3 +32,6 @@ reader-writer locks."
 
 
 ## Willingly ignored
+
+- Address this: "Only in Sec. VII does it become clear that the manner in which read access is being supported is to redefine the priority ceiling to allow read preemptions, but that this is implemented overall with a write lock.  It would strengthen the paper to have this context described more clearly earlier in the paper."
+  - Ignored due to: it is not relevant how we implement this. This is only an example implementation.
