@@ -161,7 +161,7 @@ readers-writer locks under SRP.
 
 // Contributions
 However, in situations where the highest priority contender
-is not a write, a readers-writer lock improves the response
+is not a writer, a readers-writer lock improves the response
 time of high-priority
 readers/*, allowing to expedite higher priority tasks that only need to read the resource*/.
 Therefore, inclusion of the readers-writer lock in RTIC's
@@ -206,12 +206,11 @@ PCP describes a locking protocol for binary semaphores, for
 which priority inversion is bounded by the execution time of
 the longest critical section of a lower-priority
 job.~@sha1987pcp PCP has been extended to apply to
-readers-writer resources by Sha et al.~@sha1989rwpcp, with
-results similar to those presented for SRP in the current
-paper. PCP has been extended to multiprocessor
-systems.~@rajkumar1988multi SRP extends single-processor PCP
-and allows the use of both static and dynamic priority
-assignments, and multi-unit
+readers-writer resources by Sha et al.~@sha1989rwpcp, in a
+similar manner as for RTIC in the current paper. PCP has
+been extended to multiprocessor systems.~@rajkumar1988multi
+SRP extends single-processor PCP and allows the use of both
+static and dynamic priority assignments, and multi-unit
 resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1991srp-journal.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
 PCP and SRP-based methods remain of interest for hard
 real-time scheduling, as conventional operating systems
