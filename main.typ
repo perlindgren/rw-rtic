@@ -138,13 +138,14 @@ single-shared-stack execution.
 
 SRP/*@baker1991srp-journal*/
 prescribes a system with multi-unit resources that can be
-used to implement binary semaphores, readers-writer locks,
-and general semaphores. RTIC---_however_---only implements a
-mutex based on the binary semaphore.
+used to implement binary semaphores, readers-writer
+locks~(RW locks), and general semaphores.
+RTIC---_however_---only implements a mutex based on the
+binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
-Replacing the binary semaphore with a readers-writer lock,
-when applicable, lowers the estimate for blocking time/*,
-                                                      improving schedulability*/.
+Replacing the binary semaphore with a RW lock, when
+applicable, lowers the estimate for blocking time/*,
+                                                 improving schedulability*/.
 More systems will pass those scheduling tests that include
 worst-case blocking factors, such as the recurrent
 worst-case response time test or the RM-specific utilization
@@ -156,29 +157,28 @@ safe access to shared
 resources/*, and can be implemented in a straightforward, efficient way on most hardware*/.
 Furthermore, in read-write situations where the highest
 priority contender for a resource is a writer job, a binary
-semaphore already provides similar schedulability to
-readers-writer locks under SRP.
+semaphore already provides similar schedulability to RW
+locks under SRP.
 
 // Contributions
 However, in situations where the highest priority contender
-is not a writer, a readers-writer lock improves the response
-time of high-priority
+is not a writer, a RW lock improves the response time of
+high-priority
 readers/*, allowing to expedite higher priority tasks that only need to read the resource*/.
 For instance, consider a closed-loop motor control
 application where a high-priority control task and a
 low-priority logging task both read a shared resource, while
 a mid-priority task occasionally updates the set-point. In
-this case, the readers-writer lock enables a lower upper
-bound for the worst case response time of the control task.
-/*Therefore, inclusion of the readers-writer lock in RTIC's
+this case, the RW lock enables a lower upper bound for the
+worst case response time of the control task.
+/*Therefore, inclusion of the RW lock in RTIC's
 supported lock types extends RTIC's applicability across
 real-time systems with high-priority
 readers requiring priority-ordered preemption among readers of shared resources*/
 //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
 
 This paper describes a declarative model for an
-SRP-compliant readers-writer lock that can be implemented in
-RTIC.
+SRP-compliant RW lock that can be implemented in RTIC.
 /*at no
 additional cost, when compared to a mutex based on a binary
 semaphore.*/
@@ -187,25 +187,25 @@ semaphore.*/
  * > information about the key contributions.
  */
 // Contributions
-//In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds readers-writer locks.
+//In this paper, we describe an extension of the declarative, "RTIC restricted model" that adds RW locks.
 Our contributions are:
 - the observation and proof that SRP-compliant protection
   for readable-writable resources can be implemented in
   constant time by computing only a _single_, distinct
   ceiling value for each read- and write-lock operation at
   compile time,
-- a declarative model for the implementation of a
-  readers-writer lock in RTIC _with no additional overhead_
-  when compared to the binary semaphore based mutex,
+- a declarative model for the implementation of a RW lock in
+  RTIC _with no additional overhead_ when compared to the
+  binary semaphore based mutex,
 //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - the observation that the implementation aligns the
-  SRP-compliant readers-writer lock with the Rust aliasing
-  model, allowing lock APIs to integrate seamlessly with
-  Rust's reference semantics,
-//- Static analysis for readers-writer resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
-- a description of target-independent code generation for
-  readers-writer resources in RTIC.
-//- Evaluation of readers-writer resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
+  SRP-compliant RW lock with the Rust aliasing model,
+  allowing lock APIs to integrate seamlessly with Rust's
+  reference semantics,
+//- Static analysis for RW resources#heksa[What is meant by 'static analysis'?]#heksa[Left for ECRTS.]
+- a description of target-independent code generation for RW
+  resources in RTIC.
+//- Evaluation of RW resources in RTIC with benchmarks and real world applications #heksa(position: "inline")[Left for ECRTS]
 
 = Prior Work
 
@@ -214,12 +214,12 @@ Our contributions are:
 PCP describes a locking protocol for binary semaphores, for
 which priority inversion is bounded by the execution time of
 the longest critical section of a lower-priority
-job.~@sha1987pcp PCP has been extended to apply to
-readers-writer resources by Sha et al.~@sha1989rwpcp, in a
-similar manner as for SRP/RTIC in the current paper. PCP has
-been extended to multiprocessor systems.~@rajkumar1988multi
-SRP extends single-processor PCP and allows the use of both
-static and dynamic priority assignments, and multi-unit
+job.~@sha1987pcp PCP has been extended to apply to RW
+resources by Sha et al.~@sha1989rwpcp, in a similar manner
+as for SRP/RTIC in the current paper. PCP has been extended
+to multiprocessor systems.~@rajkumar1988multi SRP extends
+single-processor PCP and allows the use of both static and
+dynamic priority assignments, and multi-unit
 resources.~@baker1991srp-journal/* EDF, RM, deadline-monotonic scheduling policies @baker1991srp-journal and static LST policies @baker1991srp-journal.#valhe[If we keep the mention of multicore PCP, we need to specify that SRP is for single-processor.]*/
 PCP and SRP-based methods remain of interest for hard
 real-time scheduling, as conventional operating systems
@@ -275,12 +275,11 @@ that data races cannot occur in safe, concurrent, e.g.,
 preemptive code, but also second, that correct access
 constraints are enforced for downstream consumers of any
 resource. Rust's alias rules coincide with the semantics of
-readers-writer locks, i.e., multiple concurrent readers are
-allowed in absence of writers. This is convenient because
-the consumer of an API providing read-only access can be
-forbidden from mutating the resource, allowing the
-requirements of the to-be-presented execution model to be
-enforced.
+RW locks, i.e., multiple concurrent readers are allowed in
+absence of writers. This is convenient because the consumer
+of an API providing read-only access can be forbidden from
+mutating the resource, allowing the requirements of the
+to-be-presented execution model to be enforced.
 //Both kinds of references should be scoped to match the duration that the lock is held.
 /*Similarly, if a region containing only reads of shared data
 is preempted, data races are prevented in the absence of
@@ -528,7 +527,7 @@ is still a single compile-time known number that the system
 ceiling needs to be raised to with each lock
 operation---just like in @eq:rtic-new-ceiling, but with a
 distinction of whether the lock is a read or a write lock.
-/*For this reason, no extra overhead is introduced to RTIC when implementing the readers-writer locks.*/
+/*For this reason, no extra overhead is introduced to RTIC when implementing the RW locks.*/
 A formalization and a proof of the statements follows:
 
 #theorem([
@@ -748,7 +747,7 @@ Now, with each write lock, the system ceiling is raised to $ceil(R)_0$, the maxi
 
 When $J_1$ claims the shared resource for read access, the system ceiling raised to $ceil(R)_"r" = 3$, allowing job $J_4$ to be directly executed (without being blocked). Similarly, when $J_4$ claims the resource, the system ceiling is raised to $ceil(R)_"r" = 3$.
 
-Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the readers-writer lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
+Notice that  if the last possible read-lock was taken, leaving the availability of $R$ to zero, the system ceiling should be raised to $5$ according to @eq:system-ceiling. This seems to mean that an implementation of the RW lock needs to keep count of $R$ availability, but the proof in @sect:proof shows it's not necessary.
 
 When $J_2$ takes a write lock on the resource, the ceiling is raised to $ceil(R)_0 = 5$, guaranteeing an exclusive access to the resource and preventing a race condition.
 */
