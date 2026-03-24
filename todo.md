@@ -2,8 +2,6 @@
 
 ## To be addressed
 
-- heksa: Address this: "The authors should provide a motivational example to explain the benefits of rw locks in this case (the introduction only mentions "would" two times)."
-
 - Check out, if relevant and should be addressed: "Also, I want to point to the Sloth-series of papers (https://www4.cs.fau.de/Research/Sloth/). They are essentially also mapping task systems to interrupt controllers."
 
 ## IEEE formatting stuff
