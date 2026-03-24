@@ -15,11 +15,11 @@
 #show "Cortex-v7m": "Cortex\u{2011}v7m"
 #show "write-lock": "write\u{2011}lock"
 #show "RM-specific": "RM\u{2011}specific"
+#show "SRP-compliant": "SRP\u{2011}compliant"
 
 // Break longer, already-hyphenated words *only* at the hyphen (keep the
 // following commented out).
 /*
-#show "SRP-compliant": "SRP\u{2011}compliant"
 #show "readers-write": "readers\u{2011}write"
 #show "readers-writer": "readers\u{2011}writer"
 #show "side-effectful": "side\u{2011}effectful"
