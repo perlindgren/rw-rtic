@@ -479,11 +479,13 @@ instance, the CLIC defines an adjustable interrupt threshold
 register (`mintthresh`) that can be used to filter
 interrupts by preemption level.~@riscv-clic-spec For
 interrupt-specific priority and preemption controls, the
-CLIC defines the `clicintctl` register. On RISC-V, when
-multiple lines are pending, the priority is used to
-determine which interrupt handler is to be dispatched first,
-while the preemption level is used to control
-preemptability.~@lindgren2023hw-support //Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
+CLIC defines the `clicintctl`
+register.~@lindgren2023hw-support/*On RISC-V, when
+                                 multiple lines are pending, the priority is used to
+                                 determine which interrupt handler is to be dispatched first,
+                                 while the preemption level is used to control
+                                 preemptability.~@lindgren2023hw-support*/
+//Finally, individually configurable interrupt priorities can be emulated on unsupported platforms. @cardenas2025slic#heksa[RTIC can be emulated on any RISC-V (SLIC)]
 
 /*
 = Example of determining the resource ceilings from @baker1991srp-journal
