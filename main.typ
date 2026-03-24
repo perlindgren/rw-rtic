@@ -401,9 +401,9 @@ code, i.e., function closures accessing a shared resource,
 are automatically wrapped with instructions that stack and
 update the system ceiling using a single, predefined value
 based on the resource. The targets supported by RTIC must
-support prioritized interrupts and interrupt masking.
-Interrupt masking is used to create a hardware
-implementation of the SRP-defined system ceiling.
+support prioritized interrupts and interrupt masking which
+is used to create a hardware implementation of the
+SRP-defined system ceiling.
 
 In RTIC so far, only single-unit resources have been
 allowed, as with them, the resource ceiling can only be
@@ -538,8 +538,8 @@ A formalization and a proof of the statements follows:
 
   Formally,*/ SRP compliance is maintained when:
 
-  + upon taking a read-lock of resource $R$ is taken, the
-    system ceiling $macron(Pi)$ is updated to
+  + upon taking a read-lock of resource $R$, the system
+    ceiling $macron(Pi)$ is updated to
 
     #box[$
       macron(Pi) = max(macron(Pi)_"old", ceil(R)_"r")
