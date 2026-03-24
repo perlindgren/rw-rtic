@@ -397,13 +397,13 @@ RTIC compiles programmer-defined and -prioritized jobs to
 interrupt handlers that get a corresponding, relative
 priority level. The jobs---now ISRs---are run preemptively,
 in priority order, by the hardware. Lock closures in user
-code, i.e., function closures accessing a shared resource,
-are automatically wrapped with instructions that stack and
-update the system ceiling using a single, predefined value
-based on the resource. The targets supported by RTIC must
-support prioritized interrupts and interrupt masking which
-is used to create a hardware implementation of the
-SRP-defined system ceiling.
+code, i.e., function closures for accessing a shared
+resource, are automatically wrapped with instructions that
+stack and update the system ceiling using a single,
+predefined value based on the resource. The targets
+supported by RTIC must support prioritized interrupts and
+interrupt masking which is used to create a hardware
+implementation of the SRP-defined system ceiling.
 
 In RTIC so far, only single-unit resources have been
 allowed, as with them, the resource ceiling can only be
