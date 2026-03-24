@@ -143,14 +143,12 @@ and general semaphores. RTIC---_however_---only implements a
 mutex based on the binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
 Replacing the binary semaphore with a readers-writer lock,
-when applicable, lowers the estimate for blocking time,
-improving
-schedulability.~@audsley1993-applying~@sha1989rwpcp
-/* More
-systems will pass those scheduling tests that include
+when applicable, lowers the estimate for blocking time/*,
+                                                      improving schedulability*/.
+More systems will pass those scheduling tests that include
 worst-case blocking factors, such as the recurrent
 worst-case response time test or the RM-specific utilization
-factor test.~@audsley1993-applying~@sha1989rwpcp*/
+factor test.~@audsley1993-applying~@sha1989rwpcp
 
 The rationale for the current constrained implementation of
 RTIC is that a binary semaphore is sufficient to provide
@@ -249,7 +247,7 @@ mutability_ and _raw pointer dereferences_#rustref(
 is always required. The alias rules can be extended to
 non-memory resources such as hardware peripherals by
 modeling them as ownership-guarded types. It should be
-carefully noted that certain hardware operations such as
+/*carefully */noted that certain hardware operations such as
 side-effectful reads from hardware buffers should be
 considered writes from a concurrency point of view, and
 should be modelled as such in Rust (cf. `Read` trait in
@@ -292,14 +290,15 @@ is preempted, data races are prevented in the absence of
 
 The RTIC framework is a Rust-first, free-and-open-source,
 real-time framework, rooted in research on modeling and
-implementation of (hard) real-time systems. Over the last
-decade, the first two major versions of RTIC---cortex-m-rtic
-and RTIC~v2---have gained wide adoption with a combined
-download count of more than a million on crates.io.
-@crates.io For the developer, RTIC provides a declarative,
-SRP-compliant, tasks-and-resources model as a thin,
-integrated domain-specific language (DSL) in the form of
-attributes applied on _items_#rustref(
+implementation of (hard) real-time systems. /*Over the last
+                                            decade, */The
+first two major versions of RTIC---cortex-m-rtic and
+RTIC~v2---are widely adopted with a combined download count
+of more than a million on crates.io. @crates.io For the
+developer, RTIC provides a declarative, SRP-compliant,
+tasks-and-resources model as a thin, integrated
+domain-specific language (DSL) in the form of attributes
+applied on _items_#rustref(
   [items],
 ) in Rust code. RTIC also provides facilities for compile
 time analysis, code generation, and the zero-cost
