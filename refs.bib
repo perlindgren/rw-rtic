@@ -11,11 +11,18 @@
   publisher={Springer}
 }
 
+# Official IEEE citation; similar content to sha1989rwpcp-techreport, edit: abbreviated journal title
 @article{mrtic2025,
-  title={Modular RTIC: Lightweight real time for customized architectures},
+  title={Modular RTIC: Lightweight Real Time for Customized Architectures},
   author={Lunnikivi, Henri and Madaoui, Zakaria and Dzialo, Pawel and Lindgren, Per},
   journal={IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+  month={Nov},
   year={2025},
+  volume={33},
+  number={11},
+  pages={2952-2960},
+  keywords={Codes;DSL;Multicore processing;Computer architecture;Hardware;Software;Real-time systems;Syntactics;Maintenance;Very large scale integration;Heterogeneous systems;real time interrupt-driven concurrency (RTIC);real time (RT) systems;Rust},
+  doi={10.1109/TVLSI.2025.3595712},
   publisher={IEEE}
 }
 
@@ -28,13 +35,17 @@
   organization={IEEE}
 }
 
-@article{sha1987pcp,
+# TODO: This reference is a mess.
+@inproceedings{sha1987pcp,
   title={Task scheduling in distributed real-time systems},
   author={Sha, Lui and Lehoczky, John P and Rajkumar, Ragunathan},
   journal={IECON'87: Automated Design and Manufacturing},
   volume={857},
-  pages={909--917},
+  pages={909--916},
+  series={SPIE Proc.},
   year={1987},
+  doi={10.1117/12.943278},
+  address={Bellingham, WA, USA},
   publisher={SPIE}
 }
 
@@ -49,17 +60,32 @@
   publisher={Springer}
 }
 
-@techreport{sha1989rwpcp,
-  author    = {Sha, Lui and Rajkumar, Ragunathan and Lehoczky, John and Ramamritham, Krithi},
+# Original tech report
+@techreport{sha1989rwpcp-techreport,
+  author    = {Sha, Lui and Rajkumar, Ragunathan and Son, Sang and Chang, Chun-Hyon},
   title     = {A Real-Time Locking Protocol (Read-or-Write Priority Ceiling Protocol)},
   institution = {CMU/SEI},
+  number={CMU/SEI-89-TR-018},
+  month={Apr},
   year      = {1989},
   note      = {Priority-driven two-phase lock protocol allowing compatible reads while bounding blocking},
   url       = {https://ieeexplore.ieee.org/document/83617},
 }
 
+# Official IEEE citation; similar content to sha1989rwpcp-techreport, edit: abbreviated journal title
+@article{sha1989rwpcp,
+  author    = {Sha, L. and Rajkumar, R. and Son, S.H. and Chang, C.-H.},
+  journal={IEEE Trans. Comput.},
+  title={A real-time locking protocol},
+  year={1991},
+  volume={40},
+  number={7},
+  pages={793-800},
+  keywords={Concurrency control;Transaction databases;Access protocols;Job shop scheduling;System recovery;Contracts;Computer science;Database systems;Real time systems;Aircraft},
+  doi={10.1109/12.83617}
+}
 
-@inproceedings{rajkumar1988multi,
+@inproceedings{rajkumar1988multi-old,
   title={Real-Time Synchronization Protocols for Multiprocessors.},
   author={Rajkumar, Ragunathan and Sha, Lui and Lehoczky, John P},
   booktitle={RTSS},
@@ -68,16 +94,36 @@
   year={1988}
 }
 
+# Official IEEE citation; edit: abbreviated book title
+@INPROCEEDINGS{rajkumar1988multi,
+  author={Rajkumar, R. and Sha, L. and Lehoczky, J.P.},
+  booktitle={Proc. Real-Time Syst. Symp.},
+  title={Real-time synchronization protocols for multiprocessors},
+  year={1988},
+  volume={},
+  number={},
+  pages={259-269},
+  keywords={Protocols;Processor scheduling;Real time systems;Scheduling algorithm;Dynamic scheduling;Contracts;Computer science;Statistics;Application software;System recovery},
+  doi={10.1109/REAL.1988.51121}
+}
+
+# Official IEEE citation; edit: abbreviated book title
 @inproceedings{lindgren2023hw-support,
-  title={Hardware support for static-priority stack resource policy based scheduling},
+  title={Hardware support for Static-Priority Stack Resource Policy based scheduling},
   author={Lindgren, Per and Dzialo, Pawel and Lunnikivi, Henri},
   booktitle={2023 IEEE 32nd International Symposium on Industrial Electronics (ISIE)},
   pages={1--5},
   year={2023},
+  publisher={IEEE},
+  volume={},
+  number={},
+  keywords={Surveys;Job shop scheduling;Computer architecture;System recovery;Hardware;Software;Safety},
+  doi={10.1109/ISIE51358.2023.10228088},
   organization={IEEE}
 }
 
-@manual{riscv-unprivileged-spec,
+# HACK: "book"? :D I couldn't think of other ways to get rid of quotes in title
+@book{riscv-unprivileged-spec,
   IDS = {riscv-vol-1},
   title  = {{The RISC-V Instruction Set Manual Volume I: Unprivileged Architecture, Version 20250508: Ratified}},
   author = {{RISC-V International}},
@@ -195,9 +241,10 @@
   url          = {https://crates.io/crates/rtic}
 }
 
-@manual{crates.io,
-  title        = {The Rust community's crate registry},
+# HACK: "book"? :D I couldn't think of other ways to get rid of quotes in title
+@book{crates.io,
+  title        = {crates.io: Rust Package Registry},
   howpublished = {\url{https://crates.io/}},
-  year         = {2026},
+  date         = "0000",
   url          = {https://crates.io/}
 }
