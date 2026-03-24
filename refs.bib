@@ -36,13 +36,15 @@
 }
 
 # TODO: This reference is a mess.
+# Omitted:
+# - series={Proc. SPIE}, due to duplication
+# - "IECON'87: Autom. Des. Manuf."
 @inproceedings{sha1987pcp,
   title={Task scheduling in distributed real-time systems},
   author={Sha, Lui and Lehoczky, John P and Rajkumar, Ragunathan},
-  journal={IECON'87: Automated Design and Manufacturing},
+  booktitle={Proc. SPIE},
   volume={857},
   pages={909--916},
-  series={SPIE Proc.},
   year={1987},
   doi={10.1117/12.943278},
   address={Bellingham, WA, USA},
@@ -64,7 +66,7 @@
 @techreport{sha1989rwpcp-techreport,
   author    = {Sha, Lui and Rajkumar, Ragunathan and Son, Sang and Chang, Chun-Hyon},
   title     = {A Real-Time Locking Protocol (Read-or-Write Priority Ceiling Protocol)},
-  institution = {CMU/SEI},
+  institution={Carnegie Mellon University, Software Engineering Institute},
   number={CMU/SEI-89-TR-018},
   month={Apr},
   year      = {1989},
@@ -95,16 +97,19 @@
 }
 
 # Official IEEE citation; edit: abbreviated book title
+# Omitted: publisher={IEEE Computer Society},
 @INPROCEEDINGS{rajkumar1988multi,
   author={Rajkumar, R. and Sha, L. and Lehoczky, J.P.},
   booktitle={Proc. Real-Time Syst. Symp.},
   title={Real-time synchronization protocols for multiprocessors},
   year={1988},
+  month={Dec},
   volume={},
   number={},
   pages={259-269},
   keywords={Protocols;Processor scheduling;Real time systems;Scheduling algorithm;Dynamic scheduling;Contracts;Computer science;Statistics;Application software;System recovery},
-  doi={10.1109/REAL.1988.51121}
+  doi={10.1109/REAL.1988.51121},
+  url = {https://doi.ieeecomputersociety.org/10.1109/REAL.1988.51121},
 }
 
 # Official IEEE citation; edit: abbreviated book title
@@ -123,13 +128,13 @@
 }
 
 # HACK: "book"? :D I couldn't think of other ways to get rid of quotes in title
-@book{riscv-unprivileged-spec,
+@manual{riscv-unprivileged-spec,
   IDS = {riscv-vol-1},
   title  = {{The RISC-V Instruction Set Manual Volume I: Unprivileged Architecture, Version 20250508: Ratified}},
   author = {{RISC-V International}},
-  month  = {5},
+  month  = {May},
   year   = {2025},
-  url    = {https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf},
+  url    = {https://docs.riscv.org/reference/isa/v20250508/_attachments/riscv-unprivileged.pdf},
   note   = {Accessed: 3.2.2026}
 }
 
@@ -157,22 +162,24 @@
   year={2024}
 }
 
-@misc{riscv-clic-spec,
+@manual{riscv-clic-spec,
   title = {{Core-Local Interrupt Controller (CLIC) RISC-V Privileged Architecture Extensions (Unratified), v0.10}},
   url   = {https://github.com/riscv/riscv-fast-interrupt},
   note  = {v0.10, accessed 11.8.2025},
   date  = "0000",
 }
 
-@manual{rust-ref,
-  title = {The Rust Reference, version 1.93.1},
-  organization = {{The Rust Project Contributors}},
-  year = {2026},
+# HACK: version is hacked into the title, this results in it being in cursive, which is wrong.
+# HACK: "book"? :D I couldn't think of other ways to get rid of quotes in title
+@book{rust-ref,
+  title = {The Rust Reference, ver. 1.93.1},
+  author = {{The Rust Project Developers}},
+  year = "0000",
   url = {https://doc.rust-lang.org/1.93.1/reference/},
   note = {Online; accessed 2026-02-15},
 }
 
-@journal{audsley1993-applying,
+@article{audsley1993-applying,
   author={Audsley, Neil and Burns, Alan and Richardson, Mike and Tindell, Ken and Wellings, Andy J},
   title={Applying new scheduling theory to static priority pre-emptive scheduling},
   journal={Software Engineering Journal},
@@ -181,15 +188,29 @@
   pages={284--292},
   year={1993},
   publisher={IET},
+  doi={10.1049/sej.1993.0034},
+  abstract={ The paper presents exact schedulability analyses for real-time
+  systems scheduled at runtime with a static priority pre-emptive dispatcher.
+  The tasks to be scheduled are allowed to experience internal blocking (from
+  other tasks with which they share resources) and (with certain restrictions)
+  to release jitter, such as waiting for a message to arrive. The analysis
+  presented is more general than that previously published and subsumes, for
+  example, techniques based on the Rate Monotonic approach. In addition to
+  presenting the relevant theory, an existing avionics case study is described
+  and analysed. The predictions that follow from this analysis are seen to be in
+  close agreement with the behaviour exhibited during simulation studies. },
+  url={https://digital-library.theiet.org/doi/abs/10.1049/sej.1993.0034},
 }
 
+% Not included: volume={24}, as it gets duplicated
+# Omitted: series={Real-Time Systems Series},
 @book{buttazzo2011-hard,
   author={Buttazzo, Giorgio C.},
   title={Hard Real-Time Computing Systems: Predictable Scheduling Algorithms and Applications},
-  series={Real-Time Systems Series},
-  volume={24},
+  edition={3},
   year={2011},
   publisher={Springer},
+  address={New York, NY, USA},
 }
 
 @inproceedings{santiprabhob1991-ada,
@@ -200,14 +221,19 @@
   pages={89--98},
 }
 
-@inproceedings{Eriksson2013-rtfm,
-  author    = {Johan Eriksson and Fredrik H\aa ggrstr\"om and Simon Aittamaa and Andrey Kruglyak and Per Lindgren},
+# Official IEEE citation; edit: abbreviated book title
+@INPROCEEDINGS{Eriksson2013-rtfm,
+  author    = {Eriksson, Johan and Häggström, Fredrik and Aittamaa, Simon and Kruglyak, Andrey and Lindgren, Per},
   title     = {Real-time for the masses, step 1: Programming API and static priority SRP kernel primitives},
   booktitle = {2013 IEEE 8th International Symposium on Industrial Embedded Systems (SIES)},
   year      = {2013},
   pages     = {110--113},
   doi       = {10.1109/SIES.2013.6601482},
+  month     = {June},
+  volume    = {},
+  number    = {},
   publisher = {{IEEE}},
+  keywords  = {Real-time systems;Kernel;Hardware;Programming;Computer architecture;Dynamic scheduling;Time factors},
 }
 
 @inproceedings{cardenas2025slic,
@@ -241,9 +267,8 @@
   url          = {https://crates.io/crates/rtic}
 }
 
-# HACK: "book"? :D I couldn't think of other ways to get rid of quotes in title
-@book{crates.io,
-  title        = {crates.io: Rust Package Registry},
+@manual{crates.io,
+  title        = {The Rust community's crate registry},
   howpublished = {\url{https://crates.io/}},
   date         = "0000",
   url          = {https://crates.io/}
