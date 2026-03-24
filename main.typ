@@ -682,21 +682,26 @@ A formalization and a proof of the statements follows:
   $
     pi(J_"cur") = max{pi(J) mid(|) J "may read" R_m}.
   $<eq:proof5>
-  #box[
-    Continuing from @eq:proof4,
+  Continuing from @eq:proof4,
+
+  #math.equation(
+    numbering: none,
+    block: true,
     $
       =>^(#ref(<eq:proof5>)) macron(Pi) & = && max(
-        { macron(Pi)_"old"} union {pi(J_"cur")} \
-        &&& union {pi(J) mid(|) J "may write" R_m}
-      ) \
-      & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
-        { macron(Pi)_"old"} \
-        &&& union {pi(J) mid(|) J "may write" R_m}
-      ) \
-      & = && max(macron(Pi)_"old", ceil(R)_"r"),
-    $
-    which proves @eq:rw-lock-ceil-r.
-  ]
+                                                 { macron(Pi)_"old"} union {pi(J_"cur")} \
+                                                 &&& union {pi(J) mid(|) J "may write" R_m}
+                                               ) \
+    $,
+  )
+  $
+    & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
+      { macron(Pi)_"old"} \
+      &&& union {pi(J) mid(|) J "may write" R_m}
+    ) \
+    & = && max(macron(Pi)_"old", ceil(R)_"r"),
+  $
+  which proves @eq:rw-lock-ceil-r.
 ])
 
 #proof(title: [Proof for @eq:rw-lock-ceil-w (write-lock)], [
