@@ -136,19 +136,21 @@ single-context-switch-per-job blocking, prevention of
 multiple priority inversion, and simple, efficient,
 single-shared-stack execution.
 
-The original theory for SRP/*@baker1991srp-journal*/
-describes a scheduling policy for a system with multi-unit
-resources that can be used to implement binary semaphores,
-readers-writer locks, and general semaphores.
-RTIC---_however_---only implements a mutex based on the
-binary semaphore.
+SRP/*@baker1991srp-journal*/
+prescribes a system with multi-unit resources that can be
+used to implement binary semaphores, readers-writer locks,
+and general semaphores. RTIC---_however_---only implements a
+mutex based on the binary semaphore.
 // The question then: why does RTIC only implement binary semaphores.
 Replacing the binary semaphore with a readers-writer lock,
-when applicable, lowers the estimate for blocking time. More
+when applicable, lowers the estimate for blocking time,
+improving
+schedulability.~@audsley1993-applying~@sha1989rwpcp
+/* More
 systems will pass those scheduling tests that include
 worst-case blocking factors, such as the recurrent
 worst-case response time test or the RM-specific utilization
-factor test.~@audsley1993-applying~@sha1989rwpcp
+factor test.~@audsley1993-applying~@sha1989rwpcp*/
 
 The rationale for the current constrained implementation of
 RTIC is that a binary semaphore is sufficient to provide
@@ -165,21 +167,23 @@ is not a writer, a readers-writer lock improves the response
 time of high-priority
 readers/*, allowing to expedite higher priority tasks that only need to read the resource*/.
 For instance, consider a closed-loop motor control
-application where a high-priority control loop and a
+application where a high-priority control task and a
 low-priority logging task both read a shared resource, while
 a mid-priority task occasionally updates the set-point. In
 this case, the readers-writer lock enables a lower upper
-bound for the worst case execution time of the control task.
+bound for the worst case response time of the control task.
 /*Therefore, inclusion of the readers-writer lock in RTIC's
 supported lock types extends RTIC's applicability across
 real-time systems with high-priority
 readers requiring priority-ordered preemption among readers of shared resources*/
 //Examples include systems with high-priority protection or control tasks that read shared state concurrently with lower-priority monitoring or diagnostic readers, as found in automotive, avionics, and robotic controllers. #valhe[Per, Heksa: please review this claim.]
 
-This paper describes a declarative model of SRP-compliant
-readers-writer locks that can be implemented in RTIC at no
+This paper describes a declarative model for an
+SRP-compliant readers-writer lock that can be implemented in
+RTIC.
+/*at no
 additional cost, when compared to a mutex based on a binary
-semaphore.
+semaphore.*/
 /* RTAS 2024 FAQ:
  * > The paper should clearly state the research problem, together with
  * > information about the key contributions.
@@ -193,8 +197,9 @@ Our contributions are:
   ceiling value for each read- and write-lock operation at
   compile time,
 - a declarative model for the implementation of a
-  readers-writer lock in RTIC with no additional overhead
-  when compared to the binary semaphore based mutex, //The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
+  readers-writer lock in RTIC _with no additional overhead_
+  when compared to the binary semaphore based mutex,
+//The system still schedules jobs identically to SRP.#valhe[Should it be mentioned here, that the deviation allows us to raise the system ceiling to a compile-time known constant with each lock operation?]
 - the observation that the implementation aligns the
   SRP-compliant readers-writer lock with the Rust aliasing
   model, allowing lock APIs to integrate seamlessly with
@@ -213,7 +218,7 @@ which priority inversion is bounded by the execution time of
 the longest critical section of a lower-priority
 job.~@sha1987pcp PCP has been extended to apply to
 readers-writer resources by Sha et al.~@sha1989rwpcp, in a
-similar manner as for RTIC in the current paper. PCP has
+similar manner as for SRP/RTIC in the current paper. PCP has
 been extended to multiprocessor systems.~@rajkumar1988multi
 SRP extends single-processor PCP and allows the use of both
 static and dynamic priority assignments, and multi-unit
