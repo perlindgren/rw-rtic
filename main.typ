@@ -770,18 +770,19 @@ required to be precomputed:
 - writer ceiling $ceil(R)_0$: maximum priority among jobs
   with _read or write access_ to the resource.
 
-The protocol bindings and necessary analysis can be provided
-by a new module ("`rw-pass`") implementing the read-lock
-user API and a pre-compilation pass. As the API, a method
-should be provided with the signature
+The protocol bindings and the necessary analysis can be
+provided in a new module (`rw-pass`) that provides the
+read-lock user API and a pre-compilation pass. As the API, a
+method should be provided with the signature
 #box[`read_lock(Fn(&T)->R)`]. The method may be implemented
 simply by calling the conventional `lock` method with the
-ceiling set to $ceil(R)_"r"$. As the closure argument, the
-method should pass a shared, immutable reference to the
-underlying data structure. Since the resource~(`&T`) is
-exposed to user code as a shared, immutable reference, user
-code is required by the compiler to conform to the rules
-concerning shared references, i.e., reads only.
+ceiling set to $ceil(R)_"r"$. As the argument to the
+closure, the method should pass a shared, immutable
+reference to the underlying data structure. Since the
+resource~(`&T`) is exposed to user code as a shared,
+immutable reference, user code is required by the compiler
+to conform to the rules concerning shared references, i.e.,
+reads only.
 
 During pre-compilation `rw-pass` should:
 
@@ -790,14 +791,14 @@ During pre-compilation `rw-pass` should:
 - transform all DSL read accesses to binary-semaphore-based
   locks with ceiling set to $ceil(R)_"r"$.
 
-The main DSL compilation /*`core-pass`*/ takes as input the
-DSL with knowledge of all accesses to shared resources.
+The main DSL compiler /*`core-pass`*/ reads the DSL with
+knowledge of all accesses to shared resources.
 /*Then, the $ceil(R)_0$ is computed based on all jobs $J$ with shared access to the resource $R$.*/
 The implementation /*`core-pass`*/ will now take into
-account all accesses (both read and write) when computing
-the ceiling $ceil(R)_0$. This way, no additional target
-specific code generation is required, as the target specific
-`lock` implementation can be reused.
+account both types of accesses when computing the ceiling
+$ceil(R)_0$. This way, no additional _target specific_ code
+generation is required, as the target specific `lock`
+implementation can be reused.
 
 //At this point, we have defined the `rw-pass` contract at high level. In the following, we will further detail how the pass may be implemented leveraging the modularity of RTIC-eVo.
 
@@ -829,22 +830,26 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 
 From a modeling perspective, it would be preferable to be
 able to declare some tasks as having only read-access to a
-readable-writable resource. In the suggested implementation,
-tasks that only read a readable-writable resource must be
-given full access to the resource, similarly to a mutex
-resource. This is not a problem from a safety or SRP
-perspective, as the usage of the write-lock determines which
-tasks the `rw-pass` considers writers of the resource, and
-resources are not writable without using the write-lock.
-However, we lose the ability to analyse the DSL to determine
-worst-case blocking times. Strengthening the model is out of
-scope for this paper and left as future work.
+readable-writable resource. However, in the DSL layer of the
+suggested implementation, tasks that only _read_ a
+readable-writable resource are dealt with in the same way as
+mutex
+resources./* and access restrictions are applied only in
+          the API provided to the user of the resource. */
+This is not a problem from a safety or SRP perspective, as
+the _usage_ of the write-lock determines which tasks the
+`rw-pass` considers writers of the resource, and resources
+are not writable without using the write-lock. However, the
+ability to determine the improved bound for worst-case
+blocking times based on the DSL alone is lost. Strengthening
+the model in this regard is out of scope for this paper and
+left as future work.
 
 For general multi-unit resources, the new system ceiling
 value is different for each number of remaining resources.
 An overhead-free implementation has not been identified, and
-the viability of general multi-resource support for RTIC is
-left as future work.
+determining the viability of general multi-resource support
+for RTIC is left as future work.
 
 //Concrete implementation of the necessary analysis and code generation in RTIC is left as future work.
 
