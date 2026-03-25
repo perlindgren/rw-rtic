@@ -831,19 +831,18 @@ In this way, given a valid input model, the `rw-pass` will lower the DSL into a 
 From a modeling perspective, it would be preferable to be
 able to declare some tasks as having only read-access to a
 readable-writable resource. However, in the DSL layer of the
-suggested implementation, tasks that only _read_ a
-readable-writable resource are dealt with in the same way as
-mutex
-resources./* and access restrictions are applied only in
-          the API provided to the user of the resource. */
-This is not a problem from a safety or SRP perspective, as
-the _usage_ of the write-lock determines which tasks the
-`rw-pass` considers writers of the resource, and resources
-are not writable without using the write-lock. However, the
-ability to determine the improved bound for worst-case
-blocking times based on the DSL alone is lost. Strengthening
-the model in this regard is out of scope for this paper and
-left as future work.
+suggested implementation, tasks that only _read_ a resource
+are dealt with in the same way as mutex-protected
+resources/*,
+         while access restrictions are applied only in the API
+         provided to the user of the resource*/. This is not
+a problem from a safety or SRP perspective, as the _usage_
+of the write-lock determines which tasks are considered
+writers by `rw-pass`, and resources are not writable without
+using the write-lock. However, the ability to determine the
+improved bound for worst-case blocking times based on the
+DSL alone is lost. Strengthening the model in this regard is
+out of scope for this paper and left as future work.
 
 For general multi-unit resources, the new system ceiling
 value is different for each number of remaining resources.
