@@ -73,11 +73,12 @@
       email: "henri.lunnikivi@tuni.fi",
     ),
     (
-      name: "Anonymous Authors for review",
-      department: [Anonymous],
-      organization: [Anonymous],
-      location: [Anonymous],
-      email: "anonymous@example.com",
+      name: "Per Lindgren",
+      department: [Computer science, Electrical and Space
+        engineering],
+      organization: [Luleå University of Technology],
+      location: [Luleå, Sweden],
+      email: "per.lindgren@ltu.se",
     ),
   ),
   index-terms: (
