@@ -74,8 +74,10 @@
     ),
     (
       name: "Per Lindgren",
-      department: [Computer science, Electrical and Space
-        engineering],
+      /* Original ortography from Luleå's site:
+       * "Computer science, Electrical and Space engineering" */
+      department: [Computer Science, Electrical and Space
+        Engineering],
       organization: [Luleå University of Technology],
       location: [Luleå, Sweden],
       email: "per.lindgren@ltu.se",
