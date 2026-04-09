@@ -43,13 +43,12 @@
     deadlock-free execution for single-processor systems.
     While the original work on SRP allows for multi-unit
     resources, the RTIC framework uses a model that is
-    constrained to single-unit resources.
-
-    We review the theoretical foundations of readers-writer
-    locks in the context of SRP to show that they can be
-    implemented in RTIC at zero cost when compared to its
-    existing binary-semaphore-based locks, while relaxing
-    the constraints of the worst-case-blocking-time-based
+    constrained to single-unit resources. We review the
+    theoretical foundations of readers-writer locks in the
+    context of SRP to show that they can be implemented in
+    RTIC at zero cost when compared to its existing
+    binary-semaphore-based locks, while relaxing the
+    constraints of the worst-case-blocking-time-based
     schedulability test. We provide a declarative model for
     the implementation of code generation in RTIC,
     compatible with the ARM Cortex-M and RISC-V
