@@ -566,7 +566,8 @@ A formalization and a proof of the statements follows:
     macron(Pi)_"cur" & = max {ceil(R_i)_v_R_i mid(|) i in {1, ..., n}}
   $<eq:proof0>*/
   Assume the read or write lock operation concerns resource
-  $R_m$, $m in 1, ..., n$.
+  $R_m$, $m in 1, ..., n$, accessed by $k$ jobs, i.e., $R_m$
+  is modeled as a multi-unit resource with $k$ units.
   /*
   After the locking, the system ceiling is, by definition,
   $
@@ -642,7 +643,7 @@ A formalization and a proof of the statements follows:
 ])
 
 #proof(title: [Proof for @eq:rw-lock-ceil-r (read-lock)], [
-  After locking, either $v'_R_m in {1, ..., n-1}$ or
+  After locking, either $v'_R_m in {1, ..., k-1}$ or
   $v_R_m = 0$.
 
   In the former case, the condition $v'_R_m < mu_R_m (J)$ in
