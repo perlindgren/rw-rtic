@@ -698,7 +698,7 @@ A formalization and a proof of the statements follows:
     $,
   )
   $
-    & =^#place-super($macron(Pi) >= pi(J_"cur")$) && max(
+    & =^#place-super($macron(Pi)_"old" >= pi(J_"cur")$) && max(
       { macron(Pi)_"old"} \
       &&& union {pi(J) mid(|) J "may write" R_m}
     ) \
