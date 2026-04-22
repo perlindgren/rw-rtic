@@ -7,9 +7,8 @@
 
 #show: doc => preamble(doc)
 
-// All headings in purple, all headings in standard point size
-#show heading: it => text(fill: tuni-style.tuni-purple, size: pop.layout-a0.at("body-size"), it)
-#show heading: it => { [#it #v(-.3em)] }
+// Hyphenate or not?
+#set text(hyphenate: false)
 
 #let DEBUG = false
 
@@ -80,22 +79,48 @@
 
 #columns(2, [
   #pop.column-box(heading: [*Summary*])[
-    - We present Readers-Writers locks (RW locks) for the RTIC framework, offering improved schedulability for systems with high-priority readers.
+    - We present _Readers-Writers Locks_ (_RW Locks_) for the RTIC framework, offering improved schedulability for embedded systems with high-priority readers.
     - Suggested runtime implementation introduces no overhead compared to RTIC's pre-existing mutex locks.
     - The declarative mapping from RW locks to SRP can be implemented by analysis and a preprocessor pass.
   ]
-  #pop.column-box(heading: [Prior work])[
+  #pop.column-box(heading: [*Prior work*])[
     PCP has been extended to apply to RW resources by Sha et al.~@sha1989rwpcp
   ]
 
   #pop.column-box(heading: [*RTIC framework*])[
-    = Meta
-    - *Near-zero overhead Rust-based RTOS* based on a hardware orchestrated execution model.
-    - Million downloads on crates.io
+    #grid(
+      columns: (1fr, auto),
+      align: (left + horizon, center + top),
+      column-gutter: 1em,
+      stroke: if DEBUG { red },
+      [
+        *Near-zero overhead Rust-based RTOS*\ with a hardware orchestrated execution model.
 
-    = Model: tasks & shared resources
-    - Stack Resource Policy (SRP) @baker1991srp-journal
-    - Interrupts as tasks
+        Used by industry & popular with hobbyists:\ *a million all-time downloads on crates.io*.
+
+        /*
+        #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
+        //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
+        #hrule
+        */
+
+        *Model: tasks & shared resources*
+        - Stack Resource Policy (SRP) @baker1991srp-journal
+        - Interrupts as tasks
+      ],
+      move(dy: -2em, align(center + horizon, rect(
+        radius: 100%,
+        height: 6em,
+        width: 6em,
+        stroke: none,
+        fill: white,
+        move(
+          // Account for the tail
+          dy: -8pt,
+          image("assets/logo_RTIC.png", height: 95%),
+        ),
+      ))),
+    )
   ]
 
   #pop.column-box(heading: [*RW resources/*Multi-unit resources*/*])[
@@ -120,35 +145,34 @@
   #pop.column-box(heading: [*Code*])[
   ]
 
-  #pop.column-box(heading: [*Mutex*], rect(
-    stroke: if DEBUG { red },
-    /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
-     *
-     * Using PDf causes hatch-colorings to be partially invisible. Rendering as
-     * SVG  gives a warning but we'll be okay with that.
-     *
-     * SVG rendering settings for draw.io:
-     *
-     * * Zoom: 100%, Border Width: 0
-     * * Size: Diagram
-     * * [x] Transparent background
-     * * Appearance: Light
-     * * [ ] Shadow
-     * * [ ] Include a copy of my diagram
-     * * [x] Embed Images
-     * * [x] Embed Fonts
-     */
-    image("assets/export/system-mutex.svg", width: 100%),
-  ))
 
-  #pop.column-box(
-    heading: [*RW*],
-    rect(
-      stroke: if DEBUG { red },
+  #pop.column-box(heading: [*Improved response time RW locks for high-priority readers*], rect(
+    stroke: if DEBUG { red },
+    [
+      #image("assets/export/legend.svg", width: 100%)
+      *Mutex*
+      /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
+       *
+       * Using PDf causes hatch-colorings to be partially invisible. Rendering as
+       * SVG  gives a warning but we'll be okay with that.
+       *
+       * SVG rendering settings for draw.io:
+       *
+       * * Zoom: 100%, Border Width: 0
+       * * Size: Diagram
+       * * [x] Transparent background
+       * * Appearance: Light
+       * * [ ] Shadow
+       * * [ ] Include a copy of my diagram
+       * * [x] Embed Images
+       * * [x] Embed Fonts
+       */
+      #image("assets/export/system-mutex.svg", width: 100%)
       /* HACK: see above */
-      image("assets/export/system-rw.svg", width: 100%),
-    ),
-  )
+      *RW*
+      #image("assets/export/system-rw.svg", width: 100%)
+    ],
+  ))
 
   #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
     #set math.equation(numbering: "(1)")
