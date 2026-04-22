@@ -54,19 +54,34 @@
     #set text(fill: white)
     #box(
       height: 140pt,
-      image("assets/logo_TAU_fieng_white_crop.svg", width: 400pt),
+      image(
+        "assets/logo_TAU_fieng_white_crop.svg",
+        width: 400pt,
+      ),
     )
 
-    Work in Progress:\ Efficient Readers-Writer Locks for the RTIC Framework
+    Work in Progress:\ Efficient Readers-Writer Locks for
+    the RTIC Framework
   ],
   authors: [
     #v(1cm)
     #set text(fill: white)
-    #authors.map(a => [#a.name#super[#a.org.idx]]).join(", ", last: " and ")
+    #(
+      authors
+        .map(a => [#a.name#super[#a.org.idx]])
+        .join(", ", last: " and ")
+    )
   ],
   institutes: [
     #set text(fill: white, weight: "regular")
-    #orgs.values().map(o => super[#o.idx] + o.name + ", " + o.location).join(", ", last: " and ")
+    #(
+      orgs
+        .values()
+        .map(o => (
+          super[#o.idx] + o.name + ", " + o.location
+        ))
+        .join(", ", last: " and ")
+    )
 
     /*#super("1")Tampere University, Finland
     #super("2")Luleå University of Technology, Sweden
@@ -79,12 +94,17 @@
 
 #columns(2, [
   #pop.column-box(heading: [*Summary*])[
-    - We present _Readers-Writers Locks_ (_RW Locks_) for the RTIC framework, offering improved schedulability for embedded systems with high-priority readers.
-    - Suggested runtime implementation introduces no overhead compared to RTIC's pre-existing mutex locks.
-    - The declarative mapping from RW locks to SRP can be implemented by analysis and a preprocessor pass.
+    - We present _Readers-Writers Locks_ (_RW Locks_) for
+      the RTIC framework, offering improved schedulability
+      for embedded systems with high-priority readers.
+    - Suggested runtime implementation introduces no
+      overhead compared to RTIC's pre-existing mutex locks.
+    - The declarative mapping from RW locks to SRP can be
+      implemented by analysis and a preprocessor pass.
   ]
   #pop.column-box(heading: [*Prior work*])[
-    PCP has been extended to apply to RW resources by Sha et al.~@sha1989rwpcp
+    PCP has been extended to apply to RW resources by Sha et
+    al.~@sha1989rwpcp
   ]
 
   #pop.column-box(heading: [*RTIC framework*])[
@@ -94,9 +114,11 @@
       column-gutter: 1em,
       stroke: if DEBUG { red },
       [
-        *Near-zero overhead Rust-based RTOS*\ with a hardware orchestrated execution model.
+        *Near-zero overhead Rust-based RTOS*\ with a
+        hardware orchestrated execution model.
 
-        Used by industry & popular with hobbyists:\ *a million all-time downloads on crates.io*.
+        Used by industry & popular with hobbyists:\ *a
+        million all-time downloads on crates.io*.
 
       ],
       move(dy: -2em, align(center + horizon, rect(
@@ -120,18 +142,31 @@
     #hrule
     */
 
-    *Model: tasks & shared resources for single-processor systems*
+    *Model: tasks & shared resources for single-processor
+    systems*
     - *Intuition:* interrupts as tasks.
-    - Stack Resource Policy (SRP) based scheduling model for concurrent tasks with shared resources.~@baker1991srp-journal
-    - *Limitations/*Constraints*/:* single-processor, static-priorities.
-    - *Benefits:* single-stack execution, race- and deadlock-free execution, bounded blocking, one context switch per task execution, prevention of multiple priority inversion, amenable to tests for worst-case execution time and task and overall schedulability.
+    - Stack Resource Policy (SRP) based scheduling model for
+      concurrent tasks with shared
+      resources.~@baker1991srp-journal
+    - *Limitations/*Constraints*/:* single-processor,
+      static-priorities.
+    - *Benefits:* single-stack execution, race- and
+      deadlock-free execution, bounded blocking, one context
+      switch per task execution, prevention of multiple
+      priority inversion, amenable to tests for worst-case
+      execution time and task and overall schedulability.
   ]
 
-  #pop.column-box(heading: [*RW resources/*Multi-unit resources*/*])[
-    RW resources are modeled as a special case of multi-unit resources, where the number of units is the number of jobs accessing the resource and readers acquire one unit and writers acquire all units.
+  #pop.column-box(heading: [*RW
+  resources/*Multi-unit resources*/*])[
+    RW resources are modeled as a special case of multi-unit
+    resources, where the number of units is the number of
+    jobs accessing the resource and readers acquire one unit
+    and writers acquire all units.
   ]
 
-  #pop.column-box(heading: [*Efficient resource sharing / locking*])[
+  #pop.column-box(heading: [*Efficient resource sharing /
+  locking*])[
     #zebraw(
       highlight-lines: (2, 8, 9, 10, 18, 19, 20),
       footer: "Highlight footer",
@@ -146,10 +181,13 @@
     ]
   ]
 
-  #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
+  #pop.column-box(heading: [*SRP-compliant Readers-Writer
+  Lock*])[
     #set math.equation(numbering: "(1)")
 
-    *Theorem* Given the current system ceiling $macron(Pi)_"old"$ and assuming $R$ is a RW resource modeled as a multi-unit resource,
+    *Theorem* Given the current system ceiling
+    $macron(Pi)_"old"$ and assuming $R$ is a RW resource
+    modeled as a multi-unit resource,
     /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
 
     Formally,*/ SRP compliance is maintained when:
@@ -169,36 +207,44 @@
         macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
       $<eq:rw-lock-ceil-w>]
 
-      where $ceil(R)_0$ is the highest preemption level of jobs with any access~to~$R$.
+      where $ceil(R)_0$ is the highest preemption level of
+      jobs with any access~to~$R$.
   ]
 
-  #pop.column-box(heading: [*Improved response time RW locks for high-priority readers*], box(
-    stroke: if DEBUG { red },
-    [
-      #image("assets/export/legend.svg", width: 100%)
-      *Mutex*
-      /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
-       *
-       * Using PDf causes hatch-colorings to be partially invisible. Rendering as
-       * SVG  gives a warning but we'll be okay with that.
-       *
-       * SVG rendering settings for draw.io:
-       *
-       * * Zoom: 100%, Border Width: 0
-       * * Size: Diagram
-       * * [x] Transparent background
-       * * Appearance: Light
-       * * [ ] Shadow
-       * * [ ] Include a copy of my diagram
-       * * [x] Embed Images
-       * * [x] Embed Fonts
-       */
-      #image("assets/export/system-mutex.svg", width: 100%)
-      /* HACK: see above */
-      *RW*
-      #image("assets/export/system-rw.svg", width: 100%)
-    ],
-  ))
+  #pop.column-box(
+    heading: [*Improved response time RW locks for
+    high-priority readers*],
+    box(
+      stroke: if DEBUG { red },
+      [
+        #image("assets/export/legend.svg", width: 100%)
+        *Mutex*
+        /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
+         *
+         * Using PDf causes hatch-colorings to be partially invisible. Rendering as
+         * SVG  gives a warning but we'll be okay with that.
+         *
+         * SVG rendering settings for draw.io:
+         *
+         * * Zoom: 100%, Border Width: 0
+         * * Size: Diagram
+         * * [x] Transparent background
+         * * Appearance: Light
+         * * [ ] Shadow
+         * * [ ] Include a copy of my diagram
+         * * [x] Embed Images
+         * * [x] Embed Fonts
+         */
+        #image(
+          "assets/export/system-mutex.svg",
+          width: 100%,
+        )
+        /* HACK: see above */
+        *RW*
+        #image("assets/export/system-rw.svg", width: 100%)
+      ],
+    ),
+  )
 
   //#colbreak()
 
