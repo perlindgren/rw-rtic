@@ -54,7 +54,7 @@
       image("assets/logo_TAU_fieng_white_crop.svg", width: 400pt),
     )
 
-    Work in Progress: Efficient Readers-Writer Locks for the RTIC Framework
+    Work in Progress:\ Efficient Readers-Writer Locks for the RTIC Framework
   ],
   authors: [
     #v(1cm)
@@ -76,72 +76,75 @@
 
 #columns(2, [
   #pop.column-box(heading: "Summary")[
-    #set text(size: 33pt)
-    - #lorem(10)
-    - #lorem(20)
-    - #lorem(30)
+    - We present Readers-Writers locks (RW locks) for the RTIC framework, offering improved schedulability for systems with high-priority readers.
+    - Suggested runtime implementation introduces no overhead compared to RTIC's pre-existing mutex locks.
+    - The declarative mapping from RW locks to SRP can be implemented by analysis and a preprocessor pass.
   ]
-
-  #pop.column-box(heading: "Example: ???")[
-    #set text(size: 28pt)
-    #zebraw(
-      highlight-lines: (7, 8, 9, 10, 18, 19, 20),
-      footer: "Highlight footer",
-      highlight-color: rgb("#c3b9d7"),
-    )[
-      ```C
-      line 1
-      line 2
-      line 3
-      ```
+  #pop.column-box(heading: "RTIC framework")[
+    #pop.column-box(heading: "Tasks & Resources model")[
+      - Stack Resource Policy (SRP) @baker1991srp-journal
+      - Rust
+      - Interrupts as tasks
+    ]
+    #pop.column-box(heading: "Multi-unit resources")[
+      RW resources modeled as a special case of multi-unit resources, where the number of units is the number of jobs accessing the resource and readers acquire one unit and writers acquire all units.
+    ]
+    #pop.column-box(heading: "Efficient resource sharing / locking")[
+    ]
+    #pop.column-box(heading: "Code")[
+      #zebraw(
+        highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        footer: "Highlight footer",
+        highlight-color: tuni-style.tuni-blue,
+        lang: false,
+      )[
+        ```C
+        line 1
+        line 2
+        line 3
+        ```
+      ]
     ]
   ]
+  #pop.column-box(heading: "Mutex", rect(image("assets/export/system-mutex.pdf", width: 100%)))
 
-  #pop.column-box(heading: "Architecture")[
-    #set text(size: 30pt)
-    #lorem(10)
+  #pop.column-box(heading: "RW", image("assets/export/system-rw.pdf", width: 100%))
 
-    #text(weight: "bold")[Results]:
-    - #lorem(5)
-    - #lorem(10)
-    - #lorem(15)
+  #pop.column-box(heading: [SRP-compliant Readers-Writer Lock])[
+    #set math.equation(numbering: "(1)")
+
+    *Theorem* Given the current system ceiling $macron(Pi)_"old"$ and assuming $R$ is a RW resource modeled as a multi-unit resource,
+    /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
+
+    Formally,*/ SRP compliance is maintained when:
+
+    + upon taking a read-lock of resource $R$, the system
+      ceiling $macron(Pi)$ is updated to
+
+      #box[$
+        macron(Pi) = max(macron(Pi)_"old", ceil(R)_1)
+      $<eq:rw-lock-ceil-r>]
+      where $ceil(R)_1$ is the highest preemption level of
+      jobs with write-access to $R$, and
+    + upon taking a write-lock of resource $R$, the system
+      ceiling $macron(Pi)$ changes to
+
+      #box[$
+        macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
+      $<eq:rw-lock-ceil-w>]
+
+      where $ceil(R)_0$ is the highest preemption level of jobs with any access~to~$R$.
   ]
-
-  #colbreak()
-
-  #pop.column-box(heading: "Virtualization")[
-    #set text(size: 32pt)
-    - #lorem(30)
-
-    #text(weight: "bold")[Requirements]:
-    - #lorem(10)
-    - #lorem(20)
-
-    #text(weight: "bold")[Effect]:
-    - #lorem(10)
-    - #lorem(20)
-
-    #text(weight: "bold")[Limitations]:
-    - #lorem(10)
-    - #lorem(20)
-  ]
-
-  #pop.column-box(heading: "Experimental Results")[
-    #set text(size: 32pt)
-    - #lorem(10)
-    - #lorem(20)
-    - #lorem(30)
-  ]
+  //#colbreak()
 
   #pop.column-box(heading: "Future Work")[
-    #set text(size: 28pt)
+    - General multi-unit resources
     - #text(weight: "bold")[Virtualization] -- #lorem(10)
     - #text(weight: "bold")[Integration] -- #lorem(20)
     - #text(weight: "bold")[Evaluation] -- #lorem(10)
   ]
 
   #pop.column-box(heading: "References")[
-    #set text(size: 25pt)
     #bibliography("refs.bib", title: none)
   ]
 ])
