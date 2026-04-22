@@ -301,10 +301,11 @@
         //footer: "Highlight footer",
         highlight-color: tuni-style.tuni-blue,
         lang: false,
+        numbering: false,
       )[
         ```asm
+
         csrr ..., mintthresh # read thr
-        sw ...
         csrw ..., mintthresh # raise thr
         /* ... */
         csrw ..., mintthresh # restore thr
