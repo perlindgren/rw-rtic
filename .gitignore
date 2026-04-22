@@ -1,0 +1,6 @@
+# Ignore DrawIo backups
+*.bkp
+
+# Ignore default outputs
+main.pdf
+poster.pdf
