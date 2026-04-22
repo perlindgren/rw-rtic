@@ -94,17 +94,20 @@
 
 #columns(2, [
   #pop.column-box(heading: [*Summary*])[
-    - We present _Readers-Writer Locks_ (_RW Locks_) for the
-      RTIC framework, offering improved schedulability for
-      embedded systems with high-priority readers.
-    - Suggested runtime implementation introduces no
-      overhead compared to RTIC's pre-existing mutex locks.
+    - We present *_Readers-Writer Locks_ (_RW Locks_) for
+      the RTIC~framework*, offering improved schedulability
+      for embedded systems with high-priority readers.
+    - Suggested _runtime_ implementation introduces *no
+      overhead* compared to RTIC's pre-existing mutex locks.
     - The declarative mapping from RW locks to SRP can be
       implemented by analysis and a preprocessor pass.
+    - User-facing model of RW locks aligns well with _Rust
+      alias guarantees_.
   ]
   #pop.column-box(heading: [*Prior work*])[
-    PCP has been extended to apply to RW resources by Sha et
-    al.~@sha1989rwpcp
+    - PCP has been extended to apply to RW resources by
+      #box[Sha et al.~@sha1989rwpcp]
+    //- Conventional OSes tend not to provide bounded blocking.~@buttazzo2011-hard
   ]
 
   #pop.column-box(heading: [*RTIC framework*])[
@@ -114,7 +117,7 @@
       column-gutter: 1em,
       stroke: if DEBUG { red },
       [
-        *Near-zero overhead Rust-based RTOS*\ with a
+        *Near-zero overhead Rust-based RTOS~@rtic*\ with a
         hardware orchestrated execution model.
 
         Used by industry & popular with hobbyists:\ *a
@@ -153,38 +156,24 @@
     - *Benefits:* single-stack execution, race- and
       deadlock-free execution, bounded blocking, one context
       switch per task execution, prevention of multiple
-      priority inversion, amenable to tests for worst-case
-      execution time and task and overall schedulability.
+      priority inversion, and amenable to tests for
+      worst-case execution time, task schedulability, and
+      overall schedulability.
   ]
 
   #pop.column-box(heading: [*RW
   resources/*Multi-unit resources*/*])[
-    RW resources are modeled as a special case of multi-unit
-    resources, where the number of units is the number of
-    jobs accessing the resource and readers acquire one unit
-    and writers acquire all units.
-  ]
+    SRP supports multi-unit resources. RTIC implements
+    near-zero overhead locks for single-unit resources.
 
-  #pop.column-box(heading: [*Efficient resource sharing /
-  locking*])[
-    #zebraw(
-      highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-      footer: "Highlight footer",
-      highlight-color: tuni-style.tuni-blue,
-      lang: false,
-    )[
-      ```C
-      line 1
-      line 2
-      line 3
-      ```
-    ]
+    RW resources are modeled in SRP as a special case of
+    multi-unit resources, where the number of units is the
+    number of jobs accessing the resource and readers
+    acquire one unit and writers acquire all units.
   ]
 
   #pop.column-box(heading: [*SRP-compliant Readers-Writer
   Lock*])[
-    #set math.equation(numbering: "(1)")
-
     *Theorem* Given the current system ceiling
     $macron(Pi)_"old"$ and assuming $R$ is a RW resource
     modeled as a multi-unit resource,
@@ -192,23 +181,28 @@
 
     Formally,*/ SRP compliance is maintained when:
 
-    + upon taking a read-lock of resource $R$, the system
-      ceiling $macron(Pi)$ is updated to
-
-      #box[$
-        macron(Pi) = max(macron(Pi)_"old", ceil(R)_1)
-      $<eq:rw-lock-ceil-r>]
-      where $ceil(R)_1$ is the highest preemption level of
-      jobs with write-access to $R$, and
-    + upon taking a write-lock of resource $R$, the system
-      ceiling $macron(Pi)$ changes to
-
-      #box[$
-        macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
-      $<eq:rw-lock-ceil-w>]
-
-      where $ceil(R)_0$ is the highest preemption level of
-      jobs with any access~to~$R$.
+    #grid(
+      columns: 2,
+      column-gutter: 1em,
+      [
+        1. upon taking a read-lock of resource $R$, the
+          system ceiling $macron(Pi)$ is updated to
+          #math.equation(block: true, [$
+            macron(Pi) = max(macron(Pi)_"old", ceil(R)_1),
+          $<eq:rw-lock-ceil-r>])
+          where $ceil(R)_1$ is the highest preemption level
+          of jobs with write-access to $R$, and
+      ],
+      [
+        2. upon taking a write-lock of resource $R$, the
+          system ceiling $macron(Pi)$ changes to
+          $
+            macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
+          $<eq:rw-lock-ceil-w>
+          where $ceil(R)_0$ is the highest preemption level
+          of jobs with any access~to~$R$.
+      ],
+    )
   ]
 
   #pop.column-box(
@@ -217,13 +211,17 @@
     box(
       stroke: if DEBUG { red },
       [
-        Example system has five jobs and a shared RW
-        resource. First diagrams shows behavior when mutex
-        locks are used to access the resource, and the
-        second when RW locks are used instead.
+        Example system has five tasks and a shared RW
+        resource. Priorities equal preemption levels. First
+        diagrams shows behavior when mutex locks are used to
+        access the resource, and the second when RW locks
+        are used instead.
 
-        #image("assets/export/legend.svg", width: 100%)
-        *Mutex*
+        #box(
+          stroke: if DEBUG { red },
+          image("assets/export/legend.svg", width: 100%),
+        )
+        //*Mutex*
         /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
          *
          * Using PDf causes hatch-colorings to be partially invisible. Rendering as
@@ -240,24 +238,65 @@
          * * [x] Embed Images
          * * [x] Embed Fonts
          */
-        #image(
-          "assets/export/system-mutex.svg",
-          width: 100%,
+        #box(
+          stroke: if DEBUG { red },
+          image(
+            "assets/export/system-mutex.svg",
+            width: 100%,
+          )
+            + place(top + right, dy: 1.5em, dx: -1em, rect(
+              fill: tuni-style.tuni-pink,
+              outset: 0.4em,
+              [*Using Mutex Locks*],
+            )),
         )
         /* HACK: see above */
-        *RW*
-        #image("assets/export/system-rw.svg", width: 100%)
+        //*RW*
+        #v(-1.25em)
+        #box(
+          stroke: if DEBUG { red },
+          image("assets/export/system-rw.svg", width: 100%)
+            + place(
+              top + right,
+              dy: 0.15em,
+              dx: -1em,
+              rect(
+                fill: tuni-style.tuni-pink,
+                outset: 0.4em,
+                [*Using Readers-Writer Locks*],
+              ),
+            ),
+        )
+        #v(-1.25em)
       ],
     ),
   )
 
-  //#colbreak()
+  #pop.column-box(heading: [*Efficient resource sharing /
+  locking*])[
+    /*
+    #zebraw(
+      highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+      footer: "Highlight footer",
+      highlight-color: tuni-style.tuni-blue,
+      lang: false,
+    )[
+      ```C
+      line 1
+      line 2
+      line 3
+      ```
+    ]
+    */
+  ]
 
   #pop.column-box(heading: [*Future Work*])[
     - General multi-unit resources
   ]
 
   #pop.column-box(heading: [*References*])[
+    #set text(size: 20pt)
+    #set par(spacing: 0.75em)
     #bibliography("refs.bib", title: none)
   ]
 ])
