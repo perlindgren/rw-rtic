@@ -279,7 +279,7 @@
   #pop.column-box(heading: [*Efficient resource sharing /
   locking*])[
     #grid(
-      columns: (1fr, 1fr),
+      columns: (1.5fr, 2fr),
       column-gutter: 0.5em,
       zebraw(
         //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
@@ -303,11 +303,12 @@
         lang: false,
       )[
         ```asm
-        csrr ..., mintthresh
+        csrr ..., mintthresh # read thr
         sw ...
-        csrw ..., mintthresh
+        csrw ..., mintthresh # raise thr
         /* ... */
-        csrw ..., mintthresh
+        csrw ..., mintthresh # restore thr
+
         ```
       ],
     )
