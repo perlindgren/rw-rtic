@@ -120,9 +120,35 @@
   #pop.column-box(heading: [*Code*])[
   ]
 
-  #pop.column-box(heading: [*Mutex*], rect(image("assets/export/system-mutex.pdf", width: 100%)))
+  #pop.column-box(heading: [*Mutex*], rect(
+    stroke: if DEBUG { red },
+    /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
+     *
+     * Using PDf causes hatch-colorings to be partially invisible. Rendering as
+     * SVG  gives a warning but we'll be okay with that.
+     *
+     * SVG rendering settings for draw.io:
+     *
+     * * Zoom: 100%, Border Width: 0
+     * * Size: Diagram
+     * * [x] Transparent background
+     * * Appearance: Light
+     * * [ ] Shadow
+     * * [ ] Include a copy of my diagram
+     * * [x] Embed Images
+     * * [x] Embed Fonts
+     */
+    image("assets/export/system-mutex.svg", width: 100%),
+  ))
 
-  #pop.column-box(heading: [*RW*], image("assets/export/system-rw.pdf", width: 100%))
+  #pop.column-box(
+    heading: [*RW*],
+    rect(
+      stroke: if DEBUG { red },
+      /* HACK: see above */
+      image("assets/export/system-rw.svg", width: 100%),
+    ),
+  )
 
   #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
     #set math.equation(numbering: "(1)")
