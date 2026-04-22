@@ -7,3 +7,6 @@
 - Convert exclamation mark to text, e.g., "Blocked!"
 - Legend: SRP system ceiling instead of system ceiling
 - Job -> Task
+
+## Finalization
+- Align bottom-most column-box border
