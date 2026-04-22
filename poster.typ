@@ -3,38 +3,11 @@
 // Tiaoma provides the QR code generator for the Bottom Box
 #import "@preview/tiaoma:0.3.0"
 #import "tuni-style.typ"
+#import "lib.typ" as lib: *
+
+#show: doc => preamble(doc)
 
 #let DEBUG = false
-#let tau = (
-  "body-box-args": (
-    inset: 0.6em,
-    width: 100%,
-    fill: tuni-style.tuni-white,
-    stroke: tuni-style.tuni-purple,
-  ),
-  "body-text-args": (
-    fill: tuni-style.tuni-black,
-  ),
-  "heading-box-args": (
-    inset: 0.6em,
-    width: 100%,
-    fill: tuni-style.tuni-purple,
-    stroke: tuni-style.tuni-purple,
-  ),
-  "heading-text-args": (
-    fill: tuni-style.tuni-white,
-  ),
-)
-
-
-#set page("a0", margin: 1cm)
-#pop.set-poster-layout(pop.layout-a0)
-#pop.set-theme(tau)
-#set text(font: tuni-style.tuni-font, size: pop.layout-a0.at("body-size"))
-#let box-spacing = 1.2em
-#set columns(gutter: box-spacing)
-#set block(spacing: box-spacing)
-#pop.update-poster-layout(spacing: box-spacing, heading-size: 30pt)
 
 #let orgs = (
   tau: (
