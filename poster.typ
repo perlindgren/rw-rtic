@@ -206,16 +206,20 @@
   ]
 
   #pop.column-box(
-    heading: [*Improved response time RW locks for
+    heading: [*Improved response time with RW locks for
     high-priority readers*],
     box(
       stroke: if DEBUG { red },
       [
+        - Five tasks and a shared resource
+        - Priority = preemption level
+        /*
         Example system has five tasks and a shared RW
         resource. Priorities equal preemption levels. First
         diagrams shows behavior when mutex locks are used to
         access the resource, and the second when RW locks
         are used instead.
+        */
 
         #box(
           stroke: if DEBUG { red },
