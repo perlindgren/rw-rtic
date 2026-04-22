@@ -94,9 +94,9 @@
 
 #columns(2, [
   #pop.column-box(heading: [*Summary*])[
-    - We present _Readers-Writers Locks_ (_RW Locks_) for
-      the RTIC framework, offering improved schedulability
-      for embedded systems with high-priority readers.
+    - We present _Readers-Writer Locks_ (_RW Locks_) for the
+      RTIC framework, offering improved schedulability for
+      embedded systems with high-priority readers.
     - Suggested runtime implementation introduces no
       overhead compared to RTIC's pre-existing mutex locks.
     - The declarative mapping from RW locks to SRP can be
