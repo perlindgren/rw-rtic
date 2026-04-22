@@ -5,3 +5,4 @@
 - Increase width of lock strikeouts
 - Increase font size
 - Convert exclamation mark to text, e.g., "Blocked!"
+- Legend: SRP system ceiling instead of system ceiling
