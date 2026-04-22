@@ -278,20 +278,39 @@
 
   #pop.column-box(heading: [*Efficient resource sharing /
   locking*])[
-    /*
-    #zebraw(
-      highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-      footer: "Highlight footer",
-      highlight-color: tuni-style.tuni-blue,
-      lang: false,
-    )[
-      ```C
-      line 1
-      line 2
-      line 3
-      ```
-    ]
-    */
+    #grid(
+      columns: (1fr, 1fr),
+      column-gutter: 0.5em,
+      zebraw(
+        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        //footer: "Highlight footer",
+        highlight-color: tuni-style.tuni-blue,
+        lang: false,
+      )[
+        ```rust
+        #[shared = [res]]
+        fn task() {
+          res.lock(|r| {
+            /* ... */
+          });
+        }
+        ```
+      ],
+      zebraw(
+        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        //footer: "Highlight footer",
+        highlight-color: tuni-style.tuni-blue,
+        lang: false,
+      )[
+        ```asm
+        csrr ..., mintthresh
+        sw ...
+        csrw ..., mintthresh
+        /* ... */
+        csrw ..., mintthresh
+        ```
+      ],
+    )
   ]
 
   #pop.column-box(heading: [*Future Work*])[
