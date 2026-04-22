@@ -98,15 +98,6 @@
 
         Used by industry & popular with hobbyists:\ *a million all-time downloads on crates.io*.
 
-        /*
-        #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
-        //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
-        #hrule
-        */
-
-        *Model: tasks & shared resources*
-        - Stack Resource Policy (SRP) @baker1991srp-journal
-        - Interrupts as tasks
       ],
       move(dy: -2em, align(center + horizon, rect(
         radius: 100%,
@@ -121,6 +112,19 @@
         ),
       ))),
     )
+
+    #v(-0.5em)
+    /*
+    #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
+    //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
+    #hrule
+    */
+
+    *Model: tasks & shared resources for single-processor systems*
+    - *Intuition:* interrupts as tasks.
+    - Stack Resource Policy (SRP) based scheduling model for concurrent tasks with shared resources.~@baker1991srp-journal
+    - *Limitations/*Constraints*/:* single-processor, static-priorities.
+    - *Benefits:* single-stack execution, race- and deadlock-free execution, bounded blocking, one context switch per task execution, prevention of multiple priority inversion, amenable to tests for worst-case execution time and task and overall schedulability.
   ]
 
   #pop.column-box(heading: [*RW resources/*Multi-unit resources*/*])[
@@ -168,7 +172,7 @@
       where $ceil(R)_0$ is the highest preemption level of jobs with any access~to~$R$.
   ]
 
-  #pop.column-box(heading: [*Improved response time RW locks for high-priority readers*], rect(
+  #pop.column-box(heading: [*Improved response time RW locks for high-priority readers*], box(
     stroke: if DEBUG { red },
     [
       #image("assets/export/legend.svg", width: 100%)
