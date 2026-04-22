@@ -16,12 +16,12 @@
   tau: (
     idx: 1,
     name: [Tampere University],
-    location: [Tampere, Finland],
+    location: [/*Tampere, */Finland],
   ),
   ltu: (
     idx: 2,
     name: [Luleå University of Technology],
-    location: [Luleå, Sweden],
+    location: [/*Luleå, */Sweden],
   ),
 )
 #let authors = (
@@ -80,7 +80,7 @@
         .map(o => (
           super[#o.idx] + o.name + ", " + o.location
         ))
-        .join(", ", last: " and ")
+        .join(", ")
     )
 
     /*#super("1")Tampere University, Finland
