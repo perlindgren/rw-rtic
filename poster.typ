@@ -142,9 +142,31 @@
     ]
   ]
 
-  #pop.column-box(heading: [*Code*])[
-  ]
+  #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
+    #set math.equation(numbering: "(1)")
 
+    *Theorem* Given the current system ceiling $macron(Pi)_"old"$ and assuming $R$ is a RW resource modeled as a multi-unit resource,
+    /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
+
+    Formally,*/ SRP compliance is maintained when:
+
+    + upon taking a read-lock of resource $R$, the system
+      ceiling $macron(Pi)$ is updated to
+
+      #box[$
+        macron(Pi) = max(macron(Pi)_"old", ceil(R)_1)
+      $<eq:rw-lock-ceil-r>]
+      where $ceil(R)_1$ is the highest preemption level of
+      jobs with write-access to $R$, and
+    + upon taking a write-lock of resource $R$, the system
+      ceiling $macron(Pi)$ changes to
+
+      #box[$
+        macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
+      $<eq:rw-lock-ceil-w>]
+
+      where $ceil(R)_0$ is the highest preemption level of jobs with any access~to~$R$.
+  ]
 
   #pop.column-box(heading: [*Improved response time RW locks for high-priority readers*], rect(
     stroke: if DEBUG { red },
@@ -174,31 +196,6 @@
     ],
   ))
 
-  #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
-    #set math.equation(numbering: "(1)")
-
-    *Theorem* Given the current system ceiling $macron(Pi)_"old"$ and assuming $R$ is a RW resource modeled as a multi-unit resource,
-    /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
-
-    Formally,*/ SRP compliance is maintained when:
-
-    + upon taking a read-lock of resource $R$, the system
-      ceiling $macron(Pi)$ is updated to
-
-      #box[$
-        macron(Pi) = max(macron(Pi)_"old", ceil(R)_1)
-      $<eq:rw-lock-ceil-r>]
-      where $ceil(R)_1$ is the highest preemption level of
-      jobs with write-access to $R$, and
-    + upon taking a write-lock of resource $R$, the system
-      ceiling $macron(Pi)$ changes to
-
-      #box[$
-        macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
-      $<eq:rw-lock-ceil-w>]
-
-      where $ceil(R)_0$ is the highest preemption level of jobs with any access~to~$R$.
-  ]
   //#colbreak()
 
   #pop.column-box(heading: [*Future Work*])[
