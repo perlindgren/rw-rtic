@@ -7,6 +7,10 @@
 
 #show: doc => preamble(doc)
 
+// All headings in purple, all headings in standard point size
+#show heading: it => text(fill: tuni-style.tuni-purple, size: pop.layout-a0.at("body-size"), it)
+#show heading: it => { [#it #v(-.3em)] }
+
 #let DEBUG = false
 
 #let orgs = (
@@ -75,42 +79,52 @@
 )
 
 #columns(2, [
-  #pop.column-box(heading: "Summary")[
+  #pop.column-box(heading: [*Summary*])[
     - We present Readers-Writers locks (RW locks) for the RTIC framework, offering improved schedulability for systems with high-priority readers.
     - Suggested runtime implementation introduces no overhead compared to RTIC's pre-existing mutex locks.
     - The declarative mapping from RW locks to SRP can be implemented by analysis and a preprocessor pass.
   ]
-  #pop.column-box(heading: "RTIC framework")[
-    #pop.column-box(heading: "Tasks & Resources model")[
-      - Stack Resource Policy (SRP) @baker1991srp-journal
-      - Rust
-      - Interrupts as tasks
-    ]
-    #pop.column-box(heading: "Multi-unit resources")[
-      RW resources modeled as a special case of multi-unit resources, where the number of units is the number of jobs accessing the resource and readers acquire one unit and writers acquire all units.
-    ]
-    #pop.column-box(heading: "Efficient resource sharing / locking")[
-    ]
-    #pop.column-box(heading: "Code")[
-      #zebraw(
-        highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-        footer: "Highlight footer",
-        highlight-color: tuni-style.tuni-blue,
-        lang: false,
-      )[
-        ```C
-        line 1
-        line 2
-        line 3
-        ```
-      ]
+  #pop.column-box(heading: [Prior work])[
+    PCP has been extended to apply to RW resources by Sha et al.~@sha1989rwpcp
+  ]
+
+  #pop.column-box(heading: [*RTIC framework*])[
+    = Meta
+    - *Near-zero overhead Rust-based RTOS* based on a hardware orchestrated execution model.
+    - Million downloads on crates.io
+
+    = Model: tasks & shared resources
+    - Stack Resource Policy (SRP) @baker1991srp-journal
+    - Interrupts as tasks
+  ]
+
+  #pop.column-box(heading: [*RW resources/*Multi-unit resources*/*])[
+    RW resources are modeled as a special case of multi-unit resources, where the number of units is the number of jobs accessing the resource and readers acquire one unit and writers acquire all units.
+  ]
+
+  #pop.column-box(heading: [*Efficient resource sharing / locking*])[
+    #zebraw(
+      highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+      footer: "Highlight footer",
+      highlight-color: tuni-style.tuni-blue,
+      lang: false,
+    )[
+      ```C
+      line 1
+      line 2
+      line 3
+      ```
     ]
   ]
-  #pop.column-box(heading: "Mutex", rect(image("assets/export/system-mutex.pdf", width: 100%)))
 
-  #pop.column-box(heading: "RW", image("assets/export/system-rw.pdf", width: 100%))
+  #pop.column-box(heading: [*Code*])[
+  ]
 
-  #pop.column-box(heading: [SRP-compliant Readers-Writer Lock])[
+  #pop.column-box(heading: [*Mutex*], rect(image("assets/export/system-mutex.pdf", width: 100%)))
+
+  #pop.column-box(heading: [*RW*], image("assets/export/system-rw.pdf", width: 100%))
+
+  #pop.column-box(heading: [*SRP-compliant Readers-Writer Lock*])[
     #set math.equation(numbering: "(1)")
 
     *Theorem* Given the current system ceiling $macron(Pi)_"old"$ and assuming $R$ is a RW resource modeled as a multi-unit resource,
@@ -137,14 +151,11 @@
   ]
   //#colbreak()
 
-  #pop.column-box(heading: "Future Work")[
+  #pop.column-box(heading: [*Future Work*])[
     - General multi-unit resources
-    - #text(weight: "bold")[Virtualization] -- #lorem(10)
-    - #text(weight: "bold")[Integration] -- #lorem(20)
-    - #text(weight: "bold")[Evaluation] -- #lorem(10)
   ]
 
-  #pop.column-box(heading: "References")[
+  #pop.column-box(heading: [*References*])[
     #bibliography("refs.bib", title: none)
   ]
 ])
