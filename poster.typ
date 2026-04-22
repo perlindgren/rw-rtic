@@ -98,7 +98,8 @@
       the RTIC~framework*, offering improved schedulability
       for embedded systems with high-priority readers.
     - Suggested _runtime_ implementation introduces *no
-      overhead* compared to RTIC's pre-existing mutex locks.
+      overhead* compared to RTIC's pre-existing single-unit
+      mutex locks.
     - The declarative mapping from RW locks to SRP can be
       implemented by analysis and a preprocessor pass.
     - User-facing model of RW locks aligns well with _Rust
@@ -156,9 +157,8 @@
     - *Benefits:* single-stack execution, race- and
       deadlock-free execution, bounded blocking, one context
       switch per task execution, prevention of multiple
-      priority inversion, and amenable to tests for
-      worst-case execution time, task schedulability, and
-      overall schedulability.
+      priority inversion, and amenable to WCET, response
+      time and schedulability analysis.
   ]
 
   #pop.column-box(heading: [*RW
