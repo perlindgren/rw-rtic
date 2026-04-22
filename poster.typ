@@ -217,6 +217,11 @@
     box(
       stroke: if DEBUG { red },
       [
+        Example system has five jobs and a shared RW
+        resource. First diagrams shows behavior when mutex
+        locks are used to access the resource, and the
+        second when RW locks are used instead.
+
         #image("assets/export/legend.svg", width: 100%)
         *Mutex*
         /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
