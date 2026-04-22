@@ -6,6 +6,7 @@
 - Increase font size
 - Convert exclamation mark to text, e.g., "Blocked!" or "Unnecessary blocking".
 - Legend: SRP system ceiling instead of system ceiling
+- "Job pending without executing" -> "Job waiting"?
 - Job -> Task
 
 ## Finalization
