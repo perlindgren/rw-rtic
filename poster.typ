@@ -223,7 +223,7 @@
 
         #box(
           stroke: if DEBUG { red },
-          image("assets/export/legend.svg", width: 100%),
+          image("build/diagrams/legend.pdf", width: 100%),
         )
         //*Mutex*
         /* HACK: render diagrams as SVG to work around an unknown PDF rendering bug.
@@ -245,7 +245,7 @@
         #box(
           stroke: if DEBUG { red },
           image(
-            "assets/export/system-mutex.svg",
+            "build/diagrams/system-mutex.pdf",
             width: 100%,
           )
             + place(top + right, dy: 1.5em, dx: -1em, rect(
@@ -259,7 +259,7 @@
         #v(-1.25em)
         #box(
           stroke: if DEBUG { red },
-          image("assets/export/system-rw.svg", width: 100%)
+          image("build/diagrams/system-rw.pdf", width: 100%)
             + place(
               top + right,
               dy: 0.15em,
