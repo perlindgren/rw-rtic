@@ -1,10 +1,16 @@
 TYPST = typst
-DRAWIO = drawio
+DRAWIO ?= drawio
+HEKSA_DRAWIO := drawio #replace
 SRC_DIR = .
 BUILD_DIR = build
 DIAGRAMS_DIR = assets
 BUILD_DIAGRAMS_DIR = $(BUILD_DIR)/diagrams
 TARGET ?= main
+
+ifeq ($(HEKSA),1)
+DRAWIO := $(HEKSA_DRAWIO)
+$(info Moi Heksa)
+endif
 
 # Find all .drawio files
 DIAGRAM_FILES := $(wildcard $(DIAGRAMS_DIR)/*.drawio)
