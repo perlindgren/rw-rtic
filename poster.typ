@@ -161,15 +161,55 @@
       time and schedulability analysis.
   ]
 
-  #pop.column-box(heading: [*RW
-  resources/*Multi-unit resources*/*])[
-    SRP supports multi-unit resources. RTIC implements
-    near-zero overhead locks for single-unit resources.
+  #pop.column-box(heading: [*Efficient resource sharing /
+  locking*])[
+    #grid(
+      columns: (1fr, 1fr),
+      column-gutter: 0.5em,
+      zebraw(
+        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        //footer: "Highlight footer",
+        highlight-color: tuni-style.tuni-blue,
+        lang: false,
+      )[
+        ```rust
+        #[shared = [res]]
+        fn task() {
+          res.lock(|r| {
 
-    RW resources are modeled in SRP as a special case of
-    multi-unit resources, where the number of units is the
-    number of jobs accessing the resource and readers
-    acquire one unit and writers acquire all units.
+            /* ... */
+          });
+        }
+        ```
+      ],
+      zebraw(
+        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        //footer: "Highlight footer",
+        highlight-color: tuni-style.tuni-blue,
+        lang: false,
+        numbering: false,
+      )[
+        ```asm
+        mrs     r0, BASEPRI
+        push    {r0}
+        mov     r0, #C
+        msr     BASEPRI_MAX, r0
+        /* ... */
+        pop     {r0}
+        msr     BASEPRI, r0
+        ```
+        /*
+        ```
+        cur = read basepri
+        if ceil(r) > cur:
+          basepri = ceil(r)
+
+        /* ... */
+        basepri = cur
+        ```
+        */
+      ],
+    )
   ]
 
   #pop.column-box(heading: [*SRP-compliant Readers-Writer
@@ -203,6 +243,17 @@
           of jobs with any access~to~$R$.
       ],
     )
+  ]
+
+  #pop.column-box(heading: [*RW
+  resources/*Multi-unit resources*/*])[
+    SRP supports multi-unit resources. RTIC implements
+    near-zero overhead locks for single-unit resources.
+
+    RW resources are modeled in SRP as a special case of
+    multi-unit resources, where the number of units is the
+    number of jobs accessing the resource and readers
+    acquire one unit and writers acquire all units.
   ]
 
   #pop.column-box(
@@ -276,57 +327,6 @@
       ],
     ),
   )
-
-  #pop.column-box(heading: [*Efficient resource sharing /
-  locking*])[
-    #grid(
-      columns: (1fr, 1fr),
-      column-gutter: 0.5em,
-      zebraw(
-        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-        //footer: "Highlight footer",
-        highlight-color: tuni-style.tuni-blue,
-        lang: false,
-      )[
-        ```rust
-        #[shared = [res]]
-        fn task() {
-          res.lock(|r| {
-
-            /* ... */
-          });
-        }
-        ```
-      ],
-      zebraw(
-        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-        //footer: "Highlight footer",
-        highlight-color: tuni-style.tuni-blue,
-        lang: false,
-        numbering: false,
-      )[
-        ```asm
-        mrs     r0, BASEPRI
-        push    {r0}
-        mov     r0, #C
-        msr     BASEPRI_MAX, r0
-        /* ... */
-        pop     {r0}
-        msr     BASEPRI, r0
-        ```
-        /*
-        ```
-        cur = read basepri
-        if ceil(r) > cur:
-          basepri = ceil(r)
-
-        /* ... */
-        basepri = cur
-        ```
-        */
-      ],
-    )
-  ]
 
   #pop.column-box(heading: [*Future Work*])[
     - General multi-unit resources.
