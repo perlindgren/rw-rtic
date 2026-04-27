@@ -192,7 +192,7 @@
         ```asm
         mrs     r0, BASEPRI
         push    {r0}
-        mov     r0, #C
+        mov     r0, #0x40
         msr     BASEPRI_MAX, r0
         /* ... */
         pop     {r0}
