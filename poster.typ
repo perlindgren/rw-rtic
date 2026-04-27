@@ -280,7 +280,7 @@
   #pop.column-box(heading: [*Efficient resource sharing /
   locking*])[
     #grid(
-      columns: (1.0fr, 2fr),
+      columns: (1fr, 1fr),
       column-gutter: 0.5em,
       zebraw(
         //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
@@ -292,6 +292,7 @@
         #[shared = [res]]
         fn task() {
           res.lock(|r| {
+
             /* ... */
           });
         }
@@ -305,19 +306,30 @@
         numbering: false,
       )[
         ```asm
-
-        csrr ..., mintthresh # read thr
-        csrw ..., mintthresh # raise thr
+        mrs     r0, BASEPRI
+        push    {r0}
+        mov     r0, #C
+        msr     BASEPRI_MAX, r0
         /* ... */
-        csrw ..., mintthresh # restore thr
-
+        pop     {r0}
+        msr     BASEPRI, r0
         ```
+        /*
+        ```
+        cur = read basepri
+        if ceil(r) > cur:
+          basepri = ceil(r)
+
+        /* ... */
+        basepri = cur
+        ```
+        */
       ],
     )
   ]
 
   #pop.column-box(heading: [*Future Work*])[
-    - General multi-unit resources
+    - General multi-unit resources.
   ]
 
   #pop.column-box(heading: [*References*])[
