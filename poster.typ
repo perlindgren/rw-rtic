@@ -211,8 +211,9 @@
     box(
       stroke: if DEBUG { red },
       [
-        - Five tasks and a shared resource
-        - Priority = preemption level
+        - Five jobs (tasks) contending over a shared
+          resource
+        - Static priority = preemption level
         /*
         Example system has five tasks and a shared RW
         resource. Priorities equal preemption levels. First
@@ -248,7 +249,7 @@
             "assets/export/system-mutex.pdf",
             width: 100%,
           )
-            + place(top + right, dy: 1.5em, dx: -1em, rect(
+            + place(top + right, dy: 0.75em, dx: -1em, rect(
               fill: tuni-style.tuni-pink,
               outset: 0.4em,
               [*Using Mutex Locks*],
@@ -262,7 +263,7 @@
           image("assets/export/system-rw.pdf", width: 100%)
             + place(
               top + right,
-              dy: 0.15em,
+              dy: 0.45em,
               dx: -1em,
               rect(
                 fill: tuni-style.tuni-pink,
@@ -279,7 +280,7 @@
   #pop.column-box(heading: [*Efficient resource sharing /
   locking*])[
     #grid(
-      columns: (1.5fr, 2fr),
+      columns: (1.0fr, 2fr),
       column-gutter: 0.5em,
       zebraw(
         //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
