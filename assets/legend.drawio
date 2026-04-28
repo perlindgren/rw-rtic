@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram name="Page-1" id="SzKaqQLIyyT3BjxNXk7S">
-    <mxGraphModel dx="983" dy="610" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="274" dy="170" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -61,8 +61,8 @@
         <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#F5A5C8,#F5A5C8);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
           <mxGeometry height="40" width="10" x="655" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-18" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Job execution" vertex="1">
-          <mxGeometry height="30" width="120" x="675" y="35" as="geometry" />
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-18" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;imageWidth=24;rotation=0;rounded=0;spacingLeft=0;spacingRight=-10;" value="Job execution" vertex="1">
+          <mxGeometry height="30" width="100" x="675" y="35" as="geometry" />
         </mxCell>
         <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#82c8f0, #1d293b);strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
           <mxGeometry height="40" width="10" x="615" y="88" as="geometry" />
