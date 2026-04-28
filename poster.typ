@@ -147,10 +147,11 @@
       API.
   ]
   #pop.column-box(heading: [*Prior work*])[
-    - SRP already supports modeling readers-writer locks
-      using multi-unit resources.~@baker1991srp-journal
-    - Priority~Ceiling~Protocol (PCP) is a special case of
-      SRP that has been extended to apply to RW resources by
+    - SRP models Readers-Writer locks using multi-unit
+      resources.~@baker1991srp-journal
+    - A special case of
+      SRP---Priority~Ceiling~Protocol---has been extended to
+      apply to RW resources by
       #box[Sha et al.~@sha1989rwpcp]
     //- Conventional OSes tend not to provide bounded blocking.~@buttazzo2011-hard
 
@@ -164,7 +165,7 @@
           *Near-zero overhead Rust-based RTOS~@rtic*\ with a
           hardware orchestrated execution model.
 
-          Used by industry & popular with hobbyists:\ *a
+          Used in industry & popular with hobbyists:\ *a
           million all-time downloads on crates.io*.
 
         ],
@@ -191,17 +192,17 @@
 
       *Model: tasks & shared resources for single-processor
       systems*
+      - SRP-based resource sharing for concurrent tasks.
       - *Intuition:* interrupts as tasks.
-      - SRP-based scheduling model for concurrent tasks with
-        shared resources.~@baker1991srp-journal
-      - *Limitations/*Constraints*/:* single-processor,
-        static-priorities.
-      - *Benefits:* single-stack execution, race- and
-        deadlock-free execution, bounded blocking, one
-        context switch per task execution, prevention of
-        multiple priority inversion, and amenable to WCET,
-        response time and schedulability analysis.
-    ]
+      - *Limitations/*Constraints*/:* single processor,
+        fixed priorities.
+      - *Benefits:*
+        single-stack execution, race- and
+        deadlock-free/* execution*/, bounded blocking,
+        // one context switch per task execution,
+        prevention of multiple priority inversion, and
+        amenable to WCET, response time and schedulability
+        analysis.
 
     #pop.column-box(heading: [*Efficient resource sharing /
     locking*])[
@@ -373,7 +374,7 @@
   )
 
   #pop.column-box(heading: [*Future Work*])[
-    - General multi-unit resources.
+    - Generalized multi-unit resources.
   ]
 
   #pop.column-box(heading: [*References*])[
