@@ -26,12 +26,17 @@
   set page("a0", margin: 1cm)
   pop.set-poster-layout(pop.layout-a0)
   pop.set-theme(tau-theme)
-  set text(font: tuni-style.tuni-font, size: pop.layout-a0.at("body-size"))
+  set text(
+    font: tuni-style.tuni-font,
+    size: pop.layout-a0.at("body-size"),
+  )
   let box-spacing = 1.2em
   set columns(gutter: box-spacing)
   set block(spacing: box-spacing)
-  pop.update-poster-layout(spacing: box-spacing, heading-size: 30pt)
-
+  pop.update-poster-layout(
+    spacing: box-spacing,
+    heading-size: 30pt,
+  )
 
   doc
 }
