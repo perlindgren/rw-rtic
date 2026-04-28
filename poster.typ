@@ -265,7 +265,6 @@
       )
     ]
   ]
-
   #pop.column-box(heading: [*SRP-compliant Readers-Writer
   Lock*])[
     *Theorem* Given the current system ceiling
@@ -398,8 +397,8 @@
   #pop.column-box(heading: [*References*])[
     // Default: set text(size: 33pt)
     // This is a relatively good place to scale down if needed.
-    #set text(size: 32pt)
-    #set par(spacing: 0.75em)
+    #set text(size: 32.6pt)
+    #set par(spacing: 0.85em)
     #bibliography("refs.bib", title: none)
   ]
 ])
