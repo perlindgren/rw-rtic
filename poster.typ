@@ -49,19 +49,55 @@
   ),
 )
 
+// The bottom box is ordinarily dynamically sized, based on its contents
+#let bottom-box-height = 5cm
+
+#let vfix = 20pt
+#let tuni-logo-height = bottom-box-height
+// Editor's stylistic choice: TUNI logo's visual weight is a bit downwards
+// distributed. Consider moving it upwards just a bit to counter-balance.
+#let tuni-logo-y-offset = 0.0 * bottom-box-height
+#let logo-box(sizes, y-offsets) = box(
+  stroke: if DEBUG { red },
+  height: 140pt + vfix,
+  grid(
+    columns: 2,
+    align: horizon,
+    column-gutter: 0.5em,
+    move(
+      dy: y-offsets.at(0) + 5pt,
+      image(
+        "assets/logo_TAU_fieng_white_crop.svg",
+        fit: "contain",
+        width: sizes.at(0).at(0),
+        height: sizes.at(0).at(1),
+      ),
+    ),
+    move(
+      image(
+        "assets/export/LTU_eng_ CMYK converted white.svg",
+        height: sizes.at(1).at(0),
+        width: sizes.at(1).at(1),
+      ),
+      dy: y-offsets.at(1) + 5pt,
+    ),
+  ),
+)
+
 #pop.title-box(
   [
     #set text(fill: white)
-    #box(
-      height: 140pt,
-      image(
-        "assets/logo_TAU_fieng_white_crop.svg",
-        width: 400pt,
-      ),
-    )
 
-    Work in Progress:\ Efficient Readers-Writer Locks for
-    the RTIC Framework
+    #logo-box(
+      ((400pt, auto), (auto, auto)),
+      (tuni-logo-y-offset, -8pt),
+    )
+    #v(-vfix)
+
+    #box(stroke: if DEBUG { red })[
+      Work in Progress:\ Efficient Readers-Writer Locks for
+      the RTIC Framework
+    ]
   ],
   authors: [
     #v(1cm)
@@ -340,22 +376,11 @@
 ])
 
 #{
-  // The bottom box is dynamically sized, based on its contents
-  let bottom-box-height = 5cm
-
   pop.bottom-box(
     logo: {
-      let logo-height = bottom-box-height
-      // Editor's stylistic choice: TUNI logo's visual weight is a bit downwards
-      // distributed. Consider moving it upwards just a bit to counter-balance.
-      let logo-y-offset = 0.0 * bottom-box-height
-      move(
-        dy: logo-y-offset,
-        image(
-          "assets/logo_TAU_fieng_white_crop.svg",
-          fit: "contain",
-          height: logo-height,
-        ),
+      logo-box(
+        ((auto, tuni-logo-height), (auto, auto)),
+        (tuni-logo-y-offset, -5pt),
       )
     },
     // Stack the text and the QR code in a box
