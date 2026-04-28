@@ -234,6 +234,7 @@
           ```asm
           mrs     r0, BASEPRI
           push    {r0}
+          # 0x40: comp.-time constant
           mov     r0, #0x40
           msr     BASEPRI_MAX, r0
           /* ... */
