@@ -208,28 +208,35 @@
       *Efficient resource sharing / locking:*
       #v(-0.3em)
       #grid(
-        columns: (1fr, auto, 1fr),
+        columns: (1fr, auto, 1.1fr),
         column-gutter: 0.5em,
         align: (bottom, horizon, bottom),
-        grid.cell(fill: luma(245), zebraw(
-          //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+        zebraw(
+          header: [RTIC model],
+          highlight-lines: (5, 6, 7),
           //footer: "Highlight footer",
-          highlight-color: tuni-style.tuni-blue,
+          //highlight-color: tuni-style.tuni-green,
           lang: false,
+          numbering: (
+            ([], [], [1], [2], [3], [3], [4], [5]),
+          ),
         )[
           ```rust
+
+
           #[shared = [res]]
           fn task() {
             res.lock(|r| {
-              /* ... */
+              /* `r` accessible */
             });
           }
           ```
-        ]),
-        scale(180%)[\u{1F81E}],
+        ],
+        move(dy: 2.25em, scale(180%)[\u{1F81E}]),
         zebraw(
           //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
           //footer: "Highlight footer",
+          header: [Generated assembly],
           highlight-color: tuni-style.tuni-blue,
           lang: false,
           numbering: false,
@@ -237,8 +244,8 @@
           ```asm
           mrs     r0, BASEPRI
           push    {r0}
-          # 0x40: comp.-time constant
-          mov     r0, #0x40
+          # HW_CEIL_R: comp.-time HW(⌈r⌉)
+          mov     r0, HW_CEIL_R
           msr     BASEPRI_MAX, r0
           /* ... */
           pop     {r0}
