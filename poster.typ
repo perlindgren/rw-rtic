@@ -130,19 +130,27 @@
 
 #columns(2, [
   #pop.column-box(heading: [*Summary*])[
-    - We present *_Readers-Writer Locks_ (_RW Locks_) for
-      the RTIC~framework*, offering improved schedulability
-      for embedded systems with high-priority readers.
-    - Suggested _runtime_ implementation introduces *no
-      overhead* compared to RTIC's pre-existing single-unit
+    - *_Readers-Writer Locks_ (_RW Locks_) for the
+      RTIC~framework,*\ offer improved schedulability for
+      Rust-based embedded systems with high-priority readers
+      of shared resources.
+    - Suggested /*_runtime_*/ implementation introduces *no
+      runtime overhead* compared to RTIC's pre-existing
+      /*single-unit*/
       mutex locks.
-    - The declarative mapping from RW locks to SRP can be
-      implemented by analysis and a preprocessor pass.
-    - User-facing model of RW locks aligns well with _Rust
-      alias guarantees_.
+    - The declarative mapping between
+      Stack~Resource~Policy~(SRP) and RW~locks can be
+      implemented by ahead-of-time code analysis and
+      preprocessing.
+    - _Rust alias guarantees_ can be used to enforce
+      access-mode guarantees in the application-side lock
+      API.
   ]
   #pop.column-box(heading: [*Prior work*])[
-    - PCP has been extended to apply to RW resources by
+    - SRP already supports modeling readers-writer locks
+      using multi-unit resources.~@baker1991srp-journal
+    - Priority~Ceiling~Protocol (PCP) is a special case of
+      SRP that has been extended to apply to RW resources by
       #box[Sha et al.~@sha1989rwpcp]
     //- Conventional OSes tend not to provide bounded blocking.~@buttazzo2011-hard
   ]
