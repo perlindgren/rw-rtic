@@ -153,107 +153,106 @@
       SRP that has been extended to apply to RW resources by
       #box[Sha et al.~@sha1989rwpcp]
     //- Conventional OSes tend not to provide bounded blocking.~@buttazzo2011-hard
-  ]
 
-  #pop.column-box(heading: [*RTIC framework*])[
-    #grid(
-      columns: (1fr, auto),
-      align: (left + horizon, center + top),
-      column-gutter: 1em,
-      stroke: if DEBUG { red },
-      [
-        *Near-zero overhead Rust-based RTOS~@rtic*\ with a
-        hardware orchestrated execution model.
+    #pop.column-box(heading: [*The RTIC framework*])[
+      #grid(
+        columns: (1fr, auto),
+        align: (left + horizon, center + top),
+        column-gutter: 1em,
+        stroke: if DEBUG { red },
+        [
+          *Near-zero overhead Rust-based RTOS~@rtic*\ with a
+          hardware orchestrated execution model.
 
-        Used by industry & popular with hobbyists:\ *a
-        million all-time downloads on crates.io*.
+          Used by industry & popular with hobbyists:\ *a
+          million all-time downloads on crates.io*.
 
-      ],
-      move(dy: -2em, align(center + horizon, rect(
-        radius: 100%,
-        height: 6em,
-        width: 6em,
-        stroke: none,
-        fill: white,
-        move(
-          // Account for the tail
-          dy: -8pt,
-          image("assets/logo_RTIC.png", height: 95%),
-        ),
-      ))),
-    )
+        ],
+        move(dy: -2em, align(center + horizon, rect(
+          radius: 100%,
+          height: 6em,
+          width: 6em,
+          stroke: none,
+          fill: white,
+          move(
+            // Account for the tail
+            dy: -8pt,
+            image("assets/logo_RTIC.png", height: 95%),
+          ),
+        ))),
+      )
 
-    #v(-0.5em)
-    /*
-    #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
-    //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
-    #hrule
-    */
+      #v(-0.5em)
+      /*
+      #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
+      //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
+      #hrule
+      */
 
-    *Model: tasks & shared resources for single-processor
-    systems*
-    - *Intuition:* interrupts as tasks.
-    - Stack Resource Policy (SRP) based scheduling model for
-      concurrent tasks with shared
-      resources.~@baker1991srp-journal
-    - *Limitations/*Constraints*/:* single-processor,
-      static-priorities.
-    - *Benefits:* single-stack execution, race- and
-      deadlock-free execution, bounded blocking, one context
-      switch per task execution, prevention of multiple
-      priority inversion, and amenable to WCET, response
-      time and schedulability analysis.
-  ]
+      *Model: tasks & shared resources for single-processor
+      systems*
+      - *Intuition:* interrupts as tasks.
+      - SRP-based scheduling model for concurrent tasks with
+        shared resources.~@baker1991srp-journal
+      - *Limitations/*Constraints*/:* single-processor,
+        static-priorities.
+      - *Benefits:* single-stack execution, race- and
+        deadlock-free execution, bounded blocking, one
+        context switch per task execution, prevention of
+        multiple priority inversion, and amenable to WCET,
+        response time and schedulability analysis.
+    ]
 
-  #pop.column-box(heading: [*Efficient resource sharing /
-  locking*])[
-    #grid(
-      columns: (1fr, 1fr),
-      column-gutter: 0.5em,
-      zebraw(
-        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-        //footer: "Highlight footer",
-        highlight-color: tuni-style.tuni-blue,
-        lang: false,
-      )[
-        ```rust
-        #[shared = [res]]
-        fn task() {
-          res.lock(|r| {
+    #pop.column-box(heading: [*Efficient resource sharing /
+    locking*])[
+      #grid(
+        columns: (1fr, 1fr),
+        column-gutter: 0.5em,
+        zebraw(
+          //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+          //footer: "Highlight footer",
+          highlight-color: tuni-style.tuni-blue,
+          lang: false,
+        )[
+          ```rust
+          #[shared = [res]]
+          fn task() {
+            res.lock(|r| {
 
-            /* ... */
-          });
-        }
-        ```
-      ],
-      zebraw(
-        //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
-        //footer: "Highlight footer",
-        highlight-color: tuni-style.tuni-blue,
-        lang: false,
-        numbering: false,
-      )[
-        ```asm
-        mrs     r0, BASEPRI
-        push    {r0}
-        mov     r0, #0x40
-        msr     BASEPRI_MAX, r0
-        /* ... */
-        pop     {r0}
-        msr     BASEPRI, r0
-        ```
-        /*
-        ```
-        cur = read basepri
-        if ceil(r) > cur:
-          basepri = ceil(r)
+              /* ... */
+            });
+          }
+          ```
+        ],
+        zebraw(
+          //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
+          //footer: "Highlight footer",
+          highlight-color: tuni-style.tuni-blue,
+          lang: false,
+          numbering: false,
+        )[
+          ```asm
+          mrs     r0, BASEPRI
+          push    {r0}
+          mov     r0, #0x40
+          msr     BASEPRI_MAX, r0
+          /* ... */
+          pop     {r0}
+          msr     BASEPRI, r0
+          ```
+          /*
+          ```
+          cur = read basepri
+          if ceil(r) > cur:
+            basepri = ceil(r)
 
-        /* ... */
-        basepri = cur
-        ```
-        */
-      ],
-    )
+          /* ... */
+          basepri = cur
+          ```
+          */
+        ],
+      )
+    ]
   ]
 
   #pop.column-box(heading: [*SRP-compliant Readers-Writer
