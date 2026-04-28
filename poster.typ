@@ -142,9 +142,9 @@
       /*single-unit*/
       mutex locks.
     - The declarative mapping between
-      Stack~Resource~Policy~(SRP) and RW~locks can be
-      implemented by ahead-of-time code analysis and
-      preprocessing.
+      Stack~Resource~Policy~(SRP) and the~RW~Locks can be
+      implemented by *ahead-of-time code analysis* and
+      *preprocessing*.
     - _Rust alias guarantees_ can be used to enforce
       access-mode guarantees in the application-side lock
       API.
@@ -152,9 +152,9 @@
   #pop.column-box(heading: [*Prior work*])[
     - SRP models Readers-Writer locks using multi-unit
       resources.~@baker1991srp-journal
-    - A special case of
-      SRP---Priority~Ceiling~Protocol---has been extended to
-      apply to RW resources by
+    - Priority~Ceiling~Protocol, which is similar to
+      simplified SRP, has been extended to apply to RW
+      resources by
       #box[Sha et al.~@sha1989rwpcp]
     //- Conventional OSes tend not to provide bounded blocking.~@buttazzo2011-hard
 
@@ -247,7 +247,7 @@
           ```asm
           mrs     r0, BASEPRI
           push    {r0}
-          # HW_CEIL_R: comp.-time HW(⌈r⌉)
+          # HW_CEIL_R: comp.-time const.
           mov     r0, HW_CEIL_R
           msr     BASEPRI_MAX, r0
           /* ... */
@@ -281,17 +281,17 @@
       columns: 2,
       column-gutter: 1em,
       [
-        1. upon taking a read-lock of resource $R$, the
+        1. upon taking a read lock of resource $R$, the
           system ceiling $macron(Pi)$ is updated to
           #math.equation(block: true, [$
             macron(Pi) = max(macron(Pi)_"old", ceil(R)_1),
           $<eq:rw-lock-ceil-r>])
           where $ceil(R)_1$ is the highest preemption level
-          of jobs with write-access to $R$, and
+          of jobs with write access to $R$, and
       ],
       [
-        2. upon taking a write-lock of resource $R$, the
-          system ceiling $macron(Pi)$ changes to
+        2. upon taking a write lock of resource $R$, the
+          system ceiling $macron(Pi)$ is updated to
           $
             macron(Pi) = max(macron(Pi)_"old", ceil(R)_0),
           $<eq:rw-lock-ceil-w>
@@ -304,7 +304,7 @@
   #pop.column-box(heading: [*RW
   resources/*Multi-unit resources*/*])[
     SRP supports multi-unit resources. RTIC implements
-    near-zero overhead locks for single-unit resources.
+    near-zero-overhead locks for single-unit resources.
 
     RW resources are modeled in SRP as a special case of
     multi-unit resources, where the number of units is the
@@ -395,13 +395,15 @@
     ),
   )
   #pop.column-box(heading: [*Future Work*])[
-    - Generalized multi-unit resources.
+    - Investigate if generalized multi-unit resources can be
+      used to efficiently manage access to multi-instance
+      resources in RTIC.
   ]
   #pop.column-box(heading: [*References*])[
     // Default: set text(size: 33pt)
     // This is a relatively good place to scale down if needed.
-    #set text(size: 32.6pt)
-    #set par(spacing: 0.85em)
+    #set text(size: 30pt)
+    #set par(spacing: 0.52em)
     #bibliography("refs.bib", title: none)
   ]
 ])
