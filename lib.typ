@@ -30,8 +30,8 @@
     font: tuni-style.tuni-font,
     size: pop.layout-a0.at("body-size"),
   )
-  let box-spacing = 1.2em
-  set columns(gutter: box-spacing)
+  let box-spacing = 0.8em
+  set columns(gutter: 1.2em)
   set block(spacing: box-spacing)
   pop.update-poster-layout(
     spacing: box-spacing,
