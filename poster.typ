@@ -262,7 +262,7 @@
   #pop.column-box(heading: [*SRP-compliant Readers-Writer
   Lock*])[
     *Theorem* Given the current system ceiling
-    $macron(Pi)_"old"$ and assuming $R$ is a RW resource
+    $macron(Pi)_"old"$ and assuming $R$ is a RW~resource
     modeled as a multi-unit resource,
     /*when a lock is taken on a readers/writer resource $R$, the system ceiling can be raised to a compile-time known constant, $ceil(R)_"r"$ for read and $ceil(R)_0$ for write, and the system is still compliant to SRP.
 
