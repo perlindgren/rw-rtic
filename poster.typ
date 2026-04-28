@@ -60,28 +60,31 @@
 #let logo-box(sizes, y-offsets) = box(
   stroke: if DEBUG { red },
   height: 140pt + vfix,
-  grid(
-    columns: 2,
-    align: horizon,
-    column-gutter: 0.5em,
-    move(
-      dy: y-offsets.at(0) + 5pt,
-      image(
-        "assets/logo_TAU_fieng_white_crop.svg",
-        fit: "contain",
-        width: sizes.at(0).at(0),
-        height: sizes.at(0).at(1),
+  {
+    let y-offset-extra = 10pt
+    grid(
+      columns: 2,
+      align: horizon,
+      column-gutter: 0.5em,
+      move(
+        dy: y-offsets.at(0) + y-offset-extra,
+        image(
+          "assets/logo_TAU_fieng_white_crop.svg",
+          fit: "contain",
+          width: sizes.at(0).at(0),
+          height: sizes.at(0).at(1),
+        ),
       ),
-    ),
-    move(
-      image(
-        "assets/export/LTU_eng_ CMYK converted white.svg",
-        height: sizes.at(1).at(0),
-        width: sizes.at(1).at(1),
+      move(
+        image(
+          "assets/export/LTU_eng_ CMYK converted white.svg",
+          height: sizes.at(1).at(0),
+          width: sizes.at(1).at(1),
+        ),
+        dy: y-offsets.at(1) + y-offset-extra,
       ),
-      dy: y-offsets.at(1) + 5pt,
-    ),
-  ),
+    )
+  },
 )
 
 #pop.title-box(
@@ -406,10 +409,10 @@
 #{
   pop.bottom-box(
     logo: {
-      logo-box(
+      move(dx: -0.1em, logo-box(
         ((auto, tuni-logo-height), (auto, auto)),
         (tuni-logo-y-offset, -5pt),
-      )
+      ))
     },
     // Stack the text and the QR code in a box
     //
