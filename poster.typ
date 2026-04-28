@@ -346,30 +346,42 @@
             "assets/export/system-mutex.pdf",
             width: 100%,
           )
-            + place(top + right, dy: 0.75em, dx: -1em, rect(
-              fill: tuni-style.tuni-pink,
-              outset: 0.4em,
-              [*Using Mutex Locks*],
-            )),
+            + place(
+              top + right,
+              dy: 0.75em,
+              dx: -0.96em,
+              box(
+                fill: tuni-style.tuni-pink,
+                outset: 0.4em,
+                [*Using Mutex Locks*],
+              ),
+            ),
         )
         /* HACK: see above */
         //*RW*
         #v(-1.25em)
         #box(
           stroke: if DEBUG { red },
-          image("assets/export/system-rw.pdf", width: 100%)
+          box(
+            image(
+              "assets/export/system-rw.pdf",
+              width: 100%,
+            ),
+            clip: true,
+            inset: (bottom: -1em),
+          )
             + place(
               top + right,
               dy: 0.45em,
-              dx: -1em,
-              rect(
+              dx: -0.96em,
+              box(
                 fill: tuni-style.tuni-pink,
                 outset: 0.4em,
                 [*Using Readers-Writer Locks*],
               ),
             ),
         )
-        #v(-1.25em)
+        #v(-0.25em)
       ],
     ),
   )
