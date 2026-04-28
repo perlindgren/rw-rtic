@@ -221,12 +221,12 @@
           #[shared = [res]]
           fn task() {
             res.lock(|r| {
-
               /* ... */
             });
           }
           ```
-        ],
+        ]),
+        scale(180%)[\u{1F81E}],
         zebraw(
           //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
           //footer: "Highlight footer",
