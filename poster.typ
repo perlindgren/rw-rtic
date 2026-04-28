@@ -183,7 +183,7 @@
         ))),
       )
 
-      #v(-0.5em)
+      //#v(-0.5em)
       /*
       #let hrule = align(center, box(width: 100%, repeat[\- #h(0.4em)]))
       //#let hrule = line(length: 100%, stroke: stroke(dash: "dashed", thickness: 5pt))
@@ -204,12 +204,14 @@
         amenable to WCET, response time and schedulability
         analysis.
 
-    #pop.column-box(heading: [*Efficient resource sharing /
-    locking*])[
+      #v(0.3em)
+      *Efficient resource sharing / locking:*
+      #v(-0.3em)
       #grid(
-        columns: (1fr, 1fr),
+        columns: (1fr, auto, 1fr),
         column-gutter: 0.5em,
-        zebraw(
+        align: (bottom, horizon, bottom),
+        grid.cell(fill: luma(245), zebraw(
           //highlight-lines: (2, 8, 9, 10, 18, 19, 20),
           //footer: "Highlight footer",
           highlight-color: tuni-style.tuni-blue,
@@ -300,7 +302,6 @@
     number of jobs accessing the resource and readers
     acquire one unit and writers acquire all units.
   ]
-
   #pop.column-box(
     heading: [*Improved response time with RW locks for
     high-priority readers*],
@@ -372,13 +373,13 @@
       ],
     ),
   )
-
   #pop.column-box(heading: [*Future Work*])[
     - Generalized multi-unit resources.
   ]
-
   #pop.column-box(heading: [*References*])[
-    #set text(size: 20pt)
+    // Default: set text(size: 33pt)
+    // This is a relatively good place to scale down if needed.
+    #set text(size: 32pt)
     #set par(spacing: 0.75em)
     #bibliography("refs.bib", title: none)
   ]
