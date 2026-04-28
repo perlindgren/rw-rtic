@@ -190,8 +190,8 @@
       #hrule
       */
 
-      *Model: tasks & shared resources for single-processor
-      systems*
+      *Model: tasks with shared resources for
+      single-processor systems*
       - SRP-based resource sharing for concurrent tasks.
       - *Intuition:* interrupts as tasks.
       - *Limitations/*Constraints*/:* single processor,
