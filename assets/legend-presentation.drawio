@@ -1,0 +1,118 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36">
+  <diagram name="Page-1" id="SzKaqQLIyyT3BjxNXk7S">
+    <mxGraphModel dx="975" dy="610" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-1" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;fontSize=15;fontFamily=Open Sans;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="42" as="sourcePoint" />
+            <mxPoint x="40" y="62" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-2" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Job arrival" vertex="1">
+          <mxGeometry height="30" width="90" x="45" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-3" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_protected;fillColor=#f5f5f5;fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-4" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Read lock taken" vertex="1">
+          <mxGeometry height="30" width="130" x="255" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-5" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_unprotected;fillColor=#f5f5f5;fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-6" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Read lock released" vertex="1">
+          <mxGeometry height="30" width="150" x="254" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-7" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_protected;fillColor=light-dark(#647687, #6a6a6a);fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-8" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Write lock taken" vertex="1">
+          <mxGeometry height="30" width="140" x="255" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-9" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_unprotected;fillColor=light-dark(#647687, #6a6a6a);fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-10" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Write lock released" vertex="1">
+          <mxGeometry height="30" width="160" x="254" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-11" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=2;fontSize=15;fontFamily=Open Sans;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="40" y="202" as="sourcePoint" />
+            <mxPoint x="60" y="202" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-12" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="SRP system ceiling" vertex="1">
+          <mxGeometry height="30" width="150" x="70" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#82C8F0,#1D293B);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#C3B9D7,#C3B9D7);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="50" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#7DCDBE,#1F2F1E);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="60" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#FFDCA5,#FFDCA5);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="70" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#F5A5C8,#F5A5C8);strokeColor=none;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="80" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-18" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;imageWidth=24;rotation=0;rounded=0;spacingLeft=0;spacingRight=-10;" value="Job execution" vertex="1">
+          <mxGeometry height="30" width="100" x="100" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#82c8f0, #1d293b);strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="40" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-20" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#C3B9D7,#392F3F);strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="50" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#7DCDBE,#B1F2EB);strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="60" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFDCA5;strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="70" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#F5A5C8,#F5A5C8);strokeColor=none;fillStyle=hatch;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="40" width="10" x="80" y="138" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-24" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Job waiting" vertex="1">
+          <mxGeometry height="30" width="100" x="100" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-25" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=2;fontSize=15;fontFamily=Open Sans;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="220" y="150" as="sourcePoint" />
+            <mxPoint x="245" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-26" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeColor=light-dark(#f5f5f5, #121212);strokeWidth=2;fontSize=15;fontFamily=Open Sans;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="220" y="211" as="sourcePoint" />
+            <mxPoint x="245" y="201" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-27" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_protected;fillColor=light-dark(#cbcbcb, #1a1a1a);fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-28" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Mutex lock taken" vertex="1">
+          <mxGeometry height="30" width="140" x="255" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-29" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#666666;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.lock_unprotected;fillColor=light-dark(#cbcbcb, #1a1a1a);fontColor=#333333;strokeWidth=1;fontSize=15;fontFamily=Open Sans;" value="" vertex="1">
+          <mxGeometry height="23" width="18" x="224" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-30" parent="1" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Open Sans;" value="Mutex lock released" vertex="1">
+          <mxGeometry height="30" width="160" x="254" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="X1UTNt2D2rq8ZbdwY9Wh-31" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=2;fontSize=15;fontFamily=Open Sans;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="220" y="90" as="sourcePoint" />
+            <mxPoint x="245" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
