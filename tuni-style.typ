@@ -18,18 +18,18 @@ mediassa käytetään CMYK tai Pantone -värimäärityksiä.
 */
 
 /* Ensisijaiset värit */
-#let tuni-purple = rgb(78, 0, 142) // #4e008e
+#let tuni-purple = rgb("#4e008e")
 #let tuni-white = rgb(255, 255, 255)
 #let tuni-black = rgb(0, 0, 0)
 
 /* Toissijaiset värit */
-#let tuni-blue = rgb(130, 200, 240) // #82c8f0
-#let tuni-pink = rgb(245, 165, 200) // #f5a5c8
-#let tuni-yellow = rgb(255, 220, 165) // #ffdca5
-#let tuni-lpurple = rgb(195, 185, 215)
-#let tuni-fuchsia = rgb(240, 115, 135) // #f07387
-#let tuni-green = rgb(125, 205, 190)
-#let tuni-grey = rgb(200, 200, 200)
+#let tuni-blue = rgb("#82c8f0")
+#let tuni-pink = rgb("#f5a5c8")
+#let tuni-yellow = rgb("#ffdca5")
+#let tuni-lpurple = rgb("#c3b9d7")
+#let tuni-fuchsia = rgb("#cf286f")
+#let tuni-green = rgb("#7dcdbe")
+#let tuni-grey = rgb("c8c8c8")
 
 /*
 # Saavutettavat värit
